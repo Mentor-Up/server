@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 
-const express = require('express');
+import cors from 'cors';
+import express from 'express';
 const app = express();
-const cors = require('cors')
-const favicon = require('express-favicon');
-const logger = require('morgan');
-const session = require("express-session");
+import favicon from 'express-favicon';
+import logger from 'morgan';
+import session from 'express-session';
 
 
 // middleware
@@ -19,4 +19,4 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 // routes
 // app.use('/api/v1',);
 
-module.exports = app;
+export default app;

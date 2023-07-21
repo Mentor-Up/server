@@ -1,28 +1,36 @@
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const app = require("./app.ts");
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import app from './app';
 
+dotenv.config();
 
-dotenv.config({ path: "./config.env" });
 
 const DB = process?.env?.DATABASE?.replace(
     "<password>",
     `${process.env.DATABASE_PASSWORD}`
   );
   
-  mongoose.set("strictQuery", true);
-  
-  const listener = async () => {
-    await mongoose.connect(DB, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then(() => console.log("Database connect successfully"))
-    console.log(`Listening to port ${8000}`);
-    
-  };
-  const { PORT = 8000 } = process.env;
-  const server = app.listen(PORT, listener);
+mongoose.set("strictQuery", true);
+
+const PORT = process?.env?.PORT || 8000;
+
+const listener = async () => {
+  if (!DB) {
+    console.log("A connection string is required to connect to the DB");
+    return;
+  }
+  try {
+    await mongoose.connect(DB);
+    const server = app.listen(PORT, () =>
+      console.log(`Server is listening on port ${PORT}...`)
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+listener();
+
 
 
   
