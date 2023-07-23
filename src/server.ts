@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-import {     
+import { 
+    node_env,    
     database,
     database_password,
     port } 
