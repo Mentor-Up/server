@@ -6,27 +6,29 @@ export interface jwtPayload {
   name: string;
 }
 
-const auth = (req: Request, res: Response, next: NextFunction): void => {
+const auth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    res.sendStatus(401);
-    return;
+    return res.sendStatus(401);
   }
 
   const token = authHeader.split(" ")[1];
 
   try {
-    if (!process.env.JWT_SECRET) {
-      throw new Error("The .env file must have a JWT_SECRET key.");
+    if (!process.env.ACCESS_TOKEN_SECRET) {
+      throw new Error("The .env file must have a ACCESS_TOKEN_SECRET key.");
     }
 
-    const payload = jwt.verify(token, process.env.JWT_SECRET) as jwtPayload;
+    const payload = jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET
+    ) as jwtPayload;
+
     req.user = { userId: payload.userId };
     next();
   } catch (err) {
-    res.sendStatus(401);
-    return;
+    return res.sendStatus(401);
   }
 };
 

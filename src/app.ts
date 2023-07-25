@@ -4,6 +4,7 @@ import express from 'express';
 const app = express();
 import favicon from 'express-favicon';
 import logger from 'morgan';
+import cookieParser from "cookie-parser";
 import session from 'express-session';
 import { node_env } from './config';
 import compression from 'compression'
@@ -28,6 +29,8 @@ app.use(cors());
 app.use(mongoSanitize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+
 if (node_env === 'development') {
   app.use(logger('dev'));
 } else {

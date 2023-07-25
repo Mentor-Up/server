@@ -6,7 +6,9 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  refreshToken?: string;
   createJWT: () => string;
+  createRefreshToken: () => string;
   comparePassword: (password: string) => Promise<boolean>;
 }
 
@@ -32,6 +34,9 @@ const UserSchema = new mongoose.Schema<IUser>(
       required: [true, "Please provide a password"],
       minlength: 6,
     },
+    refreshToken: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -47,17 +52,33 @@ UserSchema.pre("save", async function (next) {
 // Adds and instance method the our Model
 // Since we refer to this here, we cannot use arrow functions
 UserSchema.methods.createJWT = function () {
-  if (!process?.env.JWT_SECRET) {
-    throw new Error("The .env file must have a JWT_SECRET key.");
+  if (!process?.env.ACCESS_TOKEN_SECRET) {
+    throw new Error("The .env file must have an ACCESS_TOKEN_SECRET key.");
   }
-  if (!process?.env.JWT_EXPIRATION) {
-    throw new Error("The .env file must have a JWT_EXPIRATION key.");
+  if (!process?.env.ACCESS_TOKEN_EXPIRATION) {
+    throw new Error("The .env file must have an ACCESS_TOKEN_EXPIRATION key.");
   }
   return jwt.sign(
     { userId: this._id, name: this.name },
-    process.env.JWT_SECRET,
+    process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: process.env.JWT_EXPIRATION,
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
+    }
+  );
+};
+
+UserSchema.methods.createRefreshToken = function () {
+  if (!process?.env.REFRESH_TOKEN_SECRET) {
+    throw new Error("The .env file must have a REFRESH_TOKEN_SECRET key.");
+  }
+  if (!process?.env.REFRESH_TOKEN_EXPIRATION) {
+    throw new Error("The .env file must have a REFRESH_TOKEN_EXPIRATION key.");
+  }
+  return jwt.sign(
+    { userId: this._id, name: this.name },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRATION,
     }
   );
 };
