@@ -1,18 +1,21 @@
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import { 
+    node_env,    
+    database,
+    database_password,
+    port } 
+    from './config';
 import app from './app';
 
-dotenv.config();
 
-
-const DB = process?.env?.DATABASE?.replace(
+const DB = database?.replace(
     "<password>",
-    `${process.env.DATABASE_PASSWORD}`
+    `${database_password}`
   );
   
 mongoose.set("strictQuery", true);
 
-const PORT = process?.env?.PORT || 8000;
+const PORT = port || 8000;
 
 const listener = async () => {
   if (!DB) {
@@ -21,7 +24,7 @@ const listener = async () => {
   }
   try {
     await mongoose.connect(DB);
-    const server = app.listen(PORT, () =>
+    const server = app.listen(port, () =>
       console.log(`Server is listening on port ${PORT}...`)
     );
   } catch (error) {
