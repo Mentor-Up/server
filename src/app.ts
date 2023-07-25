@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-
 import cors from 'cors';
+import 'express-async-errors';
 import express from 'express';
 const app = express();
 import favicon from 'express-favicon';
@@ -13,6 +13,7 @@ import compression from 'compression'
 import rateLimiter from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
+
 
 app.use(
     rateLimiter({
