@@ -1,6 +1,12 @@
 import mongoose, { Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import {
+  ACCESS_TOKEN_EXPIRATION,
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_EXPIRATION,
+  REFRESH_TOKEN_SECRET,
+} from "../config";
 
 export interface IUser extends Document {
   name: string;
@@ -52,33 +58,17 @@ UserSchema.pre("save", async function (next) {
 // Adds and instance method the our Model
 // Since we refer to this here, we cannot use arrow functions
 UserSchema.methods.createJWT = function () {
-  if (!process?.env.ACCESS_TOKEN_SECRET) {
-    throw new Error("The .env file must have an ACCESS_TOKEN_SECRET key.");
-  }
-  if (!process?.env.ACCESS_TOKEN_EXPIRATION) {
-    throw new Error("The .env file must have an ACCESS_TOKEN_EXPIRATION key.");
-  }
-  return jwt.sign(
-    { userId: this._id, name: this.name },
-    process.env.ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRATION,
-    }
-  );
+  return jwt.sign({ userId: this._id, name: this.name }, ACCESS_TOKEN_SECRET!, {
+    expiresIn: ACCESS_TOKEN_EXPIRATION!,
+  });
 };
 
 UserSchema.methods.createRefreshToken = function () {
-  if (!process?.env.REFRESH_TOKEN_SECRET) {
-    throw new Error("The .env file must have a REFRESH_TOKEN_SECRET key.");
-  }
-  if (!process?.env.REFRESH_TOKEN_EXPIRATION) {
-    throw new Error("The .env file must have a REFRESH_TOKEN_EXPIRATION key.");
-  }
   return jwt.sign(
     { userId: this._id, name: this.name },
-    process.env.REFRESH_TOKEN_SECRET,
+    REFRESH_TOKEN_SECRET!,
     {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRATION,
+      expiresIn: REFRESH_TOKEN_EXPIRATION!,
     }
   );
 };
