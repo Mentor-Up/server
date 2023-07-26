@@ -12,7 +12,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith("Bearer ")) {
-    return new UnauthenticatedError("Invalid token");
+    throw new UnauthenticatedError("Invalid token");
   }
 
   const token = authHeader.split(" ")[1];
@@ -23,7 +23,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
     req.user = { userId: payload.userId };
     next();
   } catch (err) {
-    return new UnauthenticatedError("Invalid token");
+    throw new UnauthenticatedError("Invalid token");
   }
 };
 
