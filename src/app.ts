@@ -14,6 +14,7 @@ import mongoSanitize from "express-mongo-sanitize";
 import errorHandlerMiddleware from "./middleware/error-handler";
 import notFoundMiddleware from "./middleware/not-found";
 import authMiddleware from "./middleware/authentication";
+import googleOauthHandler from "./controllers/Oauth"
 
 import authRouter from "./routes/auth";
 
@@ -54,5 +55,9 @@ app.use("/api/v1/auth", authRouter);
 app.use("/testAuth", authMiddleware, (req, res) => res.send("OK!"));
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
+
+
+//OAuth
+app.get('/auth/google/callback', googleOauthHandler)
 
 export default app;
