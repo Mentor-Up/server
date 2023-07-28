@@ -1,19 +1,23 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
 interface CustomError {
-    statusCode:number;
-    msg:string
+  statusCode: number;
+  msg: string;
 }
 
-const errorHandlerMiddleware = (err:any, req: Request, res:Response, next:NextFunction) => {
-
+const errorHandlerMiddleware = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let customError: CustomError = {
     statusCode: err.statusCode || 500,
     msg: err.message || 'Something went wrong try again later',
   };
   if (err.name === 'ValidationError') {
     customError.msg = Object.values(err.errors)
-      .map((item:any) => item.message)
+      .map((item: any) => item.message)
       .join(',');
     customError.statusCode = 400;
   }

@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -14,12 +14,12 @@ const {
 } = process.env;
 
 const requiredValues = [
-  "DATABASE",
-  "DATABASE_PASSWORD",
-  "ACCESS_TOKEN_SECRET",
-  "ACCESS_TOKEN_EXPIRATION",
-  "REFRESH_TOKEN_SECRET",
-  "REFRESH_TOKEN_EXPIRATION",
+  'DATABASE',
+  'DATABASE_PASSWORD',
+  'ACCESS_TOKEN_SECRET',
+  'ACCESS_TOKEN_EXPIRATION',
+  'REFRESH_TOKEN_SECRET',
+  'REFRESH_TOKEN_EXPIRATION',
 ];
 
 for (const value of requiredValues) {
