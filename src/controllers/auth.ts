@@ -90,7 +90,8 @@ const refreshToken = async (req: Request, res: Response) => {
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRATION }
   );
 
-  return res.status(200).json({ token });
+  return res.status(200)
+  .json({ user: { name: user.name, userId: user._id }, token });
 };
 
 const logout = async (req: Request, res: Response) => {
