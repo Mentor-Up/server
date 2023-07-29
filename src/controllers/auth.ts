@@ -15,13 +15,13 @@ const register = async (req: Request, res: Response) => {
   res.cookie("token", token, {
     httpOnly: true,
     sameSite: "none",
-    // secure: true,
+    secure: true,
     maxAge: 24 * 60 * 60 * 1000,
   });
 
   return res
     .status(201)
-    .json({ user: { name: user.name, userId: user._id }, token });
+    .json({ user: { name: user.name, userId: user._id, email: user.email }, token });
 };
 
 const login = async (req: Request, res: Response) => {
@@ -53,7 +53,7 @@ const login = async (req: Request, res: Response) => {
 
   return res
     .status(200)
-    .json({ user: { name: user.name, userId: user._id }, token });
+    .json({ user: { name: user.name, userId: user._id, email: user.email }, token });
 };
 
 const refreshToken = async (req: Request, res: Response) => {
@@ -91,7 +91,7 @@ const refreshToken = async (req: Request, res: Response) => {
   );
 
   return res.status(200)
-  .json({ user: { name: user.name, userId: user._id }, token });
+  .json({ user: { name: user.name, userId: user._id, email: user.email  }, token });
 };
 
 const logout = async (req: Request, res: Response) => {
@@ -109,7 +109,7 @@ const logout = async (req: Request, res: Response) => {
   res.clearCookie("token", {
     httpOnly: true,
     sameSite: "none",
-    // secure: true,
+    secure: true,
   });
   return res.sendStatus(204);
 };

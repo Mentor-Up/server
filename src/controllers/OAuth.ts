@@ -5,14 +5,10 @@ import { jwtPayload } from "../middleware/authentication";
 import axios from "axios"
 import qs from 'qs';
 
+
 interface GoogleOauthToken {
     id_token: string; 
     access_token:string;
-}
-
-
-const findAndUpdateUser = async (query:any, update:any, options:any) => {
-    return User.findOneAndUpdate(query, update, options)
 }
 
 
@@ -22,7 +18,7 @@ const getGoogleOauthToken = async ({code}: {code:string}): Promise<GoogleOauthTo
         code, 
         client_id: process.env.CLIENT_ID,
         client_secret: process.env.CLIENT_SECRET,
-        redirect_uri: "http://localhost:5051/auth/google/callback",
+        redirect_uri: "http://localhost:8000/auth/google/callback",
         grant_type: "authorization_code",
     }
     try {
@@ -30,7 +26,6 @@ const getGoogleOauthToken = async ({code}: {code:string}): Promise<GoogleOauthTo
         {
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
-
             }
         })
         return data.data
@@ -41,54 +36,59 @@ const getGoogleOauthToken = async ({code}: {code:string}): Promise<GoogleOauthTo
 
 
 const googleOauthHandler = async (req: Request, res: Response):Promise<void> => {
-    // if (req.query && req.query.code) {
-    //     const code: any= req.query.code
-    // }
-    // try {
-    //     if (!code) {
-    //         res.status(400).send("Invalid authorization code")
-    //         return
-    //     }
-    //     const {id_token} = await getGoogleOauthToken({code})
 
-    //     if (id_token) {
-    //         const googleUser = jwt.decode(id_token) as {
-    //             email?: string,
-    //             name?: string,
-    //             picture?: string,
-    //         }
-    //         try {
-    //             const user = await findAndUpdateUser({
-    //                 email: googleUser?.email,
-    //             }, {
-    //                 email: googleUser?.email, 
-    //                 name: googleUser?.name,
-    //                 picture: googleUser?.picture
-    //             }, {
-    //                 upsert: true, 
-    //                 new: true
-    //             })
-    //             console.log(user);
-    //             // const token = await user.createJWT()
-    //             // res.cookie('token', token, {sameSite: 'none', secure: false}).status(StatusCodes.OK).json(
-    //             //     {user: 
-    //             //         { name: user.getName(),
-    //             //             email:  user.getEmail(),
-    //             //         }, 
-    //             //     loggedIn: true,
-    //             //     token}
-    //             //     )
+    const code:any = req.query.code
+    
+    try {
+        if (!code) {
+            res.status(400).send("Invalid authorization code")
+            return
+        }
 
-    //         } catch(err) {
-    //             console.log(err);
-    //         }
-    //     }
-    //     res.redirect("http://localhost:5173/oauth/todo")
+        const googleOauthToken = await getGoogleOauthToken({code})
 
-    // } catch (err) {
-    //     console.log(err);
-    // }
+        if (!googleOauthToken) {
+            res.status(401).send('Google OAuth token not found');
+            return;
+          }
 
+        const { id_token } = googleOauthToken;
+
+        if (id_token) {
+            const googleUser = jwt.decode(id_token) as {
+                email?: string,
+                name?: string,
+                picture?: string,
+            }
+            try {
+                const user = await User.findOneAndUpdate({
+                    email: googleUser?.email,
+                }, {
+                    email: googleUser?.email, 
+                    name: googleUser?.name,
+                    picture: googleUser?.picture
+                }, {
+                    upsert: true, 
+                    new: true
+                })
+
+                const googleToken =  user?.createJWT()
+                res.cookie("token", googleToken, {
+                    httpOnly: true,
+                    sameSite: "none",
+                    secure: true,
+                    maxAge: 24 * 60 * 60 * 1000,
+                  });
+
+            } catch(err) {
+                console.log(err);
+            }
+        }
+        res.redirect("http://localhost:3000")
+
+    } catch (err) {
+        console.log(err);
+    }
 
 }
 
