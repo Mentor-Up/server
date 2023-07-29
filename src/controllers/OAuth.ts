@@ -41,53 +41,53 @@ const getGoogleOauthToken = async ({code}: {code:string}): Promise<GoogleOauthTo
 
 
 const googleOauthHandler = async (req: Request, res: Response):Promise<void> => {
-    if (req.query && req.query.code) {
-        const code: string | string[] | undefined = req.query.code
-    }
-    try {
-        if (!code) {
-            res.status(400).send("Invalid authorization code")
-            return
-        }
-        const {id_token} = await getGoogleOauthToken({code})
+    // if (req.query && req.query.code) {
+    //     const code: any= req.query.code
+    // }
+    // try {
+    //     if (!code) {
+    //         res.status(400).send("Invalid authorization code")
+    //         return
+    //     }
+    //     const {id_token} = await getGoogleOauthToken({code})
 
-        if (id_token) {
-            const googleUser = jwt.decode(id_token) as {
-                email?: string,
-                name?: string,
-                picture?: string,
-            }
-            try {
-                const user = await findAndUpdateUser({
-                    email: googleUser?.email,
-                }, {
-                    email: googleUser?.email, 
-                    name: googleUser?.name,
-                    picture: googleUser?.picture
-                }, {
-                    upsert: true, 
-                    new: true
-                })
-                console.log(user);
-                // const token = await user.createJWT()
-                // res.cookie('token', token, {sameSite: 'none', secure: false}).status(StatusCodes.OK).json(
-                //     {user: 
-                //         { name: user.getName(),
-                //             email:  user.getEmail(),
-                //         }, 
-                //     loggedIn: true,
-                //     token}
-                //     )
+    //     if (id_token) {
+    //         const googleUser = jwt.decode(id_token) as {
+    //             email?: string,
+    //             name?: string,
+    //             picture?: string,
+    //         }
+    //         try {
+    //             const user = await findAndUpdateUser({
+    //                 email: googleUser?.email,
+    //             }, {
+    //                 email: googleUser?.email, 
+    //                 name: googleUser?.name,
+    //                 picture: googleUser?.picture
+    //             }, {
+    //                 upsert: true, 
+    //                 new: true
+    //             })
+    //             console.log(user);
+    //             // const token = await user.createJWT()
+    //             // res.cookie('token', token, {sameSite: 'none', secure: false}).status(StatusCodes.OK).json(
+    //             //     {user: 
+    //             //         { name: user.getName(),
+    //             //             email:  user.getEmail(),
+    //             //         }, 
+    //             //     loggedIn: true,
+    //             //     token}
+    //             //     )
 
-            } catch(err) {
-                console.log(err);
-            }
-        }
-        res.redirect("http://localhost:5173/oauth/todo")
+    //         } catch(err) {
+    //             console.log(err);
+    //         }
+    //     }
+    //     res.redirect("http://localhost:5173/oauth/todo")
 
-    } catch (err) {
-        console.log(err);
-    }
+    // } catch (err) {
+    //     console.log(err);
+    // }
 
 
 }
