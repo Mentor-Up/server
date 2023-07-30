@@ -1,6 +1,6 @@
-import cors from "cors";
-import "express-async-errors";
-import express from "express";
+import cors from 'cors';
+import 'express-async-errors';
+import express from 'express';
 const app = express();
 import favicon from "express-favicon";
 import logger from "morgan";
@@ -19,6 +19,8 @@ import {
   NODE_ENV,
   CLIENT_URL } 
   from './config';
+
+
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
@@ -45,18 +47,18 @@ if (NODE_ENV === "development") {
       {
         stream: {
           write: (message) =>
-            console.log("info", message.trim(), { tags: ["http"] }),
+            console.log('info', message.trim(), { tags: ['http'] }),
         },
       }
     )
   );
 }
-app.use(express.static("public"));
-app.use(favicon(__dirname + "/public/favicon.ico"));
+app.use(express.static('public'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 
 // routes
 app.use("/api/v1/auth", authRouter);
-app.use("/testAuth", authMiddleware, (req, res) => res.json("OK!"));
+app.use("/testAuth", authMiddleware, (req, res) => res.send("OK!"));
 
 //OAuth
 app.get('/auth/google/callback', googleOauthHandler)

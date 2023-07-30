@@ -20,7 +20,7 @@ const PORT = PORT_CONFIG || 8000;
 
 const listener = async () => {
   if (!DB) {
-    console.log("A connection string is required to connect to the DB");
+    console.log('A connection string is required to connect to the DB');
     return;
   }
   try {
@@ -34,7 +34,3 @@ const listener = async () => {
 };
 
 listener();
-
-
-
-  
