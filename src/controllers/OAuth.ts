@@ -1,7 +1,6 @@
 import User from "../models/User";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { jwtPayload } from "../middleware/authentication";
 import axios from "axios"
 import qs from 'qs';
 
@@ -35,7 +34,7 @@ const getGoogleOauthToken = async ({code}: {code:string}): Promise<GoogleOauthTo
 }
 
 
-const googleOauthHandler = async (req: Request, res: Response):Promise<void> => {
+const googleOauthHandler = async (req: Request, res: Response) => {
 
     const code:any = req.query.code
     
@@ -73,22 +72,34 @@ const googleOauthHandler = async (req: Request, res: Response):Promise<void> => 
                 })
 
                 const googleToken =  user?.createJWT()
-                res.cookie("token", googleToken, {
-                    httpOnly: true,
-                    sameSite: "none",
-                    secure: true,
-                    maxAge: 24 * 60 * 60 * 1000,
-                  });
+                const refreshGoogleToken = user?.createRefreshToken();
 
+                await user.updateOne({ refreshGoogleToken });
+              
+                res.cookie("token", refreshGoogleToken, {
+                  httpOnly: true,
+                  sameSite: "none",
+                  secure: true,
+                  maxAge: 24 * 60 * 60 * 1000,
+                });
+
+                return res
+                .status(200)
+                .json({ user: { name: user.name, userId: user._id, email: user.email }, googleToken });
+            
             } catch(err) {
                 console.log(err);
             }
         }
+
         res.redirect("http://localhost:3000")
+
 
     } catch (err) {
         console.log(err);
     }
+
+
 
 }
 
