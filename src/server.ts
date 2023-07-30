@@ -1,21 +1,22 @@
 import mongoose from 'mongoose';
 import { 
-    node_env,    
-    database,
-    database_password,
-    port } 
+  NODE_ENV ,
+  DATABASE,
+  DATABASE_PASSWORD ,
+  PORT_CONFIG,  
+} 
     from './config';
 import app from './app';
 
 
-const DB = database?.replace(
+const DB = DATABASE?.replace(
     "<password>",
-    `${database_password}`
+    `${DATABASE_PASSWORD}`
   );
   
 mongoose.set("strictQuery", true);
 
-const PORT = port || 8000;
+const PORT = PORT_CONFIG || 8000;
 
 const listener = async () => {
   if (!DB) {
@@ -24,7 +25,7 @@ const listener = async () => {
   }
   try {
     await mongoose.connect(DB);
-    const server = app.listen(port, () =>
+    const server = app.listen(PORT, () =>
       console.log(`Server is listening on port ${PORT}...`)
     );
   } catch (error) {

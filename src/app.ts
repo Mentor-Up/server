@@ -6,7 +6,6 @@ import favicon from "express-favicon";
 import logger from "morgan";
 import cookieParser from "cookie-parser";
 import session from "express-session";
-import { node_env } from "./config";
 import compression from "compression";
 import rateLimiter from "express-rate-limit";
 import helmet from "helmet";
@@ -15,9 +14,11 @@ import errorHandlerMiddleware from "./middleware/error-handler";
 import notFoundMiddleware from "./middleware/not-found";
 import authMiddleware from "./middleware/authentication";
 import googleOauthHandler from "./controllers/OAuth"
-
 import authRouter from "./routes/auth";
-
+import { 
+  NODE_ENV,
+  CLIENT_URL } 
+  from './config';
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
@@ -27,7 +28,7 @@ app.use(
 app.use(helmet());
 app.use(compression());
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: CLIENT_URL,
   credentials: true
 }))
 app.use(mongoSanitize());
@@ -35,7 +36,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-if (node_env === "development") {
+if (NODE_ENV === "development") {
   app.use(logger("dev"));
 } else {
   app.use(

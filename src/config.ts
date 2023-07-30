@@ -7,7 +7,8 @@ const {
     NODE_ENV,
     DATABASE,
     DATABASE_PASSWORD,
-    PORT,
+    PORT_CONFIG,
+    CLIENT_URL,
 } = process.env
 
 assert(DATABASE, "DATABASE is required")
@@ -15,8 +16,9 @@ assert(DATABASE_PASSWORD, "DATABASE_PASSWORD is required")
 
 
 export {
-    NODE_ENV as node_env,
-    DATABASE as database,
-    DATABASE_PASSWORD as database_password,
-    PORT as port, 
+    NODE_ENV ,
+    DATABASE,
+    DATABASE_PASSWORD ,
+    PORT_CONFIG, 
+    CLIENT_URL, 
 };
