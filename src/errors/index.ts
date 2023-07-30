@@ -5,9 +5,9 @@ import UnauthenticatedError from './unauthenticated';
 import UnauthorizedError from './unauthorized';
 
 export {
-    CustomAPIError,
-    BadRequestError,
-    NotFoundError,
-    UnauthenticatedError,
-    UnauthorizedError
-}
+  CustomAPIError,
+  BadRequestError,
+  NotFoundError,
+  UnauthenticatedError,
+  UnauthorizedError,
+};
