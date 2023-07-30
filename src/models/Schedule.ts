@@ -10,6 +10,7 @@ export interface ISchedule extends Document {
   discussion: Array<String>;
   review: Array<String>;
   link: string;
+  userStatus: 'join' | 'pending' | 'skip'
 }
 
 const ScheduleSchema = new mongoose.Schema<ISchedule>(
@@ -51,8 +52,12 @@ const ScheduleSchema = new mongoose.Schema<ISchedule>(
     link: {
         type: String,
     }, 
+    userStatus: {
+        type: String,
+        enum: ['join', 'pending', 'skip'],
+        default: 'pending',
+      }
   },
-
   { timestamps: true }
 );
 
