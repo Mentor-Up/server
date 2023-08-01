@@ -1,5 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
-
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ISession extends Document {
   type: 'Mentor Session' | 'Student Leader Session';
@@ -20,54 +19,52 @@ export interface ISession extends Document {
 const SessionSchema = new mongoose.Schema<ISession>(
   {
     type: {
-        type: String,
-        enum: ['Mentor Session', 'Student Leader Session']
+      type: String,
+      enum: ['Mentor Session', 'Student Leader Session'],
     },
-    start: { 
-        type: Date,
-        required: [true, "Please provide start time"],
-
+    start: {
+      type: Date,
+      required: [true, 'Please provide start time'],
     },
-    end: { 
-        type: Date,
-        required: [true, "Please provide end time"],
-      },
+    end: {
+      type: Date,
+      required: [true, 'Please provide end time'],
+    },
     creator: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
+      type: Schema.Types.ObjectId,
+      ref: 'User',
     },
     participant: [
-        {
-            user: {
-                userId: {
-                    type: Schema.Types.ObjectId,
-                    ref: "User",
-                    }, 
-                userStatus:{
-                    type: String, 
-                    enum: ["confirm", "cancel"]
-                }
-            }
+      {
+        user: {
+          userId: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+          },
+          userStatus: {
+            type: String,
+            enum: ['confirm', 'cancel'],
+          },
         },
-    ], 
+      },
+    ],
     discussion: [
-        {
+      {
         type: Schema.Types.ObjectId,
-        ref: "Comment",
-        }
+        ref: 'Comment',
+      },
     ],
     review: [
-        {
+      {
         type: Schema.Types.ObjectId,
-        ref: "Review",
-        }
+        ref: 'Review',
+      },
     ],
     link: {
-        type: String,
-    }, 
+      type: String,
+    },
   },
   { timestamps: true }
 );
 
-
-export default mongoose.model("Session", SessionSchema);
+export default mongoose.model('Session', SessionSchema);

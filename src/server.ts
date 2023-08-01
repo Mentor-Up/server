@@ -1,20 +1,10 @@
 import mongoose from 'mongoose';
-import { 
-  NODE_ENV ,
-  DATABASE,
-  DATABASE_PASSWORD ,
-  PORT_CONFIG,  
-} 
-    from './config';
+import { NODE_ENV, DATABASE, DATABASE_PASSWORD, PORT_CONFIG } from './config';
 import app from './app';
 
+const DB = DATABASE?.replace('<password>', `${DATABASE_PASSWORD}`);
 
-const DB = DATABASE?.replace(
-    "<password>",
-    `${DATABASE_PASSWORD}`
-  );
-  
-mongoose.set("strictQuery", true);
+mongoose.set('strictQuery', true);
 
 const PORT = PORT_CONFIG || 8000;
 

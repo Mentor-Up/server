@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface ICohort extends Document {
   name: string;
@@ -11,39 +11,37 @@ export interface ICohort extends Document {
 
 const CohortSchema = new mongoose.Schema<ICohort>(
   {
-    name: { 
+    name: {
       type: String,
-      required: [true, "Please provide a name"],
-      unique: true, 
+      required: [true, 'Please provide a name'],
+      unique: true,
     },
-    start: { 
+    start: {
       type: Date,
-      required: [true, "Please provide start time"],
-
+      required: [true, 'Please provide start time'],
     },
     end: {
-        type: Date,
-        required: [true, "Please provide end time"],
-      },
+      type: Date,
+      required: [true, 'Please provide end time'],
+    },
     type: {
-        type: String,
-        enum: ['ReactJS', 'NodeJS', 'Intro', 'Ruby']
-      },
+      type: String,
+      enum: ['ReactJS', 'NodeJS', 'Intro', 'Ruby'],
+    },
     participants: [
-        {
+      {
         type: Schema.Types.ObjectId,
-        ref: "User", 
-        }
-    ], 
+        ref: 'User',
+      },
+    ],
     sessions: [
-        {
+      {
         type: Schema.Types.ObjectId,
-        ref: "Session",
-        }
-    ]
+        ref: 'Session',
+      },
+    ],
   },
   { timestamps: true }
 );
 
-
-export default mongoose.model("Cohort", CohortSchema);
+export default mongoose.model('Cohort', CohortSchema);

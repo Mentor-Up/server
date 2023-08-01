@@ -1,27 +1,28 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IComment extends Document {
-    scheduleId: Schema.Types.ObjectId;
-    name: Schema.Types.ObjectId;
-    content: string;
-  }
+  scheduleId: Schema.Types.ObjectId;
+  name: Schema.Types.ObjectId;
+  content: string;
+}
 
-const CommentSchema = new mongoose.Schema<IComment>({
+const CommentSchema = new mongoose.Schema<IComment>(
+  {
     scheduleId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Session",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Session',
     },
     name: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
     content: {
-        type: String, 
-        trim: true,
-        required: [true, "Content can not be blank"],
-    }, 
-},
-{ timestamps: true }
+      type: String,
+      trim: true,
+      required: [true, 'Content can not be blank'],
+    },
+  },
+  { timestamps: true }
 );
 
-module.exports = mongoose.model('Comment', CommentSchema)
+module.exports = mongoose.model('Comment', CommentSchema);
