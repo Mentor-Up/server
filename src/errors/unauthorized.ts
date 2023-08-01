@@ -1,12 +1,12 @@
 import CustomAPIError from './custom-api';
 
 class UnauthorizedError extends CustomAPIError {
-    statusCode: number;
+  statusCode: number;
 
-    constructor(message:string) {
-        super(message);
-        this.statusCode = 403;
-      }
+  constructor(message: string) {
+    super(message);
+    this.statusCode = 403;
+  }
 }
 
-export default UnauthorizedError
+export default UnauthorizedError;

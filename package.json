@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./dist/server.js",
     "build": "tsc",
-    "dev": "nodemon ./src/server.ts"
+    "dev": "nodemon ./src/server.ts",
+    "prepare": "husky install"
   },
   "author": "",
   "license": "ISC",
@@ -39,7 +40,9 @@
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.4",
     "@types/node": "^20.4.2",
+    "husky": "^8.0.0",
     "nodemon": "^2.0.21",
+    "prettier": "^3.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }

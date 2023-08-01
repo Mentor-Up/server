@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express-serve-static-core";
-import { UnauthenticatedError } from "../errors";
-import { ACCESS_TOKEN_SECRET } from "../config";
+import jwt from 'jsonwebtoken';
+import { Request, Response, NextFunction } from 'express-serve-static-core';
+import { UnauthenticatedError } from '../errors';
+import { ACCESS_TOKEN_SECRET } from '../config';
 
 export interface jwtPayload {
   userId: string;
@@ -11,11 +11,11 @@ export interface jwtPayload {
 const auth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader?.startsWith("Bearer ")) {
-    throw new UnauthenticatedError("Invalid token");
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new UnauthenticatedError('Invalid token');
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = authHeader.split(' ')[1];
 
   try {
     const payload = jwt.verify(token, ACCESS_TOKEN_SECRET!) as jwtPayload;
@@ -23,7 +23,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
     req.user = { userId: payload.userId };
     next();
   } catch (err) {
-    throw new UnauthenticatedError("Invalid token");
+    throw new UnauthenticatedError('Invalid token');
   }
 };
 

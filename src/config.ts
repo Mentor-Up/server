@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -6,20 +6,26 @@ const {
   NODE_ENV,
   DATABASE,
   DATABASE_PASSWORD,
-  PORT,
+  PORT_CONFIG,
   ACCESS_TOKEN_SECRET,
   ACCESS_TOKEN_EXPIRATION,
   REFRESH_TOKEN_SECRET,
   REFRESH_TOKEN_EXPIRATION,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
 } = process.env;
 
 const requiredValues = [
-  "DATABASE",
-  "DATABASE_PASSWORD",
-  "ACCESS_TOKEN_SECRET",
-  "ACCESS_TOKEN_EXPIRATION",
-  "REFRESH_TOKEN_SECRET",
-  "REFRESH_TOKEN_EXPIRATION",
+  'NODE_ENV',
+  'DATABASE',
+  'DATABASE_PASSWORD',
+  'PORT_CONFIG',
+  'ACCESS_TOKEN_SECRET',
+  'ACCESS_TOKEN_EXPIRATION',
+  'REFRESH_TOKEN_SECRET',
+  'REFRESH_TOKEN_EXPIRATION',
+  'GOOGLE_CLIENT_ID',
+  'GOOGLE_CLIENT_SECRET',
 ];
 
 for (const value of requiredValues) {
@@ -30,12 +36,14 @@ for (const value of requiredValues) {
 }
 
 export {
-  NODE_ENV as node_env,
-  DATABASE as database,
-  DATABASE_PASSWORD as database_password,
-  PORT as port,
+  NODE_ENV,
+  DATABASE,
+  DATABASE_PASSWORD,
+  PORT_CONFIG,
   ACCESS_TOKEN_SECRET,
   ACCESS_TOKEN_EXPIRATION,
   REFRESH_TOKEN_SECRET,
   REFRESH_TOKEN_EXPIRATION,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
 };

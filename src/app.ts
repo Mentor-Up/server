@@ -1,22 +1,21 @@
-import cors from "cors";
-import "express-async-errors";
-import express from "express";
+import cors from 'cors';
+import 'express-async-errors';
+import express from 'express';
 const app = express();
-import favicon from "express-favicon";
-import logger from "morgan";
-import cookieParser from "cookie-parser";
-import session from "express-session";
-import { node_env } from "./config";
-import compression from "compression";
-import rateLimiter from "express-rate-limit";
-import helmet from "helmet";
-import mongoSanitize from "express-mongo-sanitize";
-import errorHandlerMiddleware from "./middleware/error-handler";
-import notFoundMiddleware from "./middleware/not-found";
-import authMiddleware from "./middleware/authentication";
-import googleOauthHandler from "./controllers/OAuth"
-
-import authRouter from "./routes/auth";
+import favicon from 'express-favicon';
+import logger from 'morgan';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import compression from 'compression';
+import rateLimiter from 'express-rate-limit';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import errorHandlerMiddleware from './middleware/error-handler';
+import notFoundMiddleware from './middleware/not-found';
+import authMiddleware from './middleware/authentication';
+import googleOauthHandler from './controllers/OAuth';
+import authRouter from './routes/auth';
+import { NODE_ENV } from './config';
 
 app.use(
   rateLimiter({
@@ -26,17 +25,19 @@ app.use(
 );
 app.use(helmet());
 app.use(compression());
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}))
+app.use(
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  })
+);
 app.use(mongoSanitize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-if (node_env === "development") {
-  app.use(logger("dev"));
+if (NODE_ENV === 'development') {
+  app.use(logger('dev'));
 } else {
   app.use(
     logger(
@@ -44,29 +45,23 @@ if (node_env === "development") {
       {
         stream: {
           write: (message) =>
-            console.log("info", message.trim(), { tags: ["http"] }),
+            console.log('info', message.trim(), { tags: ['http'] }),
         },
       }
     )
   );
 }
-app.use(express.static("public"));
-app.use(favicon(__dirname + "/public/favicon.ico"));
+app.use(express.static('public'));
+app.use(favicon(__dirname + '/public/favicon.ico'));
 
 // routes
-app.use("/api/v1/auth", authRouter);
-app.use("/testAuth", authMiddleware, (req, res) => res.json("OK!"));
+app.use('/api/v1/auth', authRouter);
+app.use('/testAuth', authMiddleware, (req, res) => res.send('OK!'));
 
 //OAuth
-app.get('/auth/google/callback', googleOauthHandler)
-
-
+app.get('/auth/google/callback', googleOauthHandler);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
-
-
-
-
 
 export default app;
