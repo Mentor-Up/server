@@ -1,29 +1,34 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 
-export interface ISchedule extends Document {
+export interface ISession extends Document {
   type: 'Mentor Session' | 'Student Leader Session';
   start: Date;
   end: Date;
   creator: Schema.Types.ObjectId;
-  participant: Array<String>;
+  participant: Array<{
+    user: {
+      userId: Schema.Types.ObjectId;
+      userStatus: 'confirm' | 'cancel';
+    };
+  }>;
   discussion: Array<String>;
   review: Array<String>;
   link: string;
-  userStatus: 'join' | 'pending' | 'skip'
 }
 
-const ScheduleSchema = new mongoose.Schema<ISchedule>(
+const SessionSchema = new mongoose.Schema<ISession>(
   {
     type: {
         type: String,
         enum: ['Mentor Session', 'Student Leader Session']
     },
-    start: {
+    start: { 
         type: Date,
         required: [true, "Please provide start time"],
+
     },
-    end: {
+    end: { 
         type: Date,
         required: [true, "Please provide end time"],
       },
@@ -33,9 +38,17 @@ const ScheduleSchema = new mongoose.Schema<ISchedule>(
     },
     participant: [
         {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        }
+            user: {
+                userId: {
+                    type: Schema.Types.ObjectId,
+                    ref: "User",
+                    }, 
+                userStatus:{
+                    type: String, 
+                    enum: ["confirm", "cancel"]
+                }
+            }
+        },
     ], 
     discussion: [
         {
@@ -52,14 +65,9 @@ const ScheduleSchema = new mongoose.Schema<ISchedule>(
     link: {
         type: String,
     }, 
-    userStatus: {
-        type: String,
-        enum: ['join', 'pending', 'skip'],
-        default: 'pending',
-      }
   },
   { timestamps: true }
 );
 
 
-export default mongoose.model("Schedule", ScheduleSchema);
+export default mongoose.model("Session", SessionSchema);

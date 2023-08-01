@@ -4,21 +4,22 @@ export interface ICohort extends Document {
   name: string;
   start: Date;
   end: Date;
-  type: 'ReactJS' | 'NodeJS' | 'Intro';
-  participant: Array<string>;
-  schedule: Array<string>;
+  type: 'ReactJS' | 'NodeJS' | 'Intro' | 'Ruby';
+  participants: Array<string>;
+  sessions: Array<string>;
 }
 
 const CohortSchema = new mongoose.Schema<ICohort>(
   {
-    name: {
+    name: { 
       type: String,
       required: [true, "Please provide a name"],
       unique: true, 
     },
-    start: {
+    start: { 
       type: Date,
       required: [true, "Please provide start time"],
+
     },
     end: {
         type: Date,
@@ -26,18 +27,18 @@ const CohortSchema = new mongoose.Schema<ICohort>(
       },
     type: {
         type: String,
-        enum: ['ReactJS', 'NodeJS', 'Intro']
+        enum: ['ReactJS', 'NodeJS', 'Intro', 'Ruby']
       },
-    participant: [
+    participants: [
         {
         type: Schema.Types.ObjectId,
-        ref: "User",
+        ref: "User", 
         }
     ], 
-    schedule: [
+    sessions: [
         {
         type: Schema.Types.ObjectId,
-        ref: "Schedule",
+        ref: "Session",
         }
     ]
   },

@@ -9,7 +9,7 @@ export interface IComment extends Document {
 const CommentSchema = new mongoose.Schema<IComment>({
     scheduleId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Schedule",
+        ref: "Session",
     },
     name: {
         type: mongoose.Schema.Types.ObjectId,

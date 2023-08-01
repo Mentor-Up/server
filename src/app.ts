@@ -15,10 +15,7 @@ import notFoundMiddleware from "./middleware/not-found";
 import authMiddleware from "./middleware/authentication";
 import googleOauthHandler from "./controllers/OAuth"
 import authRouter from "./routes/auth";
-import { 
-  NODE_ENV,
-  CLIENT_URL } 
-  from './config';
+import { NODE_ENV} from './config';
 
 
 app.use(
@@ -30,7 +27,7 @@ app.use(
 app.use(helmet());
 app.use(compression());
 app.use(cors({
-  origin: CLIENT_URL,
+  origin: "http://localhost:3000",
   credentials: true
 }))
 app.use(mongoSanitize());

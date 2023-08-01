@@ -5,6 +5,7 @@ import axios from "axios"
 import qs from 'qs';
 
 
+
 interface GoogleOauthToken {
     id_token: string; 
     access_token:string;
@@ -15,8 +16,8 @@ const getGoogleOauthToken = async ({code}: {code:string}): Promise<GoogleOauthTo
     const url = "https://oauth2.googleapis.com/token"
     const values = {
         code, 
-        client_id: process.env.CLIENT_ID,
-        client_secret: process.env.CLIENT_SECRET,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
         redirect_uri: "http://localhost:8000/auth/google/callback",
         grant_type: "authorization_code",
     }
@@ -59,44 +60,41 @@ const googleOauthHandler = async (req: Request, res: Response) => {
                 name?: string,
                 picture?: string,
             }
+            const email = googleUser.email
             try {
-                const user = await User.findOneAndUpdate({
-                    email: googleUser?.email,
-                }, {
-                    email: googleUser?.email, 
-                    name: googleUser?.name,
-                    picture: googleUser?.picture
-                }, {
-                    upsert: true, 
-                    new: true
-                })
+                const user = await User.findOne({ email });
+                if (!user) {
+                    res.redirect("http://localhost:3000/login")
+                    return res.status(403).send("Account is not exist");
+                  }
 
-                const googleToken =  user?.createJWT()
-                const refreshGoogleToken = user?.createRefreshToken();
+                  const token = user.createJWT();
+                  const refreshToken = user.createRefreshToken();
+                
+                  await user.updateOne({ refreshToken });
+                
+                  res.cookie('token', refreshToken, {
+                    httpOnly: true,
+                    sameSite: "none",
+                    secure: true,
+                    maxAge: 24 * 60 * 60 * 1000,
+                  });
 
-                await user.updateOne({ refreshGoogleToken });
-              
-                res.cookie("token", refreshGoogleToken, {
-                  httpOnly: true,
-                  sameSite: "none",
-                  secure: true,
-                  maxAge: 24 * 60 * 60 * 1000,
-                });
+                  res.redirect("http://localhost:3000")
 
-                return res
-                .status(200)
-                .json({ user: { name: user.name, userId: user._id, email: user.email }, googleToken });
-            
+                  return res
+                  .status(200)
+                  .json({ user: { name: user.name, userId: user._id, email: user.email }, token });
+                
+               
             } catch(err) {
                 console.log(err);
             }
         }
-
-        res.redirect("http://localhost:3000")
-
-
+   
     } catch (err) {
         console.log(err);
+        res.redirect("http://localhost:3000/login")
     }
 
 
