@@ -1,4 +1,4 @@
-import mongoose, { Document } from 'mongoose';
+import mongoose, { Document, Mongoose, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {
@@ -7,11 +7,14 @@ import {
   REFRESH_TOKEN_EXPIRATION,
   REFRESH_TOKEN_SECRET,
 } from '../config';
+import Cohort from './Cohort';
 
 export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  role: 'admin' | 'student' | 'student-leader' | 'mentor';
+  cohorts: Array<string>;
   refreshToken?: string;
   createJWT: () => string;
   createRefreshToken: () => string;
@@ -43,6 +46,17 @@ const UserSchema = new mongoose.Schema<IUser>(
     refreshToken: {
       type: String,
     },
+    role: {
+      type: String,
+      enum: ['admin', 'student', 'student-leader', 'mentor'],
+      default: 'student',
+    },
+    cohorts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: Cohort,
+      },
+    ],
   },
   { timestamps: true }
 );
@@ -58,7 +72,7 @@ UserSchema.pre('save', async function (next) {
 // Adds and instance method the our Model
 // Since we refer to this here, we cannot use arrow functions
 UserSchema.methods.createJWT = function () {
-  return jwt.sign({ userId: this._id, name: this.name }, ACCESS_TOKEN_SECRET!, {
+  return jwt.sign({ userId: this._id, name: this.name, role: this.role }, ACCESS_TOKEN_SECRET!, {
     expiresIn: ACCESS_TOKEN_EXPIRATION!,
   });
 };

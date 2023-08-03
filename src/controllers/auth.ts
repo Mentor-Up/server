@@ -9,12 +9,14 @@ import {
   REFRESH_TOKEN_SECRET,
 } from '../config';
 
+
+
 const register = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
   if (!name || !email || !password) {
     throw new BadRequestError('Missing credentials');
   }
-  const user = await User.create({ name, email, password });
+  const user = await User.create({ name, email, password, role });
 
   const token = user.createJWT();
   const refreshToken = user.createRefreshToken();
@@ -121,13 +123,13 @@ const logout = async (req: Request, res: Response) => {
   return res.sendStatus(204);
 };
 
-// exports.restrict = (...role) => {
-//   return (req: Request, res: Response, next: NextFunction) => {
-//     if (!role.includes(req.user.role)) {
-//       throw new UnauthenticatedError('Invalid credentials');
-//     }
-//     next()
-//   }
-// }
+const restrict = (...role:any) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!role.includes(req.user.role)) {
+      throw new UnauthenticatedError('Invalid credentials');
+    }
+    next()
+  }
+}
 
-export { register, login, refreshToken, logout };
+export { register, login, refreshToken, logout, restrict };
