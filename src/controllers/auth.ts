@@ -1,5 +1,5 @@
 import User from '../models/User';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { jwtPayload } from '../middleware/authentication';
 import { BadRequestError, UnauthenticatedError } from '../errors';
@@ -120,5 +120,14 @@ const logout = async (req: Request, res: Response) => {
   });
   return res.sendStatus(204);
 };
+
+// exports.restrict = (...role) => {
+//   return (req: Request, res: Response, next: NextFunction) => {
+//     if (!role.includes(req.user.role)) {
+//       throw new UnauthenticatedError('Invalid credentials');
+//     }
+//     next()
+//   }
+// }
 
 export { register, login, refreshToken, logout };
