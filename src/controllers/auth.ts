@@ -1,39 +1,75 @@
-import User from '../models/User';
-import { Request, Response, NextFunction } from 'express';
+
+import User, { IUser } from '../models/User';
+import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { jwtPayload } from '../middleware/authentication';
-import { BadRequestError, UnauthenticatedError } from '../errors';
+import {
+  BadRequestError,
+  UnauthenticatedError,
+  UnauthorizedError,
+} from '../errors';
 import {
   ACCESS_TOKEN_EXPIRATION,
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
 } from '../config';
+import getRandomPassword from '../utils/getRandomPassword';
+import { Document } from 'mongoose';
 
 const register = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    throw new BadRequestError('Missing credentials');
+  const users: IUser[] = req.body.users;
+  const cohort = req.body.cohort;
+
+  // checks if user can register other users
+  const user = await User.findById(req.user.userId);
+  if (!user) {
+    throw new UnauthenticatedError('Invalid credentials');
   }
-  const user = await User.create({ name, email, password });
+  if (user.role !== 'admin') {
+    throw new UnauthorizedError(
+      'Your current role does not allow you to add new users'
+    );
+  }
 
-  const token = user.createJWT();
-  const refreshToken = user.createRefreshToken();
-
-  await user.updateOne({ refreshToken });
-
-  res.cookie('token', token, {
-    httpOnly: true,
-    sameSite: 'none',
-    secure: true,
-    maxAge: 24 * 60 * 60 * 1000,
+  // saves all users from the req
+  const newUserPromises = users.map(async (u) => {
+    const password = getRandomPassword();
+    if (!u.name || !u.email) {
+      return Promise.reject(
+        `Could not save ${JSON.stringify(u)}: Missing credentials`
+      );
+    }
+    // maybe the user is already register in another cohort
+    const user = await User.findOne({ email: u.email });
+    if (user) {
+      if (user.cohorts.includes(cohort)) {
+        return Promise.reject(`${user.email} already in this cohort`);
+      }
+      return User.findByIdAndUpdate(user._id, {
+        cohorts: user.cohorts.concat(cohort),
+      });
+    }
+    return User.create({
+      name: u.name,
+      email: u.email,
+      password,
+      cohorts: [cohort],
+    });
   });
 
-  return res
-    .status(201)
-    .json({
-      user: { name: user.name, userId: user._id, email: user.email },
-      token,
-    });
+  const savedUsers = await Promise.allSettled(newUserPromises);
+  const newUsers: Document<IUser>[] = [];
+  const errors: PromiseRejectedResult[] = [];
+  savedUsers.forEach((u) => {
+    if (u.status === 'fulfilled') {
+      newUsers.push(u.value!);
+    }
+    if (u.status === 'rejected') {
+      errors.push(u.reason);
+    }
+  });
+
+  res.status(201).json({ users: newUsers, errors, count: newUsers.length });
 };
 
 const login = async (req: Request, res: Response) => {
@@ -63,12 +99,10 @@ const login = async (req: Request, res: Response) => {
     maxAge: 24 * 60 * 60 * 1000,
   });
 
-  return res
-    .status(200)
-    .json({
-      user: { name: user.name, userId: user._id, email: user.email },
-      token,
-    });
+  return res.status(200).json({
+    user: { name: user.name, userId: user._id, email: user.email },
+    token,
+  });
 };
 
 const refreshToken = async (req: Request, res: Response) => {
@@ -93,12 +127,10 @@ const refreshToken = async (req: Request, res: Response) => {
     expiresIn: ACCESS_TOKEN_EXPIRATION,
   });
 
-  return res
-    .status(200)
-    .json({
-      user: { name: user.name, userId: user._id, email: user.email },
-      token,
-    });
+  return res.status(200).json({
+    user: { name: user.name, userId: user._id, email: user.email },
+    token,
+  });
 };
 
 const logout = async (req: Request, res: Response) => {
