@@ -1,3 +1,4 @@
+
 import User, { IUser } from '../models/User';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
@@ -151,5 +152,14 @@ const logout = async (req: Request, res: Response) => {
   });
   return res.sendStatus(204);
 };
+
+// exports.restrict = (...role) => {
+//   return (req: Request, res: Response, next: NextFunction) => {
+//     if (!role.includes(req.user.role)) {
+//       throw new UnauthenticatedError('Invalid credentials');
+//     }
+//     next()
+//   }
+// }
 
 export { register, login, refreshToken, logout };

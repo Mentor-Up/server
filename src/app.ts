@@ -15,6 +15,7 @@ import notFoundMiddleware from './middleware/not-found';
 import authMiddleware from './middleware/authentication';
 import googleOauthHandler from './controllers/OAuth';
 import authRouter from './routes/auth';
+import cohortRouter from './routes/cohort';
 import { NODE_ENV } from './config';
 
 app.use(
@@ -57,6 +58,8 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 // routes
 app.use('/api/v1/auth', authRouter);
 app.use('/testAuth', authMiddleware, (req, res) => res.send('OK!'));
+app.use("/api/v1/cohort", authMiddleware,  cohortRouter);
+
 
 //OAuth
 app.get('/auth/google/callback', googleOauthHandler);
