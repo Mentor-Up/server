@@ -23,8 +23,6 @@ const createSession = async (req: Request, res: Response) => {
     { $push: { sessions: session.id } }
   );
 
-
-
   return res.status(201).json({session });
 };
 
@@ -45,7 +43,7 @@ const getAllSession = async (req: Request, res: Response) => {
 const getSession = async (req: Request, res: Response) => {
   const { sessionId } = req.params;
   const populateOptions = {
-    path: "participant.user.userId",
+    path: "participant.user.userInfo",
     select: "_id name " 
   }
   const session = await Session.findOne({ _id: sessionId }).populate(populateOptions)
@@ -65,11 +63,11 @@ const updateSession = async (req: Request, res: Response) => {
       throw new BadRequestError('Name or Start or End or Type or Link fields cannot be empty')
     }
 
-    if (req.user.role === "student") {
+    if (req.user.role === "student" || req.user.role === "student-leader") {
         
           const sessionUser = await Session.findOneAndUpdate(
             { _id: sessionId,
-            "participant.user.userId": req.user.userId
+            "participant.user.userInfo": req.user.userId
              },
             { $set: 
                 { "participant.$.user.userStatus":  userStatus } 
@@ -84,7 +82,7 @@ const updateSession = async (req: Request, res: Response) => {
                     $addToSet: {
                         participant: {
                             user: {
-                                userId: req.user.userId,
+                                userInfo: req.user.userId,
                                 userStatus: userStatus
                             }
                         }
@@ -107,8 +105,6 @@ const updateSession = async (req: Request, res: Response) => {
               );
           }  
 
-    
-     
       const session = await Session.findByIdAndUpdate(
         { _id: sessionId },
         req.body,
@@ -117,8 +113,7 @@ const updateSession = async (req: Request, res: Response) => {
       if (!session) {
         throw new BadRequestError("This session does not exist");
       }
-    
-    
+
       return res.status(201).json({session});
     } else {
         throw new UnauthorizedError(
