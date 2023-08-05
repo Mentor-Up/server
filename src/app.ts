@@ -16,6 +16,8 @@ import authMiddleware from './middleware/authentication';
 import googleOauthHandler from './controllers/OAuth';
 import authRouter from './routes/auth';
 import cohortRouter from './routes/cohort';
+import sessionRouter from './routes/session';
+import weekRouter from './routes/week';
 import { NODE_ENV } from './config';
 import {restrict} from "./controllers/auth"
 app.use(
@@ -59,6 +61,8 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use('/api/v1/auth', authRouter);
 app.use('/testAuth', authMiddleware, (req, res) => res.send('OK!'));
 app.use("/api/v1/cohort", authMiddleware, restrict("admin"), cohortRouter);
+app.use("/api/v1/week", authMiddleware, weekRouter);
+app.use("/api/v1/session", authMiddleware, sessionRouter);
 
 
 //OAuth

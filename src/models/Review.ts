@@ -1,14 +1,14 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IReview extends Document {
-  scheduleId: Schema.Types.ObjectId;
+  sessionId: Schema.Types.ObjectId;
   content: string;
   rating: number;
 }
 
 const ReviewSchema = new mongoose.Schema<IReview>(
   {
-    scheduleId: {
+    sessionId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Session',
     },

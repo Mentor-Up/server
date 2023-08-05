@@ -3,20 +3,6 @@ import { Request, Response, NextFunction } from 'express-serve-static-core';
 import { UnauthenticatedError } from '../errors';
 import { ACCESS_TOKEN_SECRET } from '../config';
 
-// declare global {
-//   namespace Express {
-//     interface Request {
-//       user: {
-//         userId: string;
-//         name: string;
-//         role: string;
-//         iat: number;
-//         exp: number;
-//       };
-//     }
-//   }
-// }
-
 export interface jwtPayload {
   userId: string;
         name: string;
@@ -39,8 +25,8 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
     const payload = jwt.verify(token, ACCESS_TOKEN_SECRET!) as jwtPayload;
 
     // req.user = { userId: payload.userId };
-   console.log(payload);
-       req.user = payload
+  
+    req.user = payload
     next();
   } catch (err) {
     throw new UnauthenticatedError('Invalid token');
