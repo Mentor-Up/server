@@ -1,6 +1,6 @@
 
 import User, { IUser } from '../models/User';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { jwtPayload } from '../middleware/authentication';
 import {
@@ -15,6 +15,8 @@ import {
 } from '../config';
 import getRandomPassword from '../utils/getRandomPassword';
 import { Document } from 'mongoose';
+
+
 
 const register = async (req: Request, res: Response) => {
   const users: IUser[] = req.body.users;
@@ -34,7 +36,7 @@ const register = async (req: Request, res: Response) => {
   // saves all users from the req
   const newUserPromises = users.map(async (u) => {
     const password = getRandomPassword();
-    if (!u.name || !u.email) {
+    if (!u.name || !u.email || !u.role) {
       return Promise.reject(
         `Could not save ${JSON.stringify(u)}: Missing credentials`
       );
@@ -52,6 +54,7 @@ const register = async (req: Request, res: Response) => {
     return User.create({
       name: u.name,
       email: u.email,
+      role: u.role,
       password,
       cohorts: [cohort],
     });
@@ -100,7 +103,7 @@ const login = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({
-    user: { name: user.name, userId: user._id, email: user.email },
+    user: { name: user.name, userId: user._id, email: user.email, role: user.role },
     token,
   });
 };
@@ -128,7 +131,7 @@ const refreshToken = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({
-    user: { name: user.name, userId: user._id, email: user.email },
+    user: { name: user.name, userId: user._id, email: user.email, role: user.role  },
     token,
   });
 };
@@ -153,13 +156,13 @@ const logout = async (req: Request, res: Response) => {
   return res.sendStatus(204);
 };
 
-// exports.restrict = (...role) => {
-//   return (req: Request, res: Response, next: NextFunction) => {
-//     if (!role.includes(req.user.role)) {
-//       throw new UnauthenticatedError('Invalid credentials');
-//     }
-//     next()
-//   }
-// }
+const restrict = (...role:any) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!role.includes(req.user.role)) {
+      throw new UnauthenticatedError('Invalid credentials');
+    }
+    next()
+  }
+}
 
-export { register, login, refreshToken, logout };
+export { register, login, refreshToken, logout, restrict };

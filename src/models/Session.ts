@@ -7,7 +7,7 @@ export interface ISession extends Document {
   creator: Schema.Types.ObjectId;
   participant: Array<{
     user: {
-      userId: Schema.Types.ObjectId;
+      userInfo: Schema.Types.ObjectId;
       userStatus: 'confirm' | 'cancel';
     };
   }>;
@@ -37,7 +37,7 @@ const SessionSchema = new mongoose.Schema<ISession>(
     participant: [
       {
         user: {
-          userId: {
+          userInfo: {
             type: Schema.Types.ObjectId,
             ref: 'User',
           },

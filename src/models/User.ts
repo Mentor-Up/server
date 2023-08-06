@@ -72,7 +72,7 @@ UserSchema.pre('save', async function (next) {
 // Adds and instance method the our Model
 // Since we refer to this here, we cannot use arrow functions
 UserSchema.methods.createJWT = function () {
-  return jwt.sign({ userId: this._id, name: this.name }, ACCESS_TOKEN_SECRET!, {
+  return jwt.sign({ userId: this._id, name: this.name, role: this.role }, ACCESS_TOKEN_SECRET!, {
     expiresIn: ACCESS_TOKEN_EXPIRATION!,
   });
 };

@@ -5,8 +5,12 @@ import { ACCESS_TOKEN_SECRET } from '../config';
 
 export interface jwtPayload {
   userId: string;
-  name: string;
+        name: string;
+        role: string;
+        iat: number;
+        exp: number;
 }
+
 
 const auth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
@@ -20,7 +24,9 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = jwt.verify(token, ACCESS_TOKEN_SECRET!) as jwtPayload;
 
-    req.user = { userId: payload.userId };
+    // req.user = { userId: payload.userId };
+  
+    req.user = payload
     next();
   } catch (err) {
     throw new UnauthenticatedError('Invalid token');

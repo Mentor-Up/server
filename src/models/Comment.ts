@@ -1,14 +1,14 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IComment extends Document {
-  scheduleId: Schema.Types.ObjectId;
+  sessionId: Schema.Types.ObjectId;
   name: Schema.Types.ObjectId;
   content: string;
 }
 
 const CommentSchema = new mongoose.Schema<IComment>(
   {
-    scheduleId: {
+    sessionId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Session',
     },

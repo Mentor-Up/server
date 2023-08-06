@@ -6,7 +6,7 @@ export interface ICohort extends Document {
   end: Date;
   type: 'ReactJS' | 'NodeJS' | 'Intro' | 'Ruby';
   participants: Array<string>;
-  sessions: Array<string>;
+  weeks: Array<string>;
 }
 
 const CohortSchema = new mongoose.Schema<ICohort>(
@@ -34,10 +34,10 @@ const CohortSchema = new mongoose.Schema<ICohort>(
         ref: 'User',
       },
     ],
-    sessions: [
+    weeks: [
       {
         type: Schema.Types.ObjectId,
-        ref: 'Session',
+        ref: 'Week',
       },
     ],
   },
