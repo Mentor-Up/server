@@ -13,6 +13,8 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
+  confirmationCode: string;
+  isActivated: boolean;
   role: 'admin' | 'student' | 'student-leader' | 'mentor';
   cohorts: Array<string>;
   refreshToken?: string;
@@ -40,8 +42,16 @@ const UserSchema = new mongoose.Schema<IUser>(
     },
     password: {
       type: String,
-      required: [true, 'Please provide a password'],
+      // required: [true, 'Please provide a password'],
       minlength: 6,
+    },
+    confirmationCode: {
+      type: String,
+      required: [true, 'Please provide a confimation code'],
+    },
+    isActivated: {
+      type: Boolean,
+      default: false,
     },
     refreshToken: {
       type: String,
@@ -64,9 +74,11 @@ const UserSchema = new mongoose.Schema<IUser>(
 // Pre implemented middleware provided by mongoose, reached before saving the model
 // This will preprocess the password and hash it before saving
 UserSchema.pre('save', async function (next) {
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password!, salt);
-  next();
+  if (this.password) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  }
 });
 
 // Adds and instance method the our Model
