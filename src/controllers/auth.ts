@@ -1,4 +1,3 @@
-
 import User, { IUser } from '../models/User';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
@@ -15,8 +14,6 @@ import {
 } from '../config';
 import getRandomPassword from '../utils/getRandomPassword';
 import { Document } from 'mongoose';
-
-
 
 const register = async (req: Request, res: Response) => {
   const users: IUser[] = req.body.users;
@@ -98,7 +95,12 @@ const login = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({
-    user: { name: user.name, userId: user._id, email: user.email, role: user.role },
+    user: {
+      name: user.name,
+      userId: user._id,
+      email: user.email,
+      role: user.role,
+    },
     token,
   });
 };
@@ -126,7 +128,12 @@ const refreshToken = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({
-    user: { name: user.name, userId: user._id, email: user.email, role: user.role  },
+    user: {
+      name: user.name,
+      userId: user._id,
+      email: user.email,
+      role: user.role,
+    },
     token,
   });
 };
@@ -151,19 +158,17 @@ const logout = async (req: Request, res: Response) => {
   return res.sendStatus(204);
 };
 
-const restrict = (...role:any) => {
+const restrict = (...role: any) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const userRoles = req.user.role
+    const userRoles = req.user.role;
     if (userRoles) {
-      const authorized =  userRoles.some(((r) => 
-      role.includes(r))) 
+      const authorized = userRoles.some((r) => role.includes(r));
       {
-    throw new UnauthenticatedError('Invalid credentials');
-  }
-  next()
+        throw new UnauthenticatedError('Invalid credentials');
+      }
+      next();
     }
-
-  }
-}
+  };
+};
 
 export { register, login, refreshToken, logout, restrict };
