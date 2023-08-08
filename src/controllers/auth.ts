@@ -1,4 +1,3 @@
-
 import User, { IUser } from '../models/User';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
@@ -13,10 +12,11 @@ import {
   ACCESS_TOKEN_SECRET,
   REFRESH_TOKEN_SECRET,
 } from '../config';
-import getRandomPassword from '../utils/getRandomPassword';
+import getConfirmationCode from '../utils/getConfirmationCode';
 import { Document } from 'mongoose';
-
-
+import transporter from '../utils/mailSender';
+import sendRegistrationMail from '../mail/registrationMail';
+import createHash from '../utils/hashPassword';
 
 const register = async (req: Request, res: Response) => {
   const users: IUser[] = req.body.users;
@@ -35,8 +35,7 @@ const register = async (req: Request, res: Response) => {
 
   // saves all users from the req
   const newUserPromises = users.map(async (u) => {
-    const password = getRandomPassword();
-    if (!u.name || !u.email || !u.role) {
+    if (!u.name || !u.email) {
       return Promise.reject(
         `Could not save ${JSON.stringify(u)}: Missing credentials`
       );
@@ -51,21 +50,29 @@ const register = async (req: Request, res: Response) => {
         cohorts: user.cohorts.concat(cohort),
       });
     }
+
+    const confirmationCode = getConfirmationCode();
     return User.create({
       name: u.name,
       email: u.email,
       role: u.role,
-      password,
       cohorts: [cohort],
+      confirmationCode,
     });
   });
 
   const savedUsers = await Promise.allSettled(newUserPromises);
   const newUsers: Document<IUser>[] = [];
   const errors: PromiseRejectedResult[] = [];
+
   savedUsers.forEach((u) => {
     if (u.status === 'fulfilled') {
-      newUsers.push(u.value!);
+      if (u.value) {
+        newUsers.push(u.value);
+        transporter.sendMail(
+          sendRegistrationMail(u.value.email, u.value.confirmationCode)
+        );
+      }
     }
     if (u.status === 'rejected') {
       errors.push(u.reason);
@@ -73,6 +80,30 @@ const register = async (req: Request, res: Response) => {
   });
 
   res.status(201).json({ users: newUsers, errors, count: newUsers.length });
+};
+
+const activateAccount = async (req: Request, res: Response) => {
+  const { password, confirmationCode } = req.body;
+  if (!confirmationCode || !password) {
+    throw new BadRequestError('Missing data to activate account');
+  }
+
+  const user = await User.findOne({ confirmationCode });
+  if (!user) {
+    throw new BadRequestError('Invalid confirmation code');
+  }
+
+  const hashedPassword = await createHash(password);
+  const updatedUser = await user.updateOne(
+    {
+      password: hashedPassword,
+      isActivated: true,
+      confirmationCode: null,
+    },
+    { new: true }
+  );
+
+  return res.status(200).json({ user: updatedUser });
 };
 
 const login = async (req: Request, res: Response) => {
@@ -84,6 +115,10 @@ const login = async (req: Request, res: Response) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new UnauthenticatedError('Invalid credentials');
+  }
+
+  if (!user.isActivated) {
+    throw new UnauthorizedError('Account was not activated');
   }
 
   const isPasswordCorrect = await user.comparePassword(password);
@@ -103,7 +138,12 @@ const login = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({
-    user: { name: user.name, userId: user._id, email: user.email, role: user.role },
+    user: {
+      name: user.name,
+      userId: user._id,
+      email: user.email,
+      role: user.role,
+    },
     token,
   });
 };
@@ -131,7 +171,12 @@ const refreshToken = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({
-    user: { name: user.name, userId: user._id, email: user.email, role: user.role  },
+    user: {
+      name: user.name,
+      userId: user._id,
+      email: user.email,
+      role: user.role,
+    },
     token,
   });
 };
@@ -156,13 +201,13 @@ const logout = async (req: Request, res: Response) => {
   return res.sendStatus(204);
 };
 
-const restrict = (...role:any) => {
+const restrict = (...role: any) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!role.includes(req.user.role)) {
       throw new UnauthenticatedError('Invalid credentials');
     }
-    next()
-  }
-}
+    next();
+  };
+};
 
-export { register, login, refreshToken, logout, restrict };
+export { register, login, refreshToken, logout, restrict, activateAccount };

@@ -13,6 +13,11 @@ const {
   REFRESH_TOKEN_EXPIRATION,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
+  MAIL_SMTP_SERVER,
+  MAIL_PORT,
+  MAIL_LOGIN,
+  MAIL_PWD,
+  WEBSITE_URL,
 } = process.env;
 
 const requiredValues = [
@@ -26,6 +31,11 @@ const requiredValues = [
   'REFRESH_TOKEN_EXPIRATION',
   'GOOGLE_CLIENT_ID',
   'GOOGLE_CLIENT_SECRET',
+  'MAIL_SMTP_SERVER',
+  'MAIL_PORT',
+  'MAIL_LOGIN',
+  'MAIL_PWD',
+  'WEBSITE_URL',
 ];
 
 for (const value of requiredValues) {
@@ -46,4 +56,9 @@ export {
   REFRESH_TOKEN_EXPIRATION,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
+  MAIL_SMTP_SERVER,
+  MAIL_PORT,
+  MAIL_LOGIN,
+  MAIL_PWD,
+  WEBSITE_URL,
 };
