@@ -13,7 +13,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  role: 'admin' | 'student' | 'student-leader' | 'mentor';
+  role: Array<'admin' | 'student' | 'student-leader' | 'mentor'>;
   cohorts: Array<string>;
   refreshToken?: string;
   createJWT: () => string;
@@ -47,9 +47,9 @@ const UserSchema = new mongoose.Schema<IUser>(
       type: String,
     },
     role: {
-      type: String,
+      type: [String],
       enum: ['admin', 'student', 'student-leader', 'mentor'],
-      default: 'student',
+      default: ['student'],
     },
     cohorts: [
       {

@@ -1,5 +1,6 @@
 import { getAllCohort, getCohort, updateCohort, deleteCohort , createCohort} from '../controllers/cohort';
 import express from 'express';
+import {restrict} from "../controllers/auth"
 
 const router = express.Router();
 

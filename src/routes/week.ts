@@ -1,5 +1,6 @@
 import { getAllWeek, getWeek, updateWeek, deleteWeek, createWeek  } from '../controllers/week';
 import express from 'express';
+import {restrict} from "../controllers/auth"
 
 const router = express.Router();
 

@@ -27,11 +27,6 @@ const register = async (req: Request, res: Response) => {
   if (!user) {
     throw new UnauthenticatedError('Invalid credentials');
   }
-  if (user.role !== 'admin') {
-    throw new UnauthorizedError(
-      'Your current role does not allow you to add new users'
-    );
-  }
 
   // saves all users from the req
   const newUserPromises = users.map(async (u) => {
@@ -158,10 +153,16 @@ const logout = async (req: Request, res: Response) => {
 
 const restrict = (...role:any) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    if (!role.includes(req.user.role)) {
-      throw new UnauthenticatedError('Invalid credentials');
+    const userRoles = req.user.role
+    if (userRoles) {
+      const authorized =  userRoles.some(((r) => 
+      role.includes(r))) 
+      {
+    throw new UnauthenticatedError('Invalid credentials');
+  }
+  next()
     }
-    next()
+
   }
 }
 

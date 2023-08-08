@@ -1,5 +1,6 @@
 import { createSession, getAllSession, getSession, updateSession, deleteSession  } from '../controllers/session';
 import express from 'express';
+import {restrict} from "../controllers/auth"
 
 const router = express.Router();
 

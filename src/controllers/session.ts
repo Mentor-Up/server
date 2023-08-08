@@ -7,7 +7,9 @@ import { BadRequestError, UnauthenticatedError ,   UnauthorizedError} from '../e
 
 
 const createSession = async (req: Request, res: Response) => {
-  if (req.user.role !== "mentor" && req.user.role !== "student-leader") {
+  const allowedRoles = ["mentor" , "student-leader"]
+  const userRoles = req.user.role
+  if (!userRoles.some((r)=>allowedRoles.includes(r))) {
     throw new UnauthorizedError(
         'Your current role does not allow you to add new session'
       );
@@ -59,11 +61,20 @@ const updateSession = async (req: Request, res: Response) => {
     const {body: { start, end, type, link, userStatus}} = req
     const { sessionId } = req.params;
 
+    const allowedStudentRoles = ["student" , "student-leader"]
+    const allowedMentorRoles = ["mentor" , "student-leader"]
+    const userRoles = req.user.role
+    if (!userRoles.some((r)=>allowedStudentRoles.includes(r))) {
+      throw new UnauthorizedError(
+          'Your current role does not allow you to add new session'
+        );
+    }  
+
     if ( start === '' || end === '' || type === '' || link === '') {
       throw new BadRequestError('Name or Start or End or Type or Link fields cannot be empty')
     }
 
-    if (req.user.role === "student" || req.user.role === "student-leader") {
+    if (userRoles.some((r) => allowedStudentRoles.includes(r))) {
         
           const sessionUser = await Session.findOneAndUpdate(
             { _id: sessionId,
@@ -98,12 +109,13 @@ const updateSession = async (req: Request, res: Response) => {
           }
           return res.status(201).json({sessionUser});
 
-    } else if (req.user.role === "mentor" || req.user.role === "student-leader") {
-        if (req.user.role !== "mentor" && req.user.role !== "student-leader") {
-            throw new UnauthorizedError(
-                'Your current role does not allow you to update session'
-              );
-          }  
+    } else if (userRoles.some((r)=>allowedMentorRoles.includes(r))
+    ) {
+      if (!userRoles.some((r)=>allowedMentorRoles.includes(r))) {
+        throw new UnauthorizedError(
+            'Your current role does not allow you to add new session'
+          );
+      }  
 
       const session = await Session.findByIdAndUpdate(
         { _id: sessionId },
