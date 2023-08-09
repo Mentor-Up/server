@@ -8,6 +8,7 @@ import {
 } from '../controllers/session';
 
 import { createComment, getAllComment } from '../controllers/comment';
+import { createReview } from '../controllers/review';
 
 import express from 'express';
 import { restrict } from '../controllers/auth';
@@ -28,5 +29,6 @@ router
   .patch(restrict('student', 'student-leader'), updateStatus);
 
 router.route('/comment').get(getAllComment).post(createComment);
+router.route('/review').post(createReview);
 
 export default router;
