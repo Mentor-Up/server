@@ -20,7 +20,7 @@ const SessionSchema = new mongoose.Schema<ISession>(
   {
     type: {
       type: String,
-      enum: ['Mentor Session', 'Student Leader Session'],
+      enum: ['Mentor', 'Student Leader'],
     },
     start: {
       type: Date,

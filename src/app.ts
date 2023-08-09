@@ -18,6 +18,7 @@ import authRouter from './routes/auth';
 import cohortRouter from './routes/cohort';
 import sessionRouter from './routes/session';
 import weekRouter from './routes/week';
+
 import { NODE_ENV } from './config';
 import { restrict } from './controllers/auth';
 app.use(

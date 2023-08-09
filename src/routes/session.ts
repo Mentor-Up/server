@@ -4,18 +4,29 @@ import {
   getSession,
   updateSession,
   deleteSession,
+  updateStatus,
 } from '../controllers/session';
+
+import { createComment, getAllComment } from '../controllers/comment';
+
 import express from 'express';
 import { restrict } from '../controllers/auth';
 
 const router = express.Router();
 
-router.route('/').get(getAllSession).post(createSession);
-// router.route("/updateStatus")
+router
+  .route('/')
+  .get(getAllSession)
+  .post(restrict('mentor', 'student-leader'), createSession);
 router
   .route('/:sessionId')
   .get(getSession)
-  .patch(updateSession)
-  .delete(deleteSession);
+  .patch(restrict('mentor', 'student-leader'), updateSession)
+  .delete(restrict('mentor', 'student-leader'), deleteSession);
+router
+  .route('/:sessionId/student/updateStatus')
+  .patch(restrict('student', 'student-leader'), updateStatus);
+
+router.route('/comment').get(getAllComment).post(createComment);
 
 export default router;

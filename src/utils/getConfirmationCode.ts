@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-function getRandomPassword(): string {
+function getConfirmationCode(): string {
   const chars =
     '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   let pwd = '';
@@ -11,4 +11,4 @@ function getRandomPassword(): string {
   return pwd;
 }
 
-export default getRandomPassword;
+export default getConfirmationCode;
