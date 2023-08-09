@@ -8,28 +8,27 @@ export interface IWeek extends Document {
 }
 
 const WeekSchema = new mongoose.Schema<IWeek>(
-    {
-        name: {
-          type: String,
-          required: [true, 'Please provide a name'],
-        },
-        start: {
-          type: Date,
-          required: [true, 'Please provide start time'],
-        },
-        end: {
-          type: Date,
-        },
-        sessions: [
-          {
-            type: Schema.Types.ObjectId,
-            ref: 'Session',
-          },
-        ],
+  {
+    name: {
+      type: String,
+      required: [true, 'Please provide a name'],
+    },
+    start: {
+      type: Date,
+      required: [true, 'Please provide start time'],
+    },
+    end: {
+      type: Date,
+    },
+    sessions: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Session',
       },
-      { timestamps: true }
-    );
-
+    ],
+  },
+  { timestamps: true }
+);
 
 WeekSchema.pre('save', function (next) {
   if (this.start) {

@@ -7,7 +7,9 @@
     "start": "node ./dist/server.js",
     "build": "tsc",
     "dev": "nodemon ./src/server.ts",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "npx prettier --check 'src/**/*'",
+    "format": "npx prettier --write 'src/**/*'"
   },
   "author": "",
   "license": "ISC",
