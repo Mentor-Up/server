@@ -4,6 +4,7 @@ import {
   updateWeek,
   deleteWeek,
   createWeek,
+  currentWeek,
 } from '../controllers/week';
 import express from 'express';
 import { restrict } from '../controllers/auth';
@@ -16,5 +17,6 @@ router
   .get(getWeek)
   .patch(restrict('admin'), updateWeek)
   .delete(restrict('admin'), deleteWeek);
+router.route('/current').post(currentWeek);
 
 export default router;

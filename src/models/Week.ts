@@ -33,7 +33,7 @@ const WeekSchema = new mongoose.Schema<IWeek>(
 WeekSchema.pre('save', function (next) {
   if (this.start) {
     const endDate = new Date(this.start);
-    endDate.setDate(endDate.getDate() + 7);
+    endDate.setDate(endDate.getDate() + 6);
     this.end = endDate;
   }
   next();
