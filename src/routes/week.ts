@@ -4,12 +4,20 @@ import {
   updateWeek,
   deleteWeek,
   createWeek,
+  currentWeek,
 } from '../controllers/week';
 import express from 'express';
+import { restrict } from '../controllers/auth';
 
 const router = express.Router();
 
-router.route('/').get(getAllWeek).post(createWeek);
-router.route('/:weekId').get(getWeek).patch(updateWeek).delete(deleteWeek);
+router.route('/').get(getAllWeek).post(restrict('admin'), createWeek);
+router
+  .route('/:weekId')
+  .get(getWeek)
+  .patch(restrict('admin'), updateWeek)
+  .delete(restrict('admin'), deleteWeek);
+router.route('/current').post(currentWeek);
+
 
 export default router;

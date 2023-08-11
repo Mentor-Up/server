@@ -10,12 +10,9 @@ import {
 } from '../errors';
 
 const createSession = async (req: Request, res: Response) => {
-  if (req.user.role !== 'mentor' && req.user.role !== 'student-leader') {
-    throw new UnauthorizedError(
-      'Your current role does not allow you to add new session'
-    );
-  }
-  const { start, end, type, link, weekId, cohortId } = req.body;
+
+  const { start, end, type, link, weekId } = req.body;
+
   if (!start || !end || !type || !link) {
     throw new BadRequestError('Missing values');
   }
@@ -49,13 +46,27 @@ const getAllSession = async (req: Request, res: Response) => {
 
 const getSession = async (req: Request, res: Response) => {
   const { sessionId } = req.params;
-  const populateOptions = {
+
+  const populateParticipantOptions = {
     path: 'participant.user.userInfo',
     select: '_id name ',
   };
-  const session = await Session.findOne({ _id: sessionId }).populate(
-    populateOptions
-  );
+  const populateCreatorOptions = {
+    path: 'creator',
+    select: '_id name ',
+  };
+  const populateDiscussionOptions = {
+    path: 'discussion',
+    select: '_id name content ',
+  };
+
+  const session = await Session.findOne({ _id: sessionId })
+    .populate(populateParticipantOptions)
+    .populate(populateCreatorOptions)
+    .populate(populateDiscussionOptions);
+
+
+
 
   if (!session) {
     throw new BadRequestError('This session does not exist');
@@ -64,9 +75,11 @@ const getSession = async (req: Request, res: Response) => {
 };
 
 const updateSession = async (req: Request, res: Response) => {
+
   const {
     body: { start, end, type, link, userStatus },
   } = req;
+
   const { sessionId } = req.params;
 
   if (start === '' || end === '' || type === '' || link === '') {
@@ -75,67 +88,65 @@ const updateSession = async (req: Request, res: Response) => {
     );
   }
 
-  if (req.user.role === 'student' || req.user.role === 'student-leader') {
-    const sessionUser = await Session.findOneAndUpdate(
-      { _id: sessionId, 'participant.user.userInfo': req.user.userId },
-      { $set: { 'participant.$.user.userStatus': userStatus } },
-      { new: true }
-    );
-    if (!sessionUser) {
-      const newSessionUser = await Session.findOneAndUpdate(
-        { _id: sessionId },
-        {
-          $addToSet: {
-            participant: {
-              user: {
-                userInfo: req.user.userId,
-                userStatus: userStatus,
-              },
-            },
-          },
-        },
-        { new: true }
-      );
-      if (!newSessionUser) {
-        throw new BadRequestError('Can not update this session');
-      }
-      return res.status(201).json({ newSessionUser });
-    }
-    return res.status(201).json({ sessionUser });
-  } else if (req.user.role === 'mentor' || req.user.role === 'student-leader') {
-    if (req.user.role !== 'mentor' && req.user.role !== 'student-leader') {
-      throw new UnauthorizedError(
-        'Your current role does not allow you to update session'
-      );
-    }
 
-    const session = await Session.findByIdAndUpdate(
-      { _id: sessionId },
-      req.body,
-      { new: true, runValidators: true }
-    );
-    if (!session) {
-      throw new BadRequestError('This session does not exist');
-    }
-
-    return res.status(201).json({ session });
-  } else {
-    throw new UnauthorizedError(
-      'Your current role does not allow you to perform this action'
-    );
+  const session = await Session.findOneAndUpdate(
+    { _id: sessionId, creator: req.user.userId },
+    req.body,
+    { new: true, runValidators: true }
+  );
+  if (!session) {
+    throw new BadRequestError('This session does not exist');
   }
+
+  return res.status(201).json({ session });
+
 };
 
 const deleteSession = async (req: Request, res: Response) => {
   const { sessionId } = req.params;
 
-  const session = await Session.findByIdAndRemove({ _id: sessionId });
+  const session = await Session.findByIdAndRemove({
+    _id: sessionId,
+    creator: req.user.userId,
+  });
 
   if (!session) {
     throw new BadRequestError('This session does not exist');
   }
 
-  res.status(200).json({ status: 'Success! session removed.' });
+  res.status(200).json({ status: 'Success! Session removed.' });
+};
+
+const updateStatus = async (req: Request, res: Response) => {
+  const { userStatus } = req.body;
+  const { sessionId } = req.params;
+
+  const sessionUser = await Session.findOneAndUpdate(
+    { _id: sessionId, 'participant.user.userInfo': req.user.userId },
+    { $set: { 'participant.$.user.userStatus': userStatus } },
+    { new: true }
+  );
+  if (!sessionUser) {
+    const newSessionUser = await Session.findOneAndUpdate(
+      { _id: sessionId },
+      {
+        $addToSet: {
+          participant: {
+            user: {
+              userInfo: req.user.userId,
+              userStatus,
+            },
+          },
+        },
+      },
+      { new: true }
+    );
+    if (!newSessionUser) {
+      throw new BadRequestError('Can not update this session');
+    }
+    return res.status(201).json({ newSessionUser });
+  }
+  return res.status(201).json({ sessionUser });
 };
 
 export {
@@ -144,4 +155,5 @@ export {
   getSession,
   updateSession,
   deleteSession,
+  updateStatus,
 };

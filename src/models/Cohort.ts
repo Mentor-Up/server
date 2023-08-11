@@ -1,12 +1,16 @@
 import mongoose, { Schema, Document } from 'mongoose';
-
+import { IWeek } from './Week';
 export interface ICohort extends Document {
   name: string;
   start: Date;
   end: Date;
-  type: 'ReactJS' | 'NodeJS' | 'Intro' | 'Ruby';
+  type:
+    | 'Intro to programming'
+    | 'React.js'
+    | 'Node.js/Express'
+    | 'Ruby on Rails';
   participants: Array<string>;
-  weeks: Array<string>;
+  weeks: Array<IWeek>;
 }
 
 const CohortSchema = new mongoose.Schema<ICohort>(
@@ -26,7 +30,12 @@ const CohortSchema = new mongoose.Schema<ICohort>(
     },
     type: {
       type: String,
-      enum: ['ReactJS', 'NodeJS', 'Intro', 'Ruby'],
+      enum: [
+        'Intro to programming',
+        'React.js',
+        'Node.js/Express',
+        'Ruby on Rails',
+      ],
     },
     participants: [
       {

@@ -3,7 +3,6 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IReview extends Document {
   sessionId: Schema.Types.ObjectId;
   content: string;
-  rating: number;
 }
 
 const ReviewSchema = new mongoose.Schema<IReview>(
@@ -17,13 +16,8 @@ const ReviewSchema = new mongoose.Schema<IReview>(
       trim: true,
       required: [true, 'Content can not be blank'],
     },
-    rating: {
-      type: Number,
-      min: 1,
-      max: 5,
-    },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Review', ReviewSchema);
+export default mongoose.model('Review', ReviewSchema);

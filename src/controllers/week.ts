@@ -3,6 +3,8 @@ import Cohort from '../models/Cohort';
 import Week from '../models/Week';
 import { Request, Response } from 'express';
 import { BadRequestError, UnauthenticatedError } from '../errors';
+import moment from 'moment-timezone';
+
 
 const createWeek = async (req: Request, res: Response) => {
   const { name, start, cohortId } = req.body;
@@ -49,7 +51,8 @@ const getWeek = async (req: Request, res: Response) => {
   );
 
   if (!week) {
-    throw new BadRequestError('This cohort does not exist');
+
+    throw new BadRequestError('This week does not exist');
   }
   res.status(200).json({ status: 'Success', week });
 };
@@ -80,10 +83,54 @@ const deleteWeek = async (req: Request, res: Response) => {
   const week = await Cohort.findByIdAndRemove({ _id: weekId });
 
   if (!weekId) {
-    throw new BadRequestError('This cohort does not exist');
+    throw new BadRequestError('This week does not exist');
   }
 
   res.status(200).json({ status: 'Success! Week removed.' });
 };
 
-export { getAllWeek, getWeek, updateWeek, deleteWeek, createWeek };
+
+const currentWeek = async (req: Request, res: Response) => {
+  const { cohortId, userTimeZone } = req.body;
+
+  try {
+    const populateOptions = {
+      path: 'weeks',
+      select: 'start end',
+    };
+    const cohort = await Cohort.findById({ _id: cohortId }).populate(
+      populateOptions
+    );
+    if (!cohort) {
+      throw new BadRequestError('This cohort does not exist');
+    }
+    const weeks = cohort?.weeks;
+    console.log(weeks);
+
+    const getCurrentWeek = findCurrentWeek(userTimeZone, weeks);
+
+    const currentWeek = await Week.findById({ _id: getCurrentWeek.id });
+
+    res.json({
+      status: 'Success',
+      currentWeek,
+    });
+  } catch (err) {
+    throw new BadRequestError('An error has occured');
+  }
+};
+
+function findCurrentWeek(userTimeZone: any, weeks: any) {
+  const now = moment().tz(userTimeZone);
+
+  for (const week of weeks) {
+    if (now.isBetween(moment(week.start), moment(week.end), 'day', '[]')) {
+      return week;
+    }
+  }
+
+  return weeks[weeks.length - 1];
+}
+
+export { getAllWeek, getWeek, updateWeek, deleteWeek, createWeek, currentWeek };
+
