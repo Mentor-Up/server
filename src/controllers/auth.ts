@@ -77,6 +77,22 @@ const register = async (req: Request, res: Response) => {
   res.status(201).json({ users: newUsers, errors, count: newUsers.length });
 };
 
+const directRegister = async (req: Request, res: Response) => {
+  const { name, email, password, role } = req.body;
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role,
+    isActivated: true,
+    confirmationCode: '111111',
+    cohorts: [],
+  });
+
+  res.status(201).json({ user });
+};
+
 const activateAccount = async (req: Request, res: Response) => {
   const { password, confirmationCode } = req.body;
   if (!confirmationCode || !password) {
@@ -209,4 +225,12 @@ const restrict = (...role: any) => {
   };
 };
 
-export { register, login, refreshToken, logout, restrict, activateAccount };
+export {
+  register,
+  login,
+  refreshToken,
+  logout,
+  restrict,
+  activateAccount,
+  directRegister,
+};
