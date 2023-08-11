@@ -10,7 +10,9 @@ import {
 } from '../errors';
 
 const createSession = async (req: Request, res: Response) => {
+
   const { start, end, type, link, weekId } = req.body;
+
   if (!start || !end || !type || !link) {
     throw new BadRequestError('Missing values');
   }
@@ -44,6 +46,7 @@ const getAllSession = async (req: Request, res: Response) => {
 
 const getSession = async (req: Request, res: Response) => {
   const { sessionId } = req.params;
+
   const populateParticipantOptions = {
     path: 'participant.user.userInfo',
     select: '_id name ',
@@ -62,6 +65,9 @@ const getSession = async (req: Request, res: Response) => {
     .populate(populateCreatorOptions)
     .populate(populateDiscussionOptions);
 
+
+
+
   if (!session) {
     throw new BadRequestError('This session does not exist');
   }
@@ -69,7 +75,11 @@ const getSession = async (req: Request, res: Response) => {
 };
 
 const updateSession = async (req: Request, res: Response) => {
-  const { start, end, type, link } = req.body;
+
+  const {
+    body: { start, end, type, link, userStatus },
+  } = req;
+
   const { sessionId } = req.params;
 
   if (start === '' || end === '' || type === '' || link === '') {
@@ -77,6 +87,7 @@ const updateSession = async (req: Request, res: Response) => {
       'Name or Start or End or Type or Link fields cannot be empty'
     );
   }
+
 
   const session = await Session.findOneAndUpdate(
     { _id: sessionId, creator: req.user.userId },
@@ -88,6 +99,7 @@ const updateSession = async (req: Request, res: Response) => {
   }
 
   return res.status(201).json({ session });
+
 };
 
 const deleteSession = async (req: Request, res: Response) => {

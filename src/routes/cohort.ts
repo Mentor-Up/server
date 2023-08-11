@@ -10,6 +10,7 @@ import { restrict } from '../controllers/auth';
 
 const router = express.Router();
 
+
 router.route('/').get(getAllCohort).post(restrict('admin'), createCohort);
 router
   .route('/:cohortId')

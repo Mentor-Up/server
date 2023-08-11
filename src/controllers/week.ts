@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import { BadRequestError, UnauthenticatedError } from '../errors';
 import moment from 'moment-timezone';
 
+
 const createWeek = async (req: Request, res: Response) => {
   const { name, start, cohortId } = req.body;
   if (!name || !start) {
@@ -50,6 +51,7 @@ const getWeek = async (req: Request, res: Response) => {
   );
 
   if (!week) {
+
     throw new BadRequestError('This week does not exist');
   }
   res.status(200).json({ status: 'Success', week });
@@ -86,6 +88,7 @@ const deleteWeek = async (req: Request, res: Response) => {
 
   res.status(200).json({ status: 'Success! Week removed.' });
 };
+
 
 const currentWeek = async (req: Request, res: Response) => {
   const { cohortId, userTimeZone } = req.body;
@@ -130,3 +133,4 @@ function findCurrentWeek(userTimeZone: any, weeks: any) {
 }
 
 export { getAllWeek, getWeek, updateWeek, deleteWeek, createWeek, currentWeek };
+
