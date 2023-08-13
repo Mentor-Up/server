@@ -97,7 +97,7 @@ const createWeeks = async (req: Request, res: Response) => {
     );
 
     const startWeek = new Date(start);
-    for (let i = 1; i <= numWeek; i++) {
+    for (let i = 1; i < numWeek; i++) {
       const nextStartWeek = new Date(
         startWeek.getTime() + 7 * i * 24 * 60 * 60 * 1000
       );
@@ -110,7 +110,15 @@ const createWeeks = async (req: Request, res: Response) => {
         { $push: { weeks: nextNewWeeks._id } }
       );
     }
-    res.status(201).json({ firstWeek });
+    const populateWeekOptions = {
+      path: 'weeks',
+      select: '_id name start end sessions',
+    };
+    const updatedCohort = await Cohort.findById({ _id: cohortId }).populate(
+      populateWeekOptions
+    );
+
+    res.status(201).json({ updatedCohort });
   } catch (err) {
     console.log(err);
   }
