@@ -1,7 +1,7 @@
 import User from '../models/User';
 import Cohort from '../models/Cohort';
 import Session from '../models/Session';
-import Week from '../models/Week';
+import { Week } from '../models/Week';
 import { Request, Response } from 'express';
 import {
   BadRequestError,
