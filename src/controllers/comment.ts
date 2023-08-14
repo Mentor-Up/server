@@ -1,6 +1,6 @@
 import User from '../models/User';
 import Cohort from '../models/Cohort';
-import Week from '../models/Week';
+import { Week } from '../models/Week';
 import Session from '../models/Session';
 import Comment from '../models/Comment';
 import { Request, Response } from 'express';

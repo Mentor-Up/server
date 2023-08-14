@@ -1,10 +1,9 @@
 import User from '../models/User';
 import Cohort from '../models/Cohort';
-import Week from '../models/Week';
+import { Week, calculateEnd } from '../models/Week';
 import { Request, Response } from 'express';
 import { BadRequestError, UnauthenticatedError } from '../errors';
 import moment from 'moment-timezone';
-
 
 const createWeek = async (req: Request, res: Response) => {
   const { name, start, cohortId } = req.body;
@@ -51,7 +50,6 @@ const getWeek = async (req: Request, res: Response) => {
   );
 
   if (!week) {
-
     throw new BadRequestError('This week does not exist');
   }
   res.status(200).json({ status: 'Success', week });
@@ -60,17 +58,25 @@ const getWeek = async (req: Request, res: Response) => {
 const updateWeek = async (req: Request, res: Response) => {
   const { weekId } = req.params;
 
-  const {
-    body: { name, start },
-  } = req;
+  const { name, start } = req.body;
 
   if (name === '' || start === '') {
     throw new BadRequestError('Name or Start fields cannot be empty');
   }
-  const week = await Cohort.findByIdAndUpdate({ _id: weekId }, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const updateEnd = calculateEnd(start);
+
+  const week = await Week.findByIdAndUpdate(
+    { _id: weekId },
+    {
+      name,
+      start,
+      end: updateEnd,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
   if (!week) {
     throw new BadRequestError('This week does not exist');
   }
@@ -80,7 +86,7 @@ const updateWeek = async (req: Request, res: Response) => {
 const deleteWeek = async (req: Request, res: Response) => {
   const { weekId } = req.params;
 
-  const week = await Cohort.findByIdAndRemove({ _id: weekId });
+  const week = await Week.findByIdAndRemove({ _id: weekId });
 
   if (!weekId) {
     throw new BadRequestError('This week does not exist');
@@ -88,7 +94,6 @@ const deleteWeek = async (req: Request, res: Response) => {
 
   res.status(200).json({ status: 'Success! Week removed.' });
 };
-
 
 const currentWeek = async (req: Request, res: Response) => {
   const { cohortId, userTimeZone } = req.body;
@@ -133,4 +138,3 @@ function findCurrentWeek(userTimeZone: any, weeks: any) {
 }
 
 export { getAllWeek, getWeek, updateWeek, deleteWeek, createWeek, currentWeek };
-

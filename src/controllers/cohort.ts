@@ -1,5 +1,6 @@
 import User from '../models/User';
 import Cohort from '../models/Cohort';
+import { Week } from '../models/Week';
 import { Request, Response } from 'express';
 import { BadRequestError, UnauthenticatedError } from '../errors';
 
@@ -78,4 +79,52 @@ const deleteCohort = async (req: Request, res: Response) => {
   res.status(200).json({ status: 'Success! Cohort removed.' });
 };
 
-export { getAllCohort, getCohort, updateCohort, deleteCohort, createCohort };
+const createWeeks = async (req: Request, res: Response) => {
+  const { cohortId } = req.params;
+  const { start, numWeek } = req.body;
+  if (!start || !numWeek) {
+    throw new BadRequestError('Missing values');
+  }
+
+  const firstWeek = await Week.create({
+    name: 'Week 1',
+    start,
+  });
+  const cohort = await Cohort.findOneAndUpdate(
+    { _id: cohortId },
+    { $push: { weeks: firstWeek._id } }
+  );
+
+  const startWeek = new Date(start);
+  for (let i = 1; i < numWeek; i++) {
+    const nextStartWeek = new Date(
+      startWeek.getTime() + 7 * i * 24 * 60 * 60 * 1000
+    );
+    const nextNewWeeks = await Week.create({
+      name: `Week ${i + 1}`,
+      start: nextStartWeek,
+    });
+    await Cohort.findOneAndUpdate(
+      { _id: cohortId },
+      { $push: { weeks: nextNewWeeks._id } }
+    );
+  }
+  const populateWeekOptions = {
+    path: 'weeks',
+    select: '_id name start end sessions',
+  };
+  const updatedCohort = await Cohort.findById({ _id: cohortId }).populate(
+    populateWeekOptions
+  );
+
+  res.status(201).json({ updatedCohort });
+};
+
+export {
+  getAllCohort,
+  getCohort,
+  updateCohort,
+  deleteCohort,
+  createCohort,
+  createWeeks,
+};
