@@ -10,7 +10,6 @@ import {
 } from '../errors';
 
 const createSession = async (req: Request, res: Response) => {
-
   const { start, end, type, link, weekId } = req.body;
 
   if (!start || !end || !type || !link) {
@@ -65,9 +64,6 @@ const getSession = async (req: Request, res: Response) => {
     .populate(populateCreatorOptions)
     .populate(populateDiscussionOptions);
 
-
-
-
   if (!session) {
     throw new BadRequestError('This session does not exist');
   }
@@ -75,7 +71,6 @@ const getSession = async (req: Request, res: Response) => {
 };
 
 const updateSession = async (req: Request, res: Response) => {
-
   const {
     body: { start, end, type, link, userStatus },
   } = req;
@@ -88,7 +83,6 @@ const updateSession = async (req: Request, res: Response) => {
     );
   }
 
-
   const session = await Session.findOneAndUpdate(
     { _id: sessionId, creator: req.user.userId },
     req.body,
@@ -99,7 +93,6 @@ const updateSession = async (req: Request, res: Response) => {
   }
 
   return res.status(201).json({ session });
-
 };
 
 const deleteSession = async (req: Request, res: Response) => {
