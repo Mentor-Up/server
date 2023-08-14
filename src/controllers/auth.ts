@@ -187,9 +187,13 @@ const refreshToken = async (req: Request, res: Response) => {
     return res.sendStatus(403);
   }
 
-  const token = jwt.sign({ username: payload.name }, ACCESS_TOKEN_SECRET!, {
-    expiresIn: ACCESS_TOKEN_EXPIRATION,
-  });
+  const token = jwt.sign(
+    { name: payload.name, role: payload.role, userId: user._id },
+    ACCESS_TOKEN_SECRET!,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRATION,
+    }
+  );
 
   return res.status(200).json({
     user: {
@@ -225,7 +229,6 @@ const logout = async (req: Request, res: Response) => {
 const restrict = (...role: any) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const userRoles = req.user.role;
-
     if (!userRoles.some((r) => role.includes(r))) {
       throw new UnauthenticatedError(
         'Your roles are not allowed to access this route'
