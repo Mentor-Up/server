@@ -17,10 +17,11 @@ import { Document } from 'mongoose';
 import transporter from '../utils/mailSender';
 import sendRegistrationMail from '../mail/registrationMail';
 import createHash from '../utils/hashPassword';
+import Cohort from '../models/Cohort';
 
 const register = async (req: Request, res: Response) => {
   const users: IUser[] = req.body.users;
-  const cohort = req.body.cohort;
+  const cohortId = req.body.cohort;
 
   // checks if user can register other users
   const user = await User.findById(req.user.userId);
@@ -28,7 +29,12 @@ const register = async (req: Request, res: Response) => {
     throw new UnauthenticatedError('Invalid credentials');
   }
 
-  // saves all users from the req
+  const cohort = await Cohort.findById(cohortId);
+  if (!cohort) {
+    throw new BadRequestError('This cohort does not exist');
+  }
+
+  // // saves all users from the req
   const newUserPromises = users.map(async (u) => {
     if (!u.name || !u.email) {
       return Promise.reject(
@@ -38,11 +44,11 @@ const register = async (req: Request, res: Response) => {
     // maybe the user is already register in another cohort
     const user = await User.findOne({ email: u.email });
     if (user) {
-      if (user.cohorts.includes(cohort)) {
+      if (user.cohorts.includes(cohortId)) {
         return Promise.reject(`${user.email} already in this cohort`);
       }
       return User.findByIdAndUpdate(user._id, {
-        cohorts: user.cohorts.concat(cohort),
+        cohorts: user.cohorts.concat(cohortId),
       });
     }
 
@@ -51,7 +57,7 @@ const register = async (req: Request, res: Response) => {
       name: u.name,
       email: u.email,
       role: u.role,
-      cohorts: [cohort],
+      cohorts: [cohortId],
       confirmationCode,
     });
   });
@@ -72,6 +78,10 @@ const register = async (req: Request, res: Response) => {
     if (u.status === 'rejected') {
       errors.push(u.reason);
     }
+  });
+
+  await cohort.updateOne({
+    participants: cohort.participants.concat(newUsers.map((u) => u._id as any)),
   });
 
   res.status(201).json({ users: newUsers, errors, count: newUsers.length });
