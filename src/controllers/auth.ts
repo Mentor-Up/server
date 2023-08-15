@@ -23,12 +23,6 @@ const register = async (req: Request, res: Response) => {
   const users: IUser[] = req.body.users;
   const cohortId = req.body.cohort;
 
-  // checks if user can register other users
-  const user = await User.findById(req.user.userId);
-  if (!user) {
-    throw new UnauthenticatedError('Invalid credentials');
-  }
-
   const cohort = await Cohort.findById(cohortId);
   if (!cohort) {
     throw new BadRequestError('This cohort does not exist');
