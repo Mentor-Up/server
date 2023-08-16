@@ -18,6 +18,7 @@ import authRouter from './routes/auth';
 import cohortRouter from './routes/cohort';
 import sessionRouter from './routes/session';
 import weekRouter from './routes/week';
+import slackRouter from './routes/slack';
 
 import { NODE_ENV } from './config';
 import { restrict } from './controllers/auth';
@@ -64,6 +65,7 @@ app.use('/testAuth', authMiddleware, (req, res) => res.send('OK!'));
 app.use('/api/v1/cohort', authMiddleware, cohortRouter);
 app.use('/api/v1/week', authMiddleware, weekRouter);
 app.use('/api/v1/session', authMiddleware, sessionRouter);
+app.use('/api/v1/slack', slackRouter);
 
 //OAuth
 app.get('/auth/google/callback', googleOauthHandler);
