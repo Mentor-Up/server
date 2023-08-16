@@ -9,6 +9,7 @@ declare global {
         role: string[];
         iat: number;
         exp: number;
+        OAuthToken: string;
       };
     }
   }

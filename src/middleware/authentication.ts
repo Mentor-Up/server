@@ -9,6 +9,7 @@ export interface jwtPayload {
   role: string[];
   iat: number;
   exp: number;
+  OAuthToken: string;
 }
 
 const auth = (req: Request, res: Response, next: NextFunction) => {

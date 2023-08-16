@@ -18,6 +18,7 @@ export interface IUser extends Document {
   role: Array<'admin' | 'student' | 'student-leader' | 'mentor'>;
   cohorts: Array<string>;
   refreshToken?: string;
+  OAuthToken?: string;
   createJWT: () => string;
   createRefreshToken: () => string;
   comparePassword: (password: string) => Promise<boolean>;
@@ -67,6 +68,9 @@ const UserSchema = new mongoose.Schema<IUser>(
         ref: Cohort,
       },
     ],
+    OAuthToken: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

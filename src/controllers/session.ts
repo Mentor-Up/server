@@ -8,6 +8,7 @@ import {
   UnauthenticatedError,
   UnauthorizedError,
 } from '../errors';
+import scheduleEvent from '../utils/getConfirmationCode';
 
 const createSession = async (req: Request, res: Response) => {
   const { start, end, type, link, weekId } = req.body;
@@ -137,6 +138,12 @@ const updateStatus = async (req: Request, res: Response) => {
     if (!newSessionUser) {
       throw new BadRequestError('Can not update this session');
     }
+
+    if (sessionUser || (newSessionUser && userStatus === 'confirm')) {
+      const sessionInfo = Session.findById({ _id: sessionId });
+      console.log(sessionInfo);
+    }
+
     return res.status(201).json({ newSessionUser });
   }
   return res.status(201).json({ sessionUser });

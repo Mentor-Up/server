@@ -3,10 +3,13 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import qs from 'qs';
+import { google } from 'googleapis';
+import moment from 'moment-timezone';
 
 interface GoogleOauthToken {
   id_token: string;
   access_token: string;
+  refresh_token: string;
 }
 
 const getGoogleOauthToken = async ({
@@ -28,6 +31,7 @@ const getGoogleOauthToken = async ({
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
+
     return data.data;
   } catch (err) {
     console.log(err);
@@ -51,8 +55,10 @@ const googleOauthHandler = async (req: Request, res: Response) => {
     }
 
     const { id_token } = googleOauthToken;
+    const { refresh_token } = googleOauthToken;
+    const OAuthToken = refresh_token;
 
-    if (id_token) {
+    if (id_token && OAuthToken) {
       const googleUser = jwt.decode(id_token) as {
         email?: string;
         name?: string;
@@ -69,7 +75,7 @@ const googleOauthHandler = async (req: Request, res: Response) => {
         const token = user.createJWT();
         const refreshToken = user.createRefreshToken();
 
-        await user.updateOne({ refreshToken });
+        await user.updateOne({ refreshToken, OAuthToken });
 
         res.cookie('token', refreshToken, {
           httpOnly: true,
@@ -94,4 +100,4 @@ const googleOauthHandler = async (req: Request, res: Response) => {
   }
 };
 
-export default googleOauthHandler;
+export { googleOauthHandler };
