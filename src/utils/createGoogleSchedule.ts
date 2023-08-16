@@ -11,13 +11,11 @@ const oauth2Client = new google.auth.OAuth2(
 
 const scheduleEvent = async ({
   summary,
-  desc,
   start,
   end,
   email,
 }: {
   summary: string;
-  desc: string;
   start: Date;
   end: Date;
   email: string;
@@ -42,7 +40,6 @@ const scheduleEvent = async ({
     calendarId: 'primary',
     requestBody: {
       summary: summary,
-      description: desc,
       start: {
         dateTime: formattedStart,
         timeZone: 'America/Los_Angeles',
