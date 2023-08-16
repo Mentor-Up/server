@@ -16,7 +16,7 @@ const createCohort = async (req: Request, res: Response) => {
 };
 
 const getAllCohort = async (req: Request, res: Response) => {
-  const cohorts = await Cohort.find({});
+  const cohorts = await Cohort.find({}).populate('participants', '_id name');
 
   if (!cohorts) {
     return res

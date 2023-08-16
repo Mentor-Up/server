@@ -17,18 +17,18 @@ import { Document } from 'mongoose';
 import transporter from '../utils/mailSender';
 import sendRegistrationMail from '../mail/registrationMail';
 import createHash from '../utils/hashPassword';
+import Cohort from '../models/Cohort';
 
 const register = async (req: Request, res: Response) => {
   const users: IUser[] = req.body.users;
-  const cohort = req.body.cohort;
+  const cohortId = req.body.cohort;
 
-  // checks if user can register other users
-  const user = await User.findById(req.user.userId);
-  if (!user) {
-    throw new UnauthenticatedError('Invalid credentials');
+  const cohort = await Cohort.findById(cohortId);
+  if (!cohort) {
+    throw new BadRequestError('This cohort does not exist');
   }
 
-  // saves all users from the req
+  // // saves all users from the req
   const newUserPromises = users.map(async (u) => {
     if (!u.name || !u.email) {
       return Promise.reject(
@@ -38,11 +38,11 @@ const register = async (req: Request, res: Response) => {
     // maybe the user is already register in another cohort
     const user = await User.findOne({ email: u.email });
     if (user) {
-      if (user.cohorts.includes(cohort)) {
+      if (user.cohorts.includes(cohortId)) {
         return Promise.reject(`${user.email} already in this cohort`);
       }
       return User.findByIdAndUpdate(user._id, {
-        cohorts: user.cohorts.concat(cohort),
+        cohorts: user.cohorts.concat(cohortId),
       });
     }
 
@@ -51,7 +51,7 @@ const register = async (req: Request, res: Response) => {
       name: u.name,
       email: u.email,
       role: u.role,
-      cohorts: [cohort],
+      cohorts: [cohortId],
       confirmationCode,
     });
   });
@@ -74,7 +74,27 @@ const register = async (req: Request, res: Response) => {
     }
   });
 
+  await cohort.updateOne({
+    participants: cohort.participants.concat(newUsers.map((u) => u._id as any)),
+  });
+
   res.status(201).json({ users: newUsers, errors, count: newUsers.length });
+};
+
+const directRegister = async (req: Request, res: Response) => {
+  const { name, email, password, role } = req.body;
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role,
+    isActivated: true,
+    confirmationCode: '111111',
+    cohorts: [],
+  });
+
+  res.status(201).json({ user });
 };
 
 const activateAccount = async (req: Request, res: Response) => {
@@ -161,9 +181,13 @@ const refreshToken = async (req: Request, res: Response) => {
     return res.sendStatus(403);
   }
 
-  const token = jwt.sign({ username: payload.name }, ACCESS_TOKEN_SECRET!, {
-    expiresIn: ACCESS_TOKEN_EXPIRATION,
-  });
+  const token = jwt.sign(
+    { name: payload.name, role: payload.role, userId: user._id },
+    ACCESS_TOKEN_SECRET!,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRATION,
+    }
+  );
 
   return res.status(200).json({
     user: {
@@ -199,7 +223,6 @@ const logout = async (req: Request, res: Response) => {
 const restrict = (...role: any) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const userRoles = req.user.role;
-
     if (!userRoles.some((r) => role.includes(r))) {
       throw new UnauthenticatedError(
         'Your roles are not allowed to access this route'
@@ -209,4 +232,12 @@ const restrict = (...role: any) => {
   };
 };
 
-export { register, login, refreshToken, logout, restrict, activateAccount };
+export {
+  register,
+  login,
+  refreshToken,
+  logout,
+  restrict,
+  activateAccount,
+  directRegister,
+};
