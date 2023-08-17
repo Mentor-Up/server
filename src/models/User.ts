@@ -99,7 +99,7 @@ UserSchema.methods.createJWT = function () {
 
 UserSchema.methods.createRefreshToken = function () {
   return jwt.sign(
-    { userId: this._id, name: this.name },
+    { userId: this._id, name: this.name, role: this.role },
     REFRESH_TOKEN_SECRET!,
     {
       expiresIn: REFRESH_TOKEN_EXPIRATION!,
