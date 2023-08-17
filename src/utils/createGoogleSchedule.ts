@@ -14,20 +14,19 @@ const scheduleEvent = async ({
   start,
   end,
   email,
+  description,
 }: {
   summary: string;
   start: Date;
   end: Date;
   email: string;
+  description: string;
 }) => {
-  console.log(summary, start, end, email);
-
   const user = await User.findOne({ email });
   if (!user) {
     throw new Error('error');
   }
-  const refresh_token =
-    '1//01Rtz68-UmnTlCgYIARAAGAESNwF-L9IraFisYgY9OO-yDGvNchokFFCpXc_ypc2HUXq8pHPCLMSMeTsTROyPrEC3IfLYwDCs5SU';
+  const refresh_token = user.OAuthToken;
 
   const formattedStart = moment(start)
     .tz('America/Los_Angeles')
@@ -43,6 +42,7 @@ const scheduleEvent = async ({
     calendarId: 'primary',
     requestBody: {
       summary: summary,
+      description: description,
       start: {
         dateTime: formattedStart,
         timeZone: 'America/Los_Angeles',
@@ -53,7 +53,8 @@ const scheduleEvent = async ({
       },
     },
   });
-  console.log(response);
+  if (!response) return 'Events failed to save in your Google Calendar';
+  return 'Events successfully saved in your Google Calendar';
 };
 
 export default scheduleEvent;
