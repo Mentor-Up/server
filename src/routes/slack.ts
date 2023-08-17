@@ -1,12 +1,9 @@
 import express from 'express';
-import { getChannels } from '../controllers/slack';
+import { getChannels, getChannelMembersDetails } from '../controllers/slack';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  res.send('Hello from Slack Router!');
-});
-
 router.get('/channels', getChannels);
+router.get('/channels/:channelId/members', getChannelMembersDetails);
 
 export default router;
