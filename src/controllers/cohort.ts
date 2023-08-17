@@ -37,7 +37,7 @@ const getCohort = async (req: Request, res: Response) => {
 
   const populateUserOptions = {
     path: 'participants',
-    select: '_id name email role',
+    select: '_id name email role isActivated',
   };
 
   const cohort = await Cohort.find({ _id: cohortId })
