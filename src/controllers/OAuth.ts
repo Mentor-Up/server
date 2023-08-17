@@ -57,6 +57,7 @@ const googleOauthHandler = async (req: Request, res: Response) => {
     const { id_token } = googleOauthToken;
     const { refresh_token } = googleOauthToken;
     const OAuthToken = refresh_token;
+    console.log(OAuthToken);
 
     if (id_token && OAuthToken) {
       const googleUser = jwt.decode(id_token) as {

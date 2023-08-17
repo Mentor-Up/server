@@ -8,7 +8,7 @@ import {
   UnauthenticatedError,
   UnauthorizedError,
 } from '../errors';
-import scheduleEvent from '../utils/getConfirmationCode';
+import scheduleEvent from '../utils/createGoogleSchedule';
 
 const createSession = async (req: Request, res: Response) => {
   const { start, end, type, link, weekId } = req.body;
@@ -139,17 +139,21 @@ const updateStatus = async (req: Request, res: Response) => {
       throw new BadRequestError('Can not update this session');
     }
 
-    const sessionInfo = await Session.findById(sessionId);
-    const sessionStart = sessionInfo?.start;
-    const sessionEnd = sessionInfo?.end;
-    const sessionType = sessionInfo?.type;
-
-    console.log(sessionStart);
-    console.log(sessionEnd);
-    console.log(sessionType);
-    console.log(req.user);
-
     if (sessionUser || (newSessionUser && userStatus === 'confirm')) {
+      const sessionInfo = await Session.findById(sessionId);
+      const sessionStart = sessionInfo?.start;
+      const sessionEnd = sessionInfo?.end;
+      const sessionType = sessionInfo?.type;
+
+      if (!sessionType || !sessionEnd || !sessionStart) {
+        throw new BadRequestError('Session does not exist');
+      }
+      scheduleEvent({
+        summary: sessionType,
+        start: sessionStart,
+        end: sessionEnd,
+        email: req.user.email,
+      });
     }
 
     return res.status(201).json({ newSessionUser });

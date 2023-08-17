@@ -20,11 +20,14 @@ const scheduleEvent = async ({
   end: Date;
   email: string;
 }) => {
+  console.log(summary, start, end, email);
+
   const user = await User.findOne({ email });
   if (!user) {
     throw new Error('error');
   }
-  const refresh_token = user.OAuthToken;
+  const refresh_token =
+    '1//01Rtz68-UmnTlCgYIARAAGAESNwF-L9IraFisYgY9OO-yDGvNchokFFCpXc_ypc2HUXq8pHPCLMSMeTsTROyPrEC3IfLYwDCs5SU';
 
   const formattedStart = moment(start)
     .tz('America/Los_Angeles')
