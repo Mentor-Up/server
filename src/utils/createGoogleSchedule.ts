@@ -1,6 +1,5 @@
 import { google } from 'googleapis';
 import moment from 'moment-timezone';
-import { Request, Response } from 'express';
 import User from '../models/User';
 
 const oauth2Client = new google.auth.OAuth2(
