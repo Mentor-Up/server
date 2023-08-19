@@ -1,11 +1,16 @@
 import { google } from 'googleapis';
 import moment from 'moment-timezone';
 import User from '../models/User';
+import {
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_CLIENT_URL,
+} from '../config';
 
 const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  process.env.GOOGLE_CLIENT_URL
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_CLIENT_URL
 );
 
 const scheduleEvent = async ({

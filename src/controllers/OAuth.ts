@@ -3,8 +3,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 import qs from 'qs';
-import { google } from 'googleapis';
-import moment from 'moment-timezone';
+import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config';
 
 interface GoogleOauthToken {
   id_token: string;
@@ -20,8 +19,8 @@ const getGoogleOauthToken = async ({
   const url = 'https://oauth2.googleapis.com/token';
   const values = {
     code,
-    client_id: process.env.GOOGLE_CLIENT_ID,
-    client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    client_id: GOOGLE_CLIENT_ID,
+    client_secret: GOOGLE_CLIENT_SECRET,
     redirect_uri: 'http://localhost:8000/auth/google/callback',
     grant_type: 'authorization_code',
   };
@@ -57,7 +56,6 @@ const googleOauthHandler = async (req: Request, res: Response) => {
     const { id_token } = googleOauthToken;
     const { refresh_token } = googleOauthToken;
     const OAuthToken = refresh_token;
-    console.log(OAuthToken);
 
     if (id_token && OAuthToken) {
       const googleUser = jwt.decode(id_token) as {
@@ -101,4 +99,4 @@ const googleOauthHandler = async (req: Request, res: Response) => {
   }
 };
 
-export { googleOauthHandler };
+export default googleOauthHandler;

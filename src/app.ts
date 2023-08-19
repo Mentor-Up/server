@@ -13,7 +13,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import errorHandlerMiddleware from './middleware/error-handler';
 import notFoundMiddleware from './middleware/not-found';
 import authMiddleware from './middleware/authentication';
-import { googleOauthHandler } from './controllers/OAuth';
+import googleOauthHandler from './controllers/OAuth';
 import authRouter from './routes/auth';
 import cohortRouter from './routes/cohort';
 import sessionRouter from './routes/session';
