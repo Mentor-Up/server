@@ -57,6 +57,7 @@ const UserSchema = new mongoose.Schema<IUser>(
     refreshToken: {
       type: String,
     },
+    // models as an object instead of a
     role: {
       type: [String],
       enum: ['admin', 'student', 'student-leader', 'mentor'],

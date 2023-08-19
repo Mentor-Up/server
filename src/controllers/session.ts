@@ -175,6 +175,45 @@ const updateStatus = async (req: Request, res: Response) => {
   return res.status(201).json({ sessionUser });
 };
 
+const createSessions = async (req: Request, res: Response) => {
+  const { sessionId } = req.params;
+  const { numSession } = req.body;
+  if (!sessionId || !numSession) {
+    throw new BadRequestError('Missing values');
+  }
+
+  const sessionInfo = await SessionModel.findOne({
+    _id: sessionId,
+  });
+  console.log(sessionInfo);
+  const sessionStart = sessionInfo?.start;
+
+  if (!sessionStart) throw new BadRequestError('Session does not exist');
+
+  for (let i = 1; i < numSession; i++) {
+    const nextSession = new Date(
+      sessionStart.getTime() + 7 * i * 24 * 60 * 60 * 1000
+    );
+    const nextNewWeeks = await SessionModel.create({
+      name: `Session ${i + 1}`,
+      start: nextSession,
+    });
+    // await Cohort.findOneAndUpdate(
+    //   { _id: cohortId },
+    //   { $push: { weeks: nextNewWeeks._id } }
+    // );
+  }
+  // const populateWeekOptions = {
+  //   path: 'weeks',
+  //   select: '_id name start end sessions',
+  // };
+  // const updatedCohort = await Cohort.findById({ _id: cohortId }).populate(
+  //   populateWeekOptions
+  // );
+
+  // res.status(201).json({ updatedCohort });
+};
+
 export {
   createSession,
   getAllSession,
@@ -182,4 +221,5 @@ export {
   updateSession,
   deleteSession,
   updateStatus,
+  createSessions,
 };
