@@ -18,6 +18,7 @@ export interface IUser extends Document {
   role: Array<'admin' | 'student' | 'student-leader' | 'mentor'>;
   cohorts: Array<string>;
   refreshToken?: string;
+  slackId?: string;
   createJWT: () => string;
   createRefreshToken: () => string;
   comparePassword: (password: string) => Promise<boolean>;
@@ -67,6 +68,10 @@ const UserSchema = new mongoose.Schema<IUser>(
         ref: Cohort,
       },
     ],
+    slackId: {
+      type: String,
+      unique: true,
+    },
   },
   { timestamps: true }
 );
