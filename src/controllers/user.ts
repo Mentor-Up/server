@@ -1,38 +1,24 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import userService from '../services/user';
 
-export const getProfile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getProfile = async (req: Request, res: Response) => {
   const userId = req.user.userId;
-  try {
-    const userProfile = await userService.getUserById(userId);
-    if (!userProfile) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    res.json({ profile: userProfile });
-  } catch (err) {
-    next(err);
-  }
+  const userProfile = await userService.getUser(userId);
+  res.status(200).json({ profile: userProfile });
 };
 
-export const updateProfile = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const updateProfile = async (req: Request, res: Response) => {
   const userId = req.user.userId;
   const updatedData = req.body;
-  console.log(updatedData);
-  try {
-    const updatedUser = await userService.updateUser(userId, updatedData);
-    if (!updatedUser) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    res.json({ profile: updatedUser });
-  } catch (err) {
-    next(err);
-  }
+  console.log('data to update', updatedData);
+  const updatedUser = await userService.updateUser(userId, updatedData);
+  res.status(200).json({ profile: updatedUser });
+};
+
+export const deleteProfile = async (req: Request, res: Response) => {
+  await userService.deleteUser(req.user.userId);
+  res.clearCookie('token');
+  res
+    .status(200)
+    .json({ message: `${req.user.name}'s profile was successfully removed` });
 };
