@@ -19,6 +19,7 @@ export interface IUser extends Document {
   cohorts: Array<string>;
   refreshToken?: string;
   slackId?: string;
+  avatarUrl?: string;
   createJWT: () => string;
   createRefreshToken: () => string;
   comparePassword: (password: string) => Promise<boolean>;
@@ -72,6 +73,9 @@ const UserSchema = new mongoose.Schema<IUser>(
       type: String,
       unique: true,
     },
+    avatarUrl: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -79,6 +83,7 @@ const UserSchema = new mongoose.Schema<IUser>(
 // Pre implemented middleware provided by mongoose, reached before saving the model
 // This will preprocess the password and hash it before saving
 UserSchema.pre('save', async function (next) {
+  console.log('user pre save hook');
   if (this.password) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
