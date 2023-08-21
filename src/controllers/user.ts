@@ -17,7 +17,14 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const { cohorts } = req.body;
-  const updatedUser = await adminService.updateUserCohort(userId, cohorts);
+  const user = req.body;
+  console.log('values to update', user);
+
+  if (!user.role && !user.cohorts) {
+    return res
+      .status(400)
+      .json({ message: 'No cohort or role values to update' });
+  }
+  const updatedUser = await adminService.updateUser(userId, user);
   res.status(200).json({ user: updatedUser });
 };
