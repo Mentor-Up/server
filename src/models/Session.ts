@@ -46,16 +46,8 @@ const SessionSchema = new mongoose.Schema<ISession>(
     },
     participant: [
       {
-        user: {
-          userInfo: {
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-          },
-          userStatus: {
-            type: String,
-            enum: ['confirm', 'cancel'],
-          },
-        },
+        type: Schema.Types.ObjectId,
+        ref: 'User',
       },
     ],
     discussion: [
