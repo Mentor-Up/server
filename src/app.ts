@@ -19,6 +19,7 @@ import cohortRouter from './routes/cohort';
 import sessionRouter from './routes/session';
 import weekRouter from './routes/week';
 import profileRouter from './routes/profile';
+import userRouter from './routes/user';
 
 import { NODE_ENV } from './config';
 import { restrict } from './controllers/auth';
@@ -66,6 +67,7 @@ app.use('/api/v1/cohort', authMiddleware, cohortRouter);
 app.use('/api/v1/week', authMiddleware, weekRouter);
 app.use('/api/v1/session', authMiddleware, sessionRouter);
 app.use('/api/v1/profile', authMiddleware, profileRouter);
+app.use('/api/v1/users', authMiddleware, userRouter);
 
 //OAuth
 app.get('/auth/google/callback', googleOauthHandler);
