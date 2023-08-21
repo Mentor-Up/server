@@ -6,6 +6,7 @@ import {
   deleteSession,
   updateStatus,
   createSessions,
+  getStatus,
 } from '../controllers/session';
 
 import { createComment, getAllComment } from '../controllers/comment';
@@ -28,6 +29,9 @@ router
 router
   .route('/:sessionId/student/updateStatus')
   .patch(restrict('student', 'student-leader'), updateStatus);
+router
+  .route('/:sessionId/student/status')
+  .get(restrict('student', 'student-leader'), getStatus);
 
 router.route('/comment').get(getAllComment).post(createComment);
 router.route('/review').post(createReview);

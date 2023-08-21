@@ -58,6 +58,10 @@ const getSession = async (req: Request, res: Response) => {
   const populateDiscussionOptions = {
     path: 'discussion',
     select: '_id name content ',
+    populate: {
+      path: 'name',
+      select: 'name',
+    },
   };
 
   const session = await SessionModel.findOne({ _id: sessionId })
@@ -215,6 +219,34 @@ const createSessions = async (req: Request, res: Response) => {
   // res.status(201).json({ updatedSessions });
 };
 
+const getStatus = async (req: Request, res: Response) => {
+  const { sessionId } = req.params;
+  const populateParticipantOptions = {
+    path: 'participant.user.userInfo',
+    select: '_id name ',
+  };
+
+  const session = await SessionModel.findById({ _id: sessionId }).populate(
+    populateParticipantOptions
+  );
+  if (!session) {
+    throw new BadRequestError('This session does not exist');
+  }
+
+  const participantWithUserStatus = session?.participant.find((p) => {
+    const userId = (p.user.userInfo as any)._id.toString(); // Cast to any and access _id
+    return userId === req.user.userId;
+  });
+  if (!participantWithUserStatus) {
+    throw new BadRequestError(
+      'Can not find your status, please update your status accordingly'
+    );
+  }
+  const loggedInUserStatus = participantWithUserStatus?.user.userStatus;
+
+  res.status(200).json({ userStatus: loggedInUserStatus });
+};
+
 export {
   createSession,
   getAllSession,
@@ -223,4 +255,5 @@ export {
   deleteSession,
   updateStatus,
   createSessions,
+  getStatus,
 };
