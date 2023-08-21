@@ -14,7 +14,7 @@ interface IUserProfile {
   confirmationCode?: string;
 }
 
-class UserService {
+class ProfileService {
   private generateUserProfile(user: IUser): IUserProfile {
     return {
       id: user._id,
@@ -82,4 +82,4 @@ class UserService {
   }
 }
 
-export default new UserService();
+export default new ProfileService();
