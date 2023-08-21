@@ -1,33 +1,9 @@
 import { NotFoundError } from '../errors';
 import User, { IUser } from '../models/User';
 import getConfirmationCode from '../utils/getConfirmationCode';
-
-interface IUserProfile {
-  id: string;
-  name: string;
-  email: string;
-  role: string[];
-  cohorts: string[];
-  slackId?: string;
-  avatarUrl?: string;
-  isActivated?: boolean;
-  confirmationCode?: string;
-}
+import { IUserProfile } from '../models/User';
 
 class ProfileService {
-  private generateUserProfile(user: IUser): IUserProfile {
-    return {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      cohorts: user.cohorts,
-      avatarUrl: user.avatarUrl,
-      slackId: user.slackId,
-      isActivated: user.isActivated,
-    };
-  }
-
   async createUser(userData: Partial<IUser>): Promise<IUser> {
     return await User.create(userData);
   }
@@ -46,7 +22,7 @@ class ProfileService {
       confirmationCode: getConfirmationCode(),
     });
 
-    return this.generateUserProfile(user);
+    return user.generateProfile();
   }
 
   async getUser(userId: string): Promise<IUserProfile | null> {
@@ -55,7 +31,7 @@ class ProfileService {
       throw new NotFoundError(`User with id ${userId} not found`);
     }
 
-    return this.generateUserProfile(user);
+    return user.generateProfile();
   }
 
   // TODO: User should only update certain fields
@@ -71,7 +47,7 @@ class ProfileService {
     if (!updatedUser) {
       throw new NotFoundError(`User with id ${userId} not found`);
     }
-    return this.generateUserProfile(updatedUser);
+    return updatedUser.generateProfile();
   }
 
   async deleteUser(userId: string): Promise<void> {
