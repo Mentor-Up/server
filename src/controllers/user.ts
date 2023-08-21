@@ -14,3 +14,10 @@ export const getUser = async (req: Request, res: Response) => {
   const user = await adminService.findUserById(userId);
   res.status(200).json({ user });
 };
+
+export const updateUser = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const { cohorts } = req.body;
+  const updatedUser = await adminService.updateUserCohort(userId, cohorts);
+  res.status(200).json({ user: updatedUser });
+};
