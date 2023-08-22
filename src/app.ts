@@ -19,7 +19,7 @@ import cohortRouter from './routes/cohort';
 import sessionRouter from './routes/session';
 import weekRouter from './routes/week';
 import profileRouter from './routes/profile';
-import userRouter from './routes/users';
+import userRouter from './routes/user';
 
 import { NODE_ENV } from './config';
 import { restrict } from './controllers/auth';
