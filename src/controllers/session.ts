@@ -8,8 +8,8 @@ import {
   UnauthenticatedError,
   UnauthorizedError,
 } from '../errors';
+import mongoose, { Schema, Document } from 'mongoose';
 import scheduleEvent from '../utils/createGoogleSchedule';
-
 const createSession = async (req: Request, res: Response) => {
   const { start, end, type, link, weekId } = req.body;
 
@@ -48,7 +48,7 @@ const getSession = async (req: Request, res: Response) => {
   const { sessionId } = req.params;
 
   const populateParticipantOptions = {
-    path: 'participant.user.userInfo',
+    path: 'participant',
     select: '_id name ',
   };
   const populateCreatorOptions = {
@@ -77,7 +77,7 @@ const getSession = async (req: Request, res: Response) => {
 
 const updateSession = async (req: Request, res: Response) => {
   const {
-    body: { start, end, type, link, userStatus },
+    body: { start, end, type, link },
   } = req;
 
   const { sessionId } = req.params;
@@ -116,135 +116,95 @@ const deleteSession = async (req: Request, res: Response) => {
 };
 
 const updateStatus = async (req: Request, res: Response) => {
-  const { userStatus } = req.body;
   const { sessionId } = req.params;
+  const userId = req.user.userId;
+  const { status } = req.body;
 
-  const sessionUser = await SessionModel.findOneAndUpdate(
-    { _id: sessionId, 'participant.user.userInfo': req.user.userId },
-    { $set: { 'participant.$.user.userStatus': userStatus } },
-    { new: true }
-  );
-  if (!sessionUser) {
-    const newSessionUser = await SessionModel.findOneAndUpdate(
-      { _id: sessionId },
-      {
-        $addToSet: {
-          participant: {
-            user: {
-              userInfo: req.user.userId,
-              userStatus,
-            },
-          },
-        },
-      },
-      { new: true }
-    );
-    if (!newSessionUser) {
-      throw new BadRequestError('Can not update this session');
-    }
+  const session = await SessionModel.findById({ _id: sessionId });
 
-    let event;
-    if (sessionUser || newSessionUser) {
-      if (userStatus !== 'confirm') {
-        throw new BadRequestError('Can not update your calendar');
-      }
-      const populateCreatorOptions = {
-        path: 'creator',
-        select: 'name ',
-      };
-
-      const sessionInfo = (await SessionModel.findOne({
-        _id: sessionId,
-      }).populate(populateCreatorOptions)) as IPopulatedSession;
-
-      const sessionStart = sessionInfo?.start;
-      const sessionEnd = sessionInfo?.end;
-      const sessionType = sessionInfo?.type;
-      const sessionCreator = sessionInfo?.creator.name;
-
-      if (!sessionType || !sessionEnd || !sessionStart) {
-        throw new BadRequestError('Session does not exist');
-      }
-      event = await scheduleEvent({
-        summary: sessionType,
-        start: sessionStart,
-        end: sessionEnd,
-        email: req.user.email,
-        description: sessionCreator,
-      });
-    }
-
-    return res.status(201).json({ newSessionUser, event });
+  if (!session) {
+    return res.status(404).json({ message: 'Session not found' });
   }
-  return res.status(201).json({ sessionUser });
-};
 
-const createSessions = async (req: Request, res: Response) => {
-  // const { sessionId } = req.params;
-  // const { numSession } = req.body;
-  // if (!sessionId || !numSession) {
-  //   throw new BadRequestError('Missing values');
-  // }
-  // const sessionInfo = await SessionModel.findOne({
-  //   _id: sessionId,
-  // });
-  // console.log(sessionInfo);
-  // const sessionStart = sessionInfo?.start;
-  // if (!sessionStart) throw new BadRequestError('Session does not exist');
-  // for (let i = 1; i < numSession; i++) {
-  //   const nextSession = new Date(
-  //     sessionStart.getTime() + 7 * i * 24 * 60 * 60 * 1000
-  //   );
-  //   const nextNewWeeks = await SessionModel.create({
-  //     name: `Session ${i + 1}`,
-  //     start: nextSession,
-  //   });
-  // }
-  // const populateParticipantOptions = {
-  //   path: 'participant.user.userInfo',
-  //   select: '_id name ',
-  // };
-  // const populateCreatorOptions = {
-  //   path: 'creator',
-  //   select: '_id name ',
-  // };
-  // const populateDiscussionOptions = {
-  //   path: 'discussion',
-  //   select: '_id name content ',
-  // };
-  // const updatedSessions = await SessionModel.findOne({ _id: sessionId })
-  //   .populate(populateParticipantOptions)
-  //   .populate(populateCreatorOptions)
-  //   .populate(populateDiscussionOptions);
-  // res.status(201).json({ updatedSessions });
+  const user = await User.findById({ _id: userId });
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  const participantIds = session.participant.map((participant) =>
+    (participant as any)._id.toString()
+  );
+
+  let event;
+  if (status === true) {
+    if (!participantIds.includes(userId)) {
+      (session.participant as any).push(user._id);
+      await session.save();
+
+      // const populateCreatorOptions = {
+      //   path: 'creator',
+      //   select: 'name ',
+      // };
+
+      // const sessionInfo = (await SessionModel.findById({
+      //   _id: sessionId,
+      // }).populate(populateCreatorOptions)) as IPopulatedSession;
+
+      // const sessionStart = sessionInfo?.start;
+      // const sessionEnd = sessionInfo?.end;
+      // const sessionType = sessionInfo?.type;
+      // const sessionCreator = sessionInfo?.creator.name;
+
+      // if (!sessionType || !sessionEnd || !sessionStart) {
+      //   throw new BadRequestError('Session does not exist');
+      // }
+
+      // event = await scheduleEvent({
+      //   summary: sessionType,
+      //   start: sessionStart,
+      //   end: sessionEnd,
+      //   email: req.user.email,
+      //   description: sessionCreator,
+      // });
+    }
+  } else if (status === false) {
+    const userIndex = session.participant.findIndex((participant) =>
+      (participant as any).equals(userId)
+    );
+    if (userIndex !== -1) {
+      session.participant.splice(userIndex, 1);
+      await session.save();
+    }
+  } else {
+    return res.status(400).json({ message: 'Invalid status value' });
+  }
+
+  return res.status(200).json({ session, event });
 };
 
 const getStatus = async (req: Request, res: Response) => {
   const { sessionId } = req.params;
   const populateParticipantOptions = {
-    path: 'participant.user.userInfo',
+    path: 'participant',
     select: '_id name ',
   };
-
   const session = await SessionModel.findById({ _id: sessionId }).populate(
     populateParticipantOptions
   );
   if (!session) {
     throw new BadRequestError('This session does not exist');
   }
-
   const participantWithUserStatus = session?.participant.find((p) => {
-    const userId = (p.user.userInfo as any)._id.toString(); // Cast to any and access _id
+    console.log(p);
+
+    const userId = (p as any)._id.toString();
     return userId === req.user.userId;
   });
   if (!participantWithUserStatus) {
-    throw new BadRequestError(
-      'Can not find your status, please update your status accordingly'
-    );
+    throw new BadRequestError('You are not joining this session');
   }
-  const loggedInUserStatus = participantWithUserStatus?.user.userStatus;
-
-  res.status(200).json({ userStatus: loggedInUserStatus });
+  res.status(200).json(true);
 };
 
 export {
@@ -254,6 +214,5 @@ export {
   updateSession,
   deleteSession,
   updateStatus,
-  createSessions,
   getStatus,
 };

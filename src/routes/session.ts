@@ -5,7 +5,6 @@ import {
   updateSession,
   deleteSession,
   updateStatus,
-  createSessions,
   getStatus,
 } from '../controllers/session';
 
@@ -35,5 +34,4 @@ router
 
 router.route('/comment').get(getAllComment).post(createComment);
 router.route('/review').post(createReview);
-router.route('/create-sessions/:sessionId').post(createSessions);
 export default router;

@@ -8,12 +8,7 @@ interface ISession extends Document {
     _id: string;
     name: string;
   };
-  participant: Array<{
-    user: {
-      userInfo: Schema.Types.ObjectId;
-      userStatus: 'confirm' | 'cancel';
-    };
-  }>;
+  participant: Array<Schema.Types.ObjectId>;
   discussion: Array<String>;
   review: Array<String>;
   link: string;
