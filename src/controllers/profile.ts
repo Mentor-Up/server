@@ -9,9 +9,15 @@ export const getProfile = async (req: Request, res: Response) => {
 
 export const updateProfile = async (req: Request, res: Response) => {
   const userId = req.user.userId;
-  const updatedData = req.body;
-  console.log('data to update', updatedData);
-  const updatedUser = await profileService.updateUser(userId, updatedData);
+  const { name, email, avatarUrl } = req.body;
+  if (!name && !email && !avatarUrl) {
+    return res.status(400).json({ message: 'No values to update' });
+  }
+  const updatedUser = await profileService.updateUser(userId, {
+    name,
+    email,
+    avatarUrl,
+  });
   res.status(200).json({ profile: updatedUser });
 };
 

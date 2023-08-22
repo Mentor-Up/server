@@ -2,22 +2,14 @@ import { NotFoundError } from '../errors';
 import User, { IUser } from '../models/User';
 import { IUserProfile } from '../models/User';
 
+export interface IProfileService {}
+
 class ProfileService {
-  async createUser(userData: Partial<IUser>): Promise<IUser> {
-    return await User.create(userData);
-  }
-
-  async isExistingEmail(email: string): Promise<boolean> {
-    const user = await User.findOne({ email });
-    return !!user;
-  }
-
   async getUser(userId: string): Promise<IUserProfile | null> {
     const user = await User.findById(userId).populate('cohorts', '_id name');
     if (!user) {
       throw new NotFoundError(`User with id ${userId} not found`);
     }
-
     return user.generateProfile();
   }
 
@@ -25,9 +17,9 @@ class ProfileService {
   // TODO: Admin can update user's cohorts and roles
   async updateUser(
     userId: string,
-    updatedData: Partial<IUser>
+    userData: Partial<IUser>
   ): Promise<IUserProfile | null> {
-    const updatedUser = await User.findByIdAndUpdate(userId, updatedData, {
+    const updatedUser = await User.findByIdAndUpdate(userId, userData, {
       new: true,
       runValidators: true,
     }).populate('cohorts', '_id name');
