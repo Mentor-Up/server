@@ -2,6 +2,7 @@ import User, { IUser, IUserProfile } from '../models/User';
 import { NotFoundError } from '../errors';
 import mongoose from 'mongoose';
 import Cohort from '../models/Cohort';
+import getConfirmationCode from '../utils/getConfirmationCode';
 
 class AdminService {
   async findAllUsers(): Promise<IUserProfile[]> {
@@ -102,6 +103,18 @@ class AdminService {
         { session }
       );
     }
+  }
+
+  async registerDirectUser(
+    userData: Partial<IUser>
+  ): Promise<IUserProfile | null> {
+    const user = await User.create({
+      ...userData,
+      isActivated: true,
+      confirmationCode: getConfirmationCode(),
+    });
+
+    return user.generateProfile();
   }
 }
 

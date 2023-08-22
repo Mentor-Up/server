@@ -1,6 +1,5 @@
 import { NotFoundError } from '../errors';
 import User, { IUser } from '../models/User';
-import getConfirmationCode from '../utils/getConfirmationCode';
 import { IUserProfile } from '../models/User';
 
 class ProfileService {
@@ -11,18 +10,6 @@ class ProfileService {
   async isExistingEmail(email: string): Promise<boolean> {
     const user = await User.findOne({ email });
     return !!user;
-  }
-
-  async registerDirectUser(
-    userData: Partial<IUser>
-  ): Promise<IUserProfile | null> {
-    const user = await User.create({
-      ...userData,
-      isActivated: true,
-      confirmationCode: getConfirmationCode(),
-    });
-
-    return user.generateProfile();
   }
 
   async getUser(userId: string): Promise<IUserProfile | null> {
