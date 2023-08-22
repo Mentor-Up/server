@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 router.get('/', authMiddleware, getProfile);
-router.put('/', authMiddleware, updateProfile);
+router.patch('/', authMiddleware, updateProfile);
 router.delete('/', authMiddleware, deleteProfile);
 
 export default router;
