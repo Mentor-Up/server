@@ -2,8 +2,6 @@ import { NotFoundError } from '../errors';
 import User, { IUser } from '../models/User';
 import { IUserProfile } from '../models/User';
 
-export interface IProfileService {}
-
 class ProfileService {
   async getUser(userId: string): Promise<IUserProfile | null> {
     const user = await User.findById(userId).populate('cohorts', '_id name');
@@ -13,13 +11,11 @@ class ProfileService {
     return user.generateProfile();
   }
 
-  // TODO: User should only update certain fields
-  // TODO: Admin can update user's cohorts and roles
   async updateUser(
     userId: string,
-    userData: Partial<IUser>
+    update: Partial<IUser>
   ): Promise<IUserProfile | null> {
-    const updatedUser = await User.findByIdAndUpdate(userId, userData, {
+    const updatedUser = await User.findByIdAndUpdate(userId, update, {
       new: true,
       runValidators: true,
     }).populate('cohorts', '_id name');
@@ -29,6 +25,8 @@ class ProfileService {
     return updatedUser.generateProfile();
   }
 
+  // TODO: if user profile is deleted, all user's references in cohorts, sessions should be deleted
+  // TODO: Review the approach to set isDeleted flag and filter out deleted users from responses
   async deleteUser(userId: string): Promise<void> {
     const deletedUser = await User.findByIdAndDelete(userId);
     if (!deletedUser) {

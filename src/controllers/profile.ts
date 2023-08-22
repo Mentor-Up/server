@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import profileService from '../services/profile';
+import { IUser } from '../models/User';
 
 export const getProfile = async (req: Request, res: Response) => {
   const userId = req.user.userId;
@@ -9,16 +10,39 @@ export const getProfile = async (req: Request, res: Response) => {
 
 export const updateProfile = async (req: Request, res: Response) => {
   const userId = req.user.userId;
-  const { name, email, avatarUrl } = req.body;
-  if (!name && !email && !avatarUrl) {
-    return res.status(400).json({ message: 'No values to update' });
-  }
-  const updatedUser = await profileService.updateUser(userId, {
-    name,
-    email,
-    avatarUrl,
+  const update: Partial<IUser> = {};
+  const allowedKeys: Array<keyof IUser> = ['name', 'email', 'avatarUrl'];
+  const notAllowedKeys: Array<keyof IUser> = [];
+
+  // Filter and track not allowed keys
+  Object.keys(req.body).forEach((key) => {
+    if (allowedKeys.includes(key as keyof IUser)) {
+      update[key as keyof IUser] = req.body[key];
+    } else {
+      notAllowedKeys.push(key as keyof IUser);
+    }
   });
-  res.status(200).json({ profile: updatedUser });
+
+  if (Object.keys(update).length === 0) {
+    return res.status(400).json({
+      message: 'No values to update',
+      notAllowedKeys,
+      allowedKeys,
+    });
+  }
+
+  const updatedUser = await profileService.updateUser(userId, update);
+
+  if (notAllowedKeys.length > 0) {
+    res.status(200).json({
+      profile: updatedUser,
+      message: 'Some properties cannot be updated using profile endpoint',
+      notAllowedKeys,
+      allowedKeys,
+    });
+  } else {
+    res.status(200).json({ profile: updatedUser });
+  }
 };
 
 export const deleteProfile = async (req: Request, res: Response) => {
