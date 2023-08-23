@@ -18,6 +18,7 @@ import transporter from '../utils/mailSender';
 import sendRegistrationMail from '../mail/registrationMail';
 import createHash from '../utils/hashPassword';
 import Cohort from '../models/Cohort';
+import adminService from '../services/admin';
 
 const register = async (req: Request, res: Response) => {
   const users: IUser[] = req.body.users;
@@ -82,18 +83,7 @@ const register = async (req: Request, res: Response) => {
 };
 
 const directRegister = async (req: Request, res: Response) => {
-  const { name, email, password, role } = req.body;
-
-  const user = await User.create({
-    name,
-    email,
-    password,
-    role,
-    isActivated: true,
-    confirmationCode: '111111',
-    cohorts: [],
-  });
-
+  const user = await adminService.registerDirectUser(req.body);
   res.status(201).json({ user });
 };
 
