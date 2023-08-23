@@ -22,7 +22,7 @@ import profileRouter from './routes/profile';
 import userRouter from './routes/user';
 
 import { NODE_ENV } from './config';
-import { restrict } from './controllers/auth';
+
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,

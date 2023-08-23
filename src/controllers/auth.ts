@@ -1,5 +1,5 @@
 import User, { IUser } from '../models/User';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { jwtPayload } from '../middleware/authentication';
 import {
@@ -167,6 +167,7 @@ const refreshToken = async (req: Request, res: Response) => {
   }
 
   const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET!) as jwtPayload;
+
   if (!payload || payload.name !== user.name) {
     return res.sendStatus(403);
   }
@@ -210,24 +211,11 @@ const logout = async (req: Request, res: Response) => {
   return res.sendStatus(204);
 };
 
-const restrict = (...role: any) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const userRoles = req.user.role;
-    if (!userRoles.some((r) => role.includes(r))) {
-      throw new UnauthenticatedError(
-        'Your roles are not allowed to access this route'
-      );
-    }
-    next();
-  };
-};
-
 export {
   register,
   login,
   refreshToken,
   logout,
-  restrict,
   activateAccount,
   directRegister,
 };

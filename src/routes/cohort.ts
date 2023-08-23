@@ -7,7 +7,7 @@ import {
   createWeeks,
 } from '../controllers/cohort';
 import express from 'express';
-import { restrict } from '../controllers/auth';
+import restrict from '../middleware/authorizeRole';
 
 const router = express.Router();
 
