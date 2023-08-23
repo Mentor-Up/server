@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { fetchChannelMembersDetails } from '../../utils/slack/user';
+import { fetchChannelMembersDetails } from '../../utils/slack/member';
 
 export async function getChannelMembersDetails(
   req: Request,

@@ -1,4 +1,4 @@
-import { slackWebClient, WebAPICallResult } from './index';
+import { slackWebClient, WebAPICallResult } from './slackWebClient';
 
 interface SlackUserProfile {
   id: string;

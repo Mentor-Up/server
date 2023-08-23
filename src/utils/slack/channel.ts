@@ -1,4 +1,8 @@
-import { slackWebClient, WebAPICallResult, WebAPICallError } from './index';
+import {
+  slackWebClient,
+  WebAPICallResult,
+  WebAPICallError,
+} from './slackWebClient';
 
 interface SlackChannel {
   id: string;

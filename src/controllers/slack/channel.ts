@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { getAllPrivateChannels } from '../../utils/slack';
+import { getAllPrivateChannels } from '../../utils/slack/channel';
 
 export const getChannels = async (
   req: Request,
