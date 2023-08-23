@@ -5,8 +5,8 @@ import restrict from '../middleware/authorizeRole';
 
 const router = express.Router();
 
-router.get('/', authMiddleware, getUsers);
-router.get('/:userId', authMiddleware, getUser);
-router.patch('/:userId', authMiddleware, restrict('admin'), updateUser);
+router.get('/', getUsers);
+router.get('/:userId', getUser);
+router.patch('/:userId', restrict('admin'), updateUser);
 
 export default router;

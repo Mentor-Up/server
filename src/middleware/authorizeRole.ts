@@ -9,7 +9,6 @@ const restrict = (...role: any) => {
         'Your roles are not allowed to access this route'
       );
     }
-    console.log('userRoles', userRoles);
     next();
   };
 };
