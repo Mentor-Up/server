@@ -1,6 +1,7 @@
 import express from 'express';
 import restrict from '../middleware/authorizeRole';
-import { getChannels, getChannelMembersDetails } from '../controllers/slack';
+import { getChannels } from '../controllers/slack/channel';
+import { getChannelMembersDetails } from '../controllers/slack/member';
 
 const router = express.Router();
 
