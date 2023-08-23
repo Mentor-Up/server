@@ -10,7 +10,7 @@ import {
 import { createComment, getAllComment } from '../controllers/comment';
 import { createReview } from '../controllers/review';
 import express from 'express';
-import { restrict } from '../controllers/auth';
+import restrict from '../middleware/authorizeRole';
 
 const router = express.Router();
 

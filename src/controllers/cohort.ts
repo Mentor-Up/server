@@ -16,7 +16,7 @@ const createCohort = async (req: Request, res: Response) => {
 };
 
 const getAllCohort = async (req: Request, res: Response) => {
-  const cohorts = await Cohort.find({});
+  const cohorts = await Cohort.find({}).populate('participants', '_id name');
 
   if (!cohorts) {
     return res
@@ -35,9 +35,14 @@ const getCohort = async (req: Request, res: Response) => {
     select: '_id name start end sessions',
   };
 
-  const cohort = await Cohort.find({ _id: cohortId }).populate(
-    populateWeekOptions
-  );
+  const populateUserOptions = {
+    path: 'participants',
+    select: '_id name email role isActivated',
+  };
+
+  const cohort = await Cohort.find({ _id: cohortId })
+    .populate(populateWeekOptions)
+    .populate(populateUserOptions);
 
   if (!cohort) {
     throw new BadRequestError('This cohort does not exist');
