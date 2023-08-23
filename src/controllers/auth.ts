@@ -1,5 +1,5 @@
 import User, { IUser } from '../models/User';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { jwtPayload } from '../middleware/authentication';
 import {
@@ -18,6 +18,7 @@ import transporter from '../utils/mailSender';
 import sendRegistrationMail from '../mail/registrationMail';
 import createHash from '../utils/hashPassword';
 import Cohort from '../models/Cohort';
+import adminService from '../services/admin';
 
 const register = async (req: Request, res: Response) => {
   const users: IUser[] = req.body.users;
@@ -82,18 +83,7 @@ const register = async (req: Request, res: Response) => {
 };
 
 const directRegister = async (req: Request, res: Response) => {
-  const { name, email, password, role } = req.body;
-
-  const user = await User.create({
-    name,
-    email,
-    password,
-    role,
-    isActivated: true,
-    confirmationCode: '111111',
-    cohorts: [],
-  });
-
+  const user = await adminService.registerDirectUser(req.body);
   res.status(201).json({ user });
 };
 
@@ -177,6 +167,7 @@ const refreshToken = async (req: Request, res: Response) => {
   }
 
   const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET!) as jwtPayload;
+
   if (!payload || payload.name !== user.name) {
     return res.sendStatus(403);
   }
@@ -220,24 +211,11 @@ const logout = async (req: Request, res: Response) => {
   return res.sendStatus(204);
 };
 
-const restrict = (...role: any) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const userRoles = req.user.role;
-    if (!userRoles.some((r) => role.includes(r))) {
-      throw new UnauthenticatedError(
-        'Your roles are not allowed to access this route'
-      );
-    }
-    next();
-  };
-};
-
 export {
   register,
   login,
   refreshToken,
   logout,
-  restrict,
   activateAccount,
   directRegister,
 };

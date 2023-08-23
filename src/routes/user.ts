@@ -1,8 +1,12 @@
 import express from 'express';
-import { getCohorts } from '../controllers/user';
+import authMiddleware from '../middleware/authentication';
+import { getUsers, getUser, updateUser } from '../controllers/user';
+import restrict from '../middleware/authorizeRole';
 
 const router = express.Router();
 
-router.get('/cohorts', getCohorts);
+router.get('/', getUsers);
+router.get('/:userId', getUser);
+router.patch('/:userId', restrict('admin'), updateUser);
 
 export default router;

@@ -18,10 +18,24 @@ export interface IUser extends Document {
   role: Array<'admin' | 'student' | 'student-leader' | 'mentor'>;
   cohorts: Array<string>;
   refreshToken?: string;
+  slackId?: string;
+  avatarUrl?: string;
   OAuthToken?: string;
   createJWT: () => string;
   createRefreshToken: () => string;
   comparePassword: (password: string) => Promise<boolean>;
+  generateProfile: () => IUserProfile;
+}
+
+export interface IUserProfile {
+  id: string;
+  name: string;
+  email: string;
+  roles: string[];
+  cohorts: string[];
+  slackId?: string;
+  avatarUrl?: string;
+  isActivated?: boolean;
 }
 
 const UserSchema = new mongoose.Schema<IUser>(
@@ -69,6 +83,14 @@ const UserSchema = new mongoose.Schema<IUser>(
         ref: Cohort,
       },
     ],
+
+    slackId: {
+      type: String,
+      unique: true,
+    },
+    avatarUrl: {
+      type: String,
+    },
     OAuthToken: {
       type: String,
     },
@@ -100,7 +122,7 @@ UserSchema.methods.createJWT = function () {
 
 UserSchema.methods.createRefreshToken = function () {
   return jwt.sign(
-    { userId: this._id, name: this.name, role: this.role },
+    { userId: this._id, name: this.name, role: this.role, email: this.email },
     REFRESH_TOKEN_SECRET!,
     {
       expiresIn: REFRESH_TOKEN_EXPIRATION!,
@@ -112,6 +134,19 @@ UserSchema.methods.comparePassword = async function (
   password: string
 ): Promise<boolean> {
   return await bcrypt.compare(password, this.password);
+};
+
+UserSchema.methods.generateProfile = function (): IUserProfile {
+  return {
+    id: this._id,
+    name: this.name,
+    email: this.email,
+    roles: this.role,
+    cohorts: this.cohorts,
+    avatarUrl: this.avatarUrl,
+    slackId: this.slackId,
+    isActivated: this.isActivated,
+  };
 };
 
 export default mongoose.model('User', UserSchema);

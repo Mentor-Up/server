@@ -13,15 +13,16 @@ import mongoSanitize from 'express-mongo-sanitize';
 import errorHandlerMiddleware from './middleware/error-handler';
 import notFoundMiddleware from './middleware/not-found';
 import authMiddleware from './middleware/authentication';
-import { googleOauthHandler } from './controllers/OAuth';
+import googleOauthHandler from './controllers/OAuth';
 import authRouter from './routes/auth';
 import cohortRouter from './routes/cohort';
 import sessionRouter from './routes/session';
 import weekRouter from './routes/week';
+import profileRouter from './routes/profile';
 import userRouter from './routes/user';
 
 import { NODE_ENV } from './config';
-import { restrict } from './controllers/auth';
+
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
@@ -66,7 +67,8 @@ app.use('/testAuth', authMiddleware, (req, res) => res.send('OK!'));
 app.use('/api/v1/cohort', authMiddleware, cohortRouter);
 app.use('/api/v1/week', authMiddleware, weekRouter);
 app.use('/api/v1/session', authMiddleware, sessionRouter);
-app.use('/api/v1/user', authMiddleware, userRouter);
+app.use('/api/v1/profile', authMiddleware, profileRouter);
+app.use('/api/v1/users', authMiddleware, userRouter);
 
 //OAuth
 app.get('/auth/google/callback', googleOauthHandler);
