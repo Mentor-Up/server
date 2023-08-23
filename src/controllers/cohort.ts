@@ -1,8 +1,8 @@
-import User from '../models/User';
-import Cohort from '../models/Cohort';
-import { Week } from '../models/Week';
+import Cohort, { CohortSubject } from '../models/Cohort';
 import { Request, Response } from 'express';
-import { BadRequestError, UnauthenticatedError } from '../errors';
+import { BadRequestError } from '../errors';
+import { getCohortWeeks } from '../constants/cohortWeeks';
+import { isCohortSubject } from '../utils/typeGuards';
 
 const createCohort = async (req: Request, res: Response) => {
   const { name, start, end, type } = req.body;
@@ -10,7 +10,12 @@ const createCohort = async (req: Request, res: Response) => {
     throw new BadRequestError('Missing values');
   }
 
-  const cohort = await Cohort.create({ name, start, end, type });
+  if (!isCohortSubject(type)) {
+    throw new BadRequestError('Invalid cohort type');
+  }
+
+  const weeks = createWeeks(type, start);
+  const cohort = await Cohort.create({ name, start, end, type, weeks });
 
   return res.status(201).json({ cohort });
 };
@@ -30,19 +35,14 @@ const getAllCohort = async (req: Request, res: Response) => {
 const getCohort = async (req: Request, res: Response) => {
   const { cohortId } = req.params;
 
-  const populateWeekOptions = {
-    path: 'weeks',
-    select: '_id name start end sessions',
-  };
-
   const populateUserOptions = {
     path: 'participants',
     select: '_id name email role isActivated',
   };
 
-  const cohort = await Cohort.find({ _id: cohortId })
-    .populate(populateWeekOptions)
-    .populate(populateUserOptions);
+  const cohort = await Cohort.find({ _id: cohortId }).populate(
+    populateUserOptions
+  );
 
   if (!cohort) {
     throw new BadRequestError('This cohort does not exist');
@@ -84,45 +84,22 @@ const deleteCohort = async (req: Request, res: Response) => {
   res.status(200).json({ status: 'Success! Cohort removed.' });
 };
 
-const createWeeks = async (req: Request, res: Response) => {
-  const { cohortId } = req.params;
-  const { start, numWeek } = req.body;
-  if (!start || !numWeek) {
-    throw new BadRequestError('Missing values');
-  }
+const createWeeks = (type: CohortSubject, startOfCohort: Date) => {
+  const weekNames = getCohortWeeks(type);
+  let startTimestamp = new Date(startOfCohort).getTime();
 
-  const firstWeek = await Week.create({
-    name: 'Week 1',
-    start,
-  });
-  const cohort = await Cohort.findOneAndUpdate(
-    { _id: cohortId },
-    { $push: { weeks: firstWeek._id } }
-  );
+  const weeks = [];
 
-  const startWeek = new Date(start);
-  for (let i = 1; i < numWeek; i++) {
-    const nextStartWeek = new Date(
-      startWeek.getTime() + 7 * i * 24 * 60 * 60 * 1000
-    );
-    const nextNewWeeks = await Week.create({
-      name: `Week ${i + 1}`,
-      start: nextStartWeek,
+  for (let weekName of weekNames) {
+    weeks.push({
+      name: weekName,
+      start: new Date(startTimestamp),
+      end: new Date(startTimestamp + 7 * 24 * 60 * 60 * 1000 - 1000),
     });
-    await Cohort.findOneAndUpdate(
-      { _id: cohortId },
-      { $push: { weeks: nextNewWeeks._id } }
-    );
+    startTimestamp += 7 * 24 * 60 * 60 * 1000;
   }
-  const populateWeekOptions = {
-    path: 'weeks',
-    select: '_id name start end sessions',
-  };
-  const updatedCohort = await Cohort.findById({ _id: cohortId }).populate(
-    populateWeekOptions
-  );
 
-  res.status(201).json({ updatedCohort });
+  return weeks;
 };
 
 export {
