@@ -110,7 +110,6 @@ const currentWeek = async (req: Request, res: Response) => {
       throw new BadRequestError('This cohort does not exist');
     }
     const weeks = cohort?.weeks;
-    console.log(weeks);
 
     const getCurrentWeek = findCurrentWeek(userTimeZone, weeks);
 

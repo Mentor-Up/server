@@ -20,6 +20,7 @@ export interface IUser extends Document {
   refreshToken?: string;
   slackId?: string;
   avatarUrl?: string;
+  OAuthToken?: string;
   createJWT: () => string;
   createRefreshToken: () => string;
   comparePassword: (password: string) => Promise<boolean>;
@@ -81,11 +82,15 @@ const UserSchema = new mongoose.Schema<IUser>(
         ref: Cohort,
       },
     ],
+
     slackId: {
       type: String,
       unique: true,
     },
     avatarUrl: {
+      type: String,
+    },
+    OAuthToken: {
       type: String,
     },
   },
@@ -106,7 +111,7 @@ UserSchema.pre('save', async function (next) {
 // Since we refer to this here, we cannot use arrow functions
 UserSchema.methods.createJWT = function () {
   return jwt.sign(
-    { userId: this._id, name: this.name, role: this.role },
+    { userId: this._id, name: this.name, role: this.role, email: this.email },
     ACCESS_TOKEN_SECRET!,
     {
       expiresIn: ACCESS_TOKEN_EXPIRATION!,
@@ -116,7 +121,7 @@ UserSchema.methods.createJWT = function () {
 
 UserSchema.methods.createRefreshToken = function () {
   return jwt.sign(
-    { userId: this._id, name: this.name, role: this.role },
+    { userId: this._id, name: this.name, role: this.role, email: this.email },
     REFRESH_TOKEN_SECRET!,
     {
       expiresIn: REFRESH_TOKEN_EXPIRATION!,
