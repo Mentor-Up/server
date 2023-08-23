@@ -26,9 +26,10 @@ import { NODE_ENV } from './config';
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
-    max: 60,
+    max: 80, // Updated max value
   })
 );
+
 app.use(helmet());
 app.use(compression());
 app.use(

@@ -113,13 +113,22 @@ const currentWeek = async (req: Request, res: Response) => {
 
     const getCurrentWeek = findCurrentWeek(userTimeZone, weeks);
 
-    const currentWeek = await Week.findById({ _id: getCurrentWeek.id });
+    const currentWeek = await Week.findById({
+      _id: getCurrentWeek.id,
+    }).populate({
+      path: 'sessions',
+      populate: {
+        path: 'creator',
+        select: 'name',
+      },
+    });
 
     res.json({
       status: 'Success',
       currentWeek,
     });
   } catch (err) {
+    console.log(err);
     throw new BadRequestError('An error has occured');
   }
 };

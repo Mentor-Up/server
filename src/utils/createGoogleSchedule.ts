@@ -39,7 +39,9 @@ const scheduleEvent = async ({
     .tz('America/Los_Angeles')
     .format('YYYY-MM-DDTHH:mm:ssZ');
 
-  oauth2Client.setCredentials({ refresh_token: refresh_token });
+  oauth2Client.setCredentials({
+    refresh_token: refresh_token,
+  });
   const calendar = google.calendar('v3');
   const response = await calendar.events.insert({
     auth: oauth2Client,
