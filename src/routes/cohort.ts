@@ -4,7 +4,6 @@ import {
   updateCohort,
   deleteCohort,
   createCohort,
-  createWeeks,
 } from '../controllers/cohort';
 import express from 'express';
 import restrict from '../middleware/authorizeRole';
@@ -17,6 +16,5 @@ router
   .get(getCohort)
   .patch(restrict('admin'), updateCohort)
   .delete(restrict('admin'), deleteCohort);
-router.route('/create-weeks/:cohortId').post(createWeeks);
 
 export default router;

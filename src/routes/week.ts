@@ -11,12 +11,13 @@ import restrict from '../middleware/authorizeRole';
 
 const router = express.Router();
 
-router.route('/').get(getAllWeek).post(restrict('admin'), createWeek);
+router.route('/').post(restrict('admin'), createWeek);
+router.route('/:cohortId').get(getAllWeek);
+router.route('/:cohortId/current').get(currentWeek);
 router
-  .route('/:weekId')
+  .route('/:cohortId/:weekId')
   .get(getWeek)
   .patch(restrict('admin'), updateWeek)
   .delete(restrict('admin'), deleteWeek);
-router.route('/current').post(currentWeek);
 
 export default router;

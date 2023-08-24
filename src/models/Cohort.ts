@@ -1,18 +1,21 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { IWeek } from './Week';
+import mongoose, { Schema, Document, Types } from 'mongoose';
+import { IWeek, WeekSchema } from './Week';
+
 export interface ICohort extends Document {
   name: string;
   start: Date;
   end: Date;
-  type:
-    | 'Intro to programming'
-    | 'React.js'
-    | 'Node.js/Express'
-    | 'Ruby on Rails';
-  participants: Array<string>;
+  type: CohortSubject;
+  participants: Array<Types.ObjectId>;
   weeks: Array<IWeek>;
   slackId?: string;
 }
+
+export type CohortSubject =
+  | 'Intro to programming'
+  | 'React.js'
+  | 'Node.js/Express'
+  | 'Ruby on Rails';
 
 const CohortSchema = new mongoose.Schema<ICohort>(
   {
@@ -44,12 +47,7 @@ const CohortSchema = new mongoose.Schema<ICohort>(
         ref: 'User',
       },
     ],
-    weeks: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Week',
-      },
-    ],
+    weeks: [WeekSchema],
     slackId: {
       type: String,
     },

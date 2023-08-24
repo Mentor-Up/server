@@ -1,13 +1,13 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface IWeek extends Document {
   name: string;
   start: Date;
   end: Date;
-  sessions: Array<String>;
+  sessions: Array<Types.ObjectId>;
 }
 
-const WeekSchema = new mongoose.Schema<IWeek>(
+export const WeekSchema = new mongoose.Schema<IWeek>(
   {
     name: {
       type: String,
@@ -31,13 +31,15 @@ const WeekSchema = new mongoose.Schema<IWeek>(
 );
 
 const calculateEnd = (start: any) => {
-  const endDate = new Date(start);
-  endDate.setDate(endDate.getDate() + 6);
+  const startDate = new Date(start);
+  const endDate = new Date(
+    startDate.getTime() + 7 * 24 * 60 * 60 * 1000 - 1000
+  );
   return endDate;
 };
 
 WeekSchema.pre('save', function (next) {
-  if (this.start) {
+  if (this.start && !this.end) {
     this.end = calculateEnd(this.start);
   }
   next();
