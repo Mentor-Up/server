@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IUser } from '../models/User';
+import User, { IUser } from '../models/User';
 import adminService from '../services/admin';
 
 export const getUsers = async (req: Request, res: Response) => {
@@ -55,4 +55,15 @@ export const updateUser = async (req: Request, res: Response) => {
   } else {
     res.status(200).json({ profile: updatedUser });
   }
+};
+
+export const getOwnCohorts = async (req: Request, res: Response) => {
+  const userId = req.user.userId;
+
+  const user = await User.findById(userId).populate({
+    path: 'cohorts',
+    select: '_id name',
+  });
+
+  res.status(200).json({ cohorts: user!.cohorts });
 };
