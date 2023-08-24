@@ -1,6 +1,6 @@
 import { slackWebClient, WebAPICallResult } from './slackWebClient';
 
-interface SlackUserProfile {
+interface SlackMember {
   id: string;
   email: string;
   name: string;
@@ -11,6 +11,7 @@ interface SlackUserProfile {
   isBot: boolean;
   isEmailConfirmed: boolean;
   teamId: string;
+  timezone?: string;
 }
 
 async function fetchChannelMembers(channelId: string): Promise<string[]> {
@@ -34,10 +35,9 @@ async function fetchUserData(userId: string): Promise<WebAPICallResult> {
   }
 }
 
-function extractUserProfile(userData: WebAPICallResult): SlackUserProfile {
+function extractUserProfile(userData: WebAPICallResult): SlackMember {
   const user = userData.user as any;
   const profile = user?.profile || {};
-
   return {
     id: user.id,
     email: profile.email,
@@ -49,12 +49,13 @@ function extractUserProfile(userData: WebAPICallResult): SlackUserProfile {
     isBot: user.is_bot,
     isEmailConfirmed: user.is_email_confirmed,
     teamId: user.team,
+    timezone: user.tz,
   };
 }
 
 export async function fetchChannelMembersDetails(
   channelId: string
-): Promise<SlackUserProfile[]> {
+): Promise<SlackMember[]> {
   try {
     const channelMembers = await fetchChannelMembers(channelId);
     const userDetailPromises = channelMembers.map(fetchUserData);
