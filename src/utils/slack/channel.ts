@@ -5,8 +5,11 @@ import {
 } from './slackWebClient';
 
 interface SlackChannel {
-  id: string;
+  slackId: string;
   name: string;
+  type: string;
+  numberOfMembers: number;
+  startDate?: string;
 }
 
 async function fetchPrivateChannels(): Promise<WebAPICallResult> {
@@ -23,12 +26,13 @@ async function fetchPrivateChannels(): Promise<WebAPICallResult> {
 
 function handleResponse(response: WebAPICallResult): SlackChannel[] {
   const channels = (response.channels || []) as any[];
-  return channels
-    .filter((channel) => channel.id !== undefined && channel.name !== undefined)
-    .map((channel) => ({
-      id: channel.id,
-      name: channel.name,
-    }));
+  return channels.map((channel) => ({
+    slackId: channel.id,
+    name: channel.name,
+    type: channel.topic.value,
+    numberOfMembers: channel.num_members - 1, // exclude app bot
+    startDate: channel.purpose.value,
+  }));
 }
 
 export async function getAllPrivateChannels(): Promise<SlackChannel[]> {
@@ -37,7 +41,7 @@ export async function getAllPrivateChannels(): Promise<SlackChannel[]> {
     return handleResponse(response);
   } catch (error) {
     if ((error as WebAPICallError).code === 'slack_webapi_platform_error') {
-      console.error('API call error:', (error as WebAPICallError).message!);
+      console.error('API call error:', (error as WebAPICallError).message);
     } else {
       console.error('Unknown error:', error);
     }

@@ -1,16 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { getAllPrivateChannels } from '../../utils/slack/channel';
 
 export const getChannels = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): Promise<void> => {
-  try {
-    const channels = await getAllPrivateChannels();
-    res.json({ channels });
-  } catch (error) {
-    console.error('Error fetching channels:', error);
-    next(error);
-  }
+  const channels = await getAllPrivateChannels();
+  res.status(200).json({ 'CTD-Dev Channels': channels });
 };
