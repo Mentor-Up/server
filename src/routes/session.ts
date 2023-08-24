@@ -5,12 +5,13 @@ import {
   updateSession,
   deleteSession,
   updateStatus,
+  getStatus,
 } from '../controllers/session';
 
 import { createComment, getAllComment } from '../controllers/comment';
 import { createReview } from '../controllers/review';
 import express from 'express';
-import { restrict } from '../controllers/auth';
+import restrict from '../middleware/authorizeRole';
 
 const router = express.Router();
 
@@ -27,8 +28,10 @@ router
 router
   .route('/:sessionId/student/updateStatus')
   .patch(restrict('student', 'student-leader'), updateStatus);
+router
+  .route('/:sessionId/student/status')
+  .get(restrict('student', 'student-leader'), getStatus);
 
 router.route('/comment').get(getAllComment).post(createComment);
 router.route('/review').post(createReview);
-
 export default router;
