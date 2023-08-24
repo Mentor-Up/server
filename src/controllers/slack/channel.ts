@@ -1,10 +1,19 @@
 import { Request, Response } from 'express';
-import { getAllPrivateChannels } from '../../utils/slack/channel';
+import {
+  getAllPrivateChannels,
+  syncChannelsWithCohorts,
+} from '../../utils/slack/channel';
 
 export const getChannels = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   const channels = await getAllPrivateChannels();
-  res.status(200).json({ 'CTD-Dev Channels': channels });
+
+  const newCohorts = await syncChannelsWithCohorts();
+
+  res.status(200).json({
+    'CTD-Dev Channels': channels,
+    Cohorts: newCohorts,
+  });
 };

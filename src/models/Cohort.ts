@@ -11,6 +11,7 @@ export interface ICohort extends Document {
     | 'Ruby on Rails';
   participants: Array<string>;
   weeks: Array<IWeek>;
+  slackId?: string;
 }
 
 const CohortSchema = new mongoose.Schema<ICohort>(
@@ -49,6 +50,9 @@ const CohortSchema = new mongoose.Schema<ICohort>(
         ref: 'Week',
       },
     ],
+    slackId: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
