@@ -3,6 +3,7 @@ import { NotFoundError } from '../errors';
 import mongoose from 'mongoose';
 import Cohort from '../models/Cohort';
 import getConfirmationCode from '../utils/getConfirmationCode';
+import { SlackMember } from '../utils/slack/member';
 
 class AdminService {
   async findAllUsers(): Promise<IUserProfile[]> {
@@ -115,6 +116,17 @@ class AdminService {
     });
 
     return user.generateProfile();
+  }
+
+  async handleSlackMembers(members: SlackMember[]): Promise<SlackMember[]> {
+    const users = await User.find();
+    const newMembers = members.filter((member) => {
+      return !users.some(
+        (user) => user.slackId === member.id || user.email === member.email
+      );
+    });
+
+    return newMembers;
   }
 }
 

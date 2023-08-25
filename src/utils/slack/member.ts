@@ -1,6 +1,6 @@
 import { slackWebClient, WebAPICallResult } from './slackWebClient';
 
-interface SlackMember {
+export interface SlackMember {
   id: string;
   email: string;
   name: string;
