@@ -14,7 +14,6 @@ class SlackService {
         (user) => user.slackId === member.id || user.email === member.email
       );
     });
-
     return newMembers;
   }
 

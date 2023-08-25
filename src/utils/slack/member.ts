@@ -26,7 +26,7 @@ async function fetchChannelMembers(channelId: string): Promise<string[]> {
   }
 }
 
-async function fetchUserData(userId: string): Promise<WebAPICallResult> {
+async function fetchMemberData(userId: string): Promise<WebAPICallResult> {
   try {
     return await slackWebClient.users.info({ user: userId });
   } catch (error) {
@@ -35,7 +35,7 @@ async function fetchUserData(userId: string): Promise<WebAPICallResult> {
   }
 }
 
-function extractUserProfile(userData: WebAPICallResult): SlackMember {
+function extractMemberProfile(userData: WebAPICallResult): SlackMember {
   const user = userData.user as any;
   const profile = user?.profile || {};
   return {
@@ -58,13 +58,15 @@ export async function fetchChannelMembersDetails(
 ): Promise<SlackMember[]> {
   try {
     const channelMembers = await fetchChannelMembers(channelId);
-    const userDetailPromises = channelMembers.map(fetchUserData);
+    const userDetailPromises = channelMembers.map(fetchMemberData);
     const userResponses = await Promise.all(userDetailPromises);
     const userProfiles = userResponses.map((response) =>
-      extractUserProfile(response)
+      extractMemberProfile(response)
     );
 
-    return userProfiles.filter((profile) => !profile.isBot);
+    return userProfiles.filter(
+      (profile) => !profile.isBot && profile.isEmailConfirmed
+    );
   } catch (error) {
     console.error('Error fetching channel members details:', error);
     throw error;

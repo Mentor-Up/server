@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { fetchChannelMembersDetails } from '../../utils/slack/member';
 import slackService from '../../services/slack';
 import User from '../../models/User';
+import conversionService from '../../services/conversion';
 
 export async function getNewMembers(
   req: Request,
@@ -13,11 +14,15 @@ export async function getNewMembers(
     User.find(), // TODO: move to a service
   ]);
   const newMembers = await slackService.handleNewMembers(members, users);
+  const newUsers = newMembers.map((member) =>
+    conversionService.convertToUser(member)
+  );
+
   res.json({
     members: {
       channelId: channelId,
-      count: newMembers.length,
-      list: newMembers,
+      count: newUsers.length,
+      list: newUsers,
     },
     'all channel members': {
       count: members.length,

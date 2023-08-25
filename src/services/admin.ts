@@ -3,7 +3,6 @@ import { NotFoundError } from '../errors';
 import mongoose from 'mongoose';
 import Cohort from '../models/Cohort';
 import getConfirmationCode from '../utils/getConfirmationCode';
-import { SlackMember } from '../utils/slack/member';
 
 class AdminService {
   async findAllUsers(): Promise<IUserProfile[]> {
