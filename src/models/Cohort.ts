@@ -50,6 +50,7 @@ const CohortSchema = new mongoose.Schema<ICohort>(
     weeks: [WeekSchema],
     slackId: {
       type: String,
+      default: null,
     },
   },
   { timestamps: true }

@@ -4,14 +4,13 @@ import {
   WebAPICallError,
 } from './slackWebClient';
 
-import Cohort, { ICohort } from '../../models/Cohort';
-
-interface SlackChannel {
+export interface SlackChannel {
   slackId: string;
   name: string;
   type: string;
   numberOfMembers: number;
   startDate?: string;
+  endDate?: string;
 }
 
 async function fetchPrivateChannels(): Promise<WebAPICallResult> {
@@ -48,45 +47,5 @@ export async function getAllPrivateChannels(): Promise<SlackChannel[]> {
       console.error('Unknown error:', error);
     }
     return [];
-  }
-}
-
-export interface CohortFromSlack {
-  name: string;
-  slackId: string;
-  start: Date;
-  end: string;
-  type: string;
-  participants: string[];
-  weeks: string[];
-}
-
-export async function syncChannelsWithCohorts(): Promise<CohortFromSlack[]> {
-  try {
-    const [slackChannels, existingCohorts] = await Promise.all([
-      getAllPrivateChannels(),
-      Cohort.find(),
-    ]);
-
-    // Compare Slack Channels and existing Cohorts
-    const newChannels = slackChannels.filter(
-      (slackChannel) =>
-        !existingCohorts.some(
-          (cohort) => cohort.slackId === slackChannel.slackId
-        )
-    );
-
-    return newChannels.map(
-      (channel) =>
-        ({
-          name: channel.name,
-          start: new Date(channel.startDate as string),
-          type: channel.type,
-          slackId: channel.slackId,
-        }) as CohortFromSlack
-    );
-  } catch (error) {
-    console.error('Error syncing channels with cohorts:', error);
-    throw error;
   }
 }
