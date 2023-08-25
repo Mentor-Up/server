@@ -7,25 +7,6 @@ class CohortService {
     return Cohort.find();
   }
 
-  async getNewCohorts(channels: SlackChannel[]): Promise<Partial<ICohort>[]> {
-    const existingCohorts = await this.fetchAllCohorts();
-
-    const newChannels = channels.filter((channel) => {
-      return !existingCohorts.some(
-        (cohort) =>
-          cohort.slackId === channel.slackId ||
-          cohort.name.toLowerCase() === channel.name.toLowerCase() ||
-          channel.numberOfMembers <= 1 // admin only channel
-      );
-    });
-
-    const newCohorts = newChannels.map((channel) =>
-      this.convertToCohort(channel)
-    );
-
-    return Promise.all(newCohorts);
-  }
-
   private convertToCohort(channel: SlackChannel): Partial<ICohort> {
     const cohort: Partial<ICohort> = {
       name: channel.name,
