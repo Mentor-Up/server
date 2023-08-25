@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { fetchChannelMembersDetails } from '../../utils/slack/member';
-import adminService from '../../services/admin';
+import slackService from '../../services/slack';
+import User from '../../models/User';
 
 export async function getChannelMembersDetails(
   req: Request,
@@ -8,7 +9,12 @@ export async function getChannelMembersDetails(
 ): Promise<void> {
   const channelId = req.params.channelId;
   const membersDetails = await fetchChannelMembersDetails(channelId);
-  const newMembers = await adminService.handleSlackMembers(membersDetails);
+  // TODO: move to a service
+  const users = await User.find();
+  const newMembers = await slackService.handleSlackMembers(
+    membersDetails,
+    users
+  );
   res.json({
     channel: {
       id: channelId,

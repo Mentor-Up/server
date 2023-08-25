@@ -117,17 +117,6 @@ class AdminService {
 
     return user.generateProfile();
   }
-
-  async handleSlackMembers(members: SlackMember[]): Promise<SlackMember[]> {
-    const users = await User.find();
-    const newMembers = members.filter((member) => {
-      return !users.some(
-        (user) => user.slackId === member.id || user.email === member.email
-      );
-    });
-
-    return newMembers;
-  }
 }
 
 export default new AdminService();
