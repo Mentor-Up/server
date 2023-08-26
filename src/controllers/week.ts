@@ -115,6 +115,10 @@ const currentWeek = async (req: Request, res: Response) => {
   if (weekIndex >= 0 && weekIndex < cohort.weeks.length) {
     await cohort.populate({
       path: `weeks.${weekIndex}.sessions`,
+      populate: {
+        path: 'creator',
+        select: 'name',
+      },
       options: { strictPopulate: false },
     });
     res.status(200).json({ currentWeek: cohort.weeks[weekIndex] });
