@@ -5,7 +5,7 @@ import { IUser } from '../models/User';
 export const getProfile = async (req: Request, res: Response) => {
   const userId = req.user.userId;
   const userProfile = await profileService.getUser(userId);
-  res.status(200).json({ profile: userProfile });
+  res.status(200).json({ profile: userProfile.generateProfile() });
 };
 
 export const updateProfile = async (req: Request, res: Response) => {
