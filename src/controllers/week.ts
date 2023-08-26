@@ -112,11 +112,15 @@ const currentWeek = async (req: Request, res: Response) => {
     (w) => w.start.getTime() < currentTime && w.end.getTime() > currentTime
   );
 
-  await cohort.populate({
-    path: `weeks.${weekIndex}.sessions`,
-  });
-
-  res.status(200).json({ currentWeek: cohort.weeks[weekIndex] });
+  if (weekIndex >= 0 && weekIndex < cohort.weeks.length) {
+    await cohort.populate({
+      path: `weeks.${weekIndex}.sessions`,
+      options: { strictPopulate: false },
+    });
+    res.status(200).json({ currentWeek: cohort.weeks[weekIndex] });
+  } else {
+    res.status(404).json({ message: 'No active sessions found' });
+  }
 };
 
 export { getAllWeek, getWeek, updateWeek, deleteWeek, createWeek, currentWeek };
