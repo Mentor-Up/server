@@ -153,31 +153,31 @@ const updateStatus = async (req: Request, res: Response) => {
       (session.participant as any).push(user._id);
       await session.save();
 
-      // const populateCreatorOptions = {
-      //   path: 'creator',
-      //   select: 'name ',
-      // };
+      const populateCreatorOptions = {
+        path: 'creator',
+        select: 'name ',
+      };
 
-      // const sessionInfo = (await SessionModel.findById({
-      //   _id: sessionId,
-      // }).populate(populateCreatorOptions)) as IPopulatedSession;
+      const sessionInfo = (await SessionModel.findById({
+        _id: sessionId,
+      }).populate(populateCreatorOptions)) as IPopulatedSession;
 
-      // const sessionStart = sessionInfo?.start;
-      // const sessionEnd = sessionInfo?.end;
-      // const sessionType = sessionInfo?.type;
-      // const sessionCreator = sessionInfo?.creator.name;
+      const sessionStart = sessionInfo?.start;
+      const sessionEnd = sessionInfo?.end;
+      const sessionType = sessionInfo?.type;
+      const sessionCreator = sessionInfo?.creator.name;
 
-      // if (!sessionType || !sessionEnd || !sessionStart) {
-      //   throw new BadRequestError('Session does not exist');
-      // }
+      if (!sessionType || !sessionEnd || !sessionStart) {
+        throw new BadRequestError('Session does not exist');
+      }
 
-      // event = await scheduleEvent({
-      //   summary: sessionType,
-      //   start: sessionStart,
-      //   end: sessionEnd,
-      //   email: req.user.email,
-      //   description: sessionCreator,
-      // });
+      event = await scheduleEvent({
+        summary: sessionType,
+        start: sessionStart,
+        end: sessionEnd,
+        email: req.user.email,
+        description: sessionCreator,
+      });
     }
   } else if (status === false) {
     const userIndex = session.participant.findIndex((participant) =>
