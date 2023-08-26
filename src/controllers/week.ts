@@ -119,7 +119,7 @@ const currentWeek = async (req: Request, res: Response) => {
     });
     res.status(200).json({ currentWeek: cohort.weeks[weekIndex] });
   } else {
-    res.status(404).json({ message: 'No active sessions found' });
+    res.status(404).json({ message: 'No active week found' });
   }
 };
 
