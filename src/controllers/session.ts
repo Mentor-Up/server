@@ -75,7 +75,7 @@ const getSession = async (req: Request, res: Response) => {
     },
   };
 
-  const session = await SessionModel.findOne({ _id: sessionId })
+  const session = await SessionModel.findById({ _id: sessionId })
     .populate(populateParticipantOptions)
     .populate(populateCreatorOptions)
     .populate(populateDiscussionOptions);

@@ -10,7 +10,7 @@ import {
 } from '../controllers/session';
 
 import { createComment, getAllComment } from '../controllers/comment';
-import { createReview } from '../controllers/review';
+import { createReview, getReview } from '../controllers/review';
 import express from 'express';
 import restrict from '../middleware/authorizeRole';
 
@@ -38,4 +38,8 @@ router
 
 router.route('/comment').get(getAllComment).post(createComment);
 router.route('/review').post(createReview);
+router
+  .route('/:sessionId/review')
+  .get(restrict('mentor', 'student-leader'), getReview);
+
 export default router;
