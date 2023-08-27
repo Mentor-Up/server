@@ -103,7 +103,6 @@ const activateAccount = async (req: Request, res: Response) => {
     {
       password: hashedPassword,
       isActivated: true,
-      confirmationCode: null,
     },
     { new: true }
   );

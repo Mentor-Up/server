@@ -101,6 +101,9 @@ const UserSchema = new mongoose.Schema<IUser>(
 // Pre implemented middleware provided by mongoose, reached before saving the model
 // This will preprocess the password and hash it before saving
 UserSchema.pre('save', async function (next) {
+  if (this.isModified('name') || this.isModified('email')) {
+    this.refreshToken = this.createRefreshToken();
+  }
   if (this.isModified('password')) {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
