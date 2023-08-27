@@ -5,7 +5,7 @@ import { IUser } from '../models/User';
 export const getProfile = async (req: Request, res: Response) => {
   const userId = req.user.userId;
   const userProfile = await profileService.getUser(userId);
-  res.status(200).json({ profile: userProfile });
+  res.status(200).json({ profile: userProfile.generateProfile() });
 };
 
 export const updateProfile = async (req: Request, res: Response) => {
@@ -33,15 +33,22 @@ export const updateProfile = async (req: Request, res: Response) => {
 
   const updatedUser = await profileService.updateUser(userId, update);
 
+  res.cookie('token', updatedUser.refreshToken, {
+    httpOnly: true,
+    sameSite: 'none',
+    secure: true,
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+
   if (notAllowedKeys.length > 0) {
-    res.status(200).json({
-      profile: updatedUser,
+    return res.status(200).json({
+      profile: updatedUser.generateProfile(),
       message: 'Some properties cannot be updated using profile endpoint',
       notAllowedKeys,
       allowedKeys,
     });
   } else {
-    res.status(200).json({ profile: updatedUser });
+    return res.status(200).json({ profile: updatedUser.generateProfile() });
   }
 };
 

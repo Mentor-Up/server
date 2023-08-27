@@ -108,11 +108,15 @@ const currentWeek = async (req: Request, res: Response) => {
 
   const currentTime = Date.now();
 
-  const week = cohort.weeks.find(
+  const weekIndex = cohort.weeks.findIndex(
     (w) => w.start.getTime() < currentTime && w.end.getTime() > currentTime
   );
 
-  res.status(200).json({ currentWeek: week });
+  await cohort.populate({
+    path: `weeks.${weekIndex}.sessions`,
+  });
+
+  res.status(200).json({ currentWeek: cohort.weeks[weekIndex] });
 };
 
 export { getAllWeek, getWeek, updateWeek, deleteWeek, createWeek, currentWeek };
