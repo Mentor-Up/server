@@ -52,3 +52,17 @@ export const deleteProfile = async (req: Request, res: Response) => {
     .status(200)
     .json({ message: `${req.user.name}'s profile was successfully removed` });
 };
+
+export const updatePassword = async (req: Request, res: Response) => {
+  const userId = req.user.userId;
+  const { currentPassword, newPassword } = req.body;
+  const updatedUser = await profileService.updatePassword(
+    userId,
+    currentPassword,
+    newPassword
+  );
+  res.status(200).json({
+    status: 'success',
+    profile: updatedUser,
+  });
+};
