@@ -10,11 +10,18 @@ import {
 } from '../errors';
 import mongoose, { Schema, Document } from 'mongoose';
 import scheduleEvent from '../utils/createGoogleSchedule';
+
 const createSession = async (req: Request, res: Response) => {
-  const { start, end, type, link, weekId } = req.body;
+  const { start, end, type, link, cohortId } = req.body;
+  const userId = req.user.userId;
 
   if (!start || !end || !type || !link) {
     throw new BadRequestError('Missing values');
+  }
+
+  const cohort = await Cohort.findById(cohortId);
+  if (!cohort) {
+    throw new BadRequestError('Cohort not found');
   }
 
   const session = await SessionModel.create({
@@ -22,12 +29,16 @@ const createSession = async (req: Request, res: Response) => {
     end,
     type,
     link,
-    creator: req.user.userId,
+    creator: userId,
   });
-  const week = await Week.findOneAndUpdate(
-    { _id: weekId },
-    { $push: { sessions: session.id } }
+
+  const startDate = new Date(start);
+  const week = cohort?.weeks.find(
+    (w) => w.start < startDate && w.end > startDate
   );
+
+  week?.sessions.push(session._id);
+  await cohort?.save();
 
   return res.status(201).json({ session });
 };
@@ -207,6 +218,19 @@ const getStatus = async (req: Request, res: Response) => {
   res.status(200).json(true);
 };
 
+const getUpcomingSessions = async (req: Request, res: Response) => {
+  const userId = req.user.userId;
+
+  const sessions = await SessionModel.find({
+    creator: userId,
+    start: { $gte: Date.now() },
+  })
+    .limit(6)
+    .sort({ start: 'asc' });
+
+  res.status(200).json({ sessions });
+};
+
 export {
   createSession,
   getAllSession,
@@ -215,4 +239,5 @@ export {
   deleteSession,
   updateStatus,
   getStatus,
+  getUpcomingSessions,
 };

@@ -6,6 +6,7 @@ import {
   deleteSession,
   updateStatus,
   getStatus,
+  getUpcomingSessions,
 } from '../controllers/session';
 
 import { createComment, getAllComment } from '../controllers/comment';
@@ -20,6 +21,9 @@ router
   .get(getAllSession)
   .post(restrict('mentor', 'student-leader'), createSession);
 
+router
+  .route('/upcoming')
+  .get(restrict('mentor', 'student-leader'), getUpcomingSessions);
 router
   .route('/:sessionId')
   .get(getSession)
