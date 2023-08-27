@@ -32,12 +32,8 @@ const scheduleEvent = async ({
   }
   const refresh_token = user.OAuthToken;
 
-  const formattedStart = moment(start)
-    .tz('America/Los_Angeles')
-    .format('YYYY-MM-DDTHH:mm:ssZ');
-  const formattedEnd = moment(end)
-    .tz('America/Los_Angeles')
-    .format('YYYY-MM-DDTHH:mm:ssZ');
+  const formattedStart = moment(start).format('YYYY-MM-DDTHH:mm:ssZ');
+  const formattedEnd = moment(end).format('YYYY-MM-DDTHH:mm:ssZ');
 
   oauth2Client.setCredentials({
     refresh_token: refresh_token,
