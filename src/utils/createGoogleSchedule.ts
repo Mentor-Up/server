@@ -51,11 +51,9 @@ const scheduleEvent = async ({
       description: description,
       start: {
         dateTime: formattedStart,
-        timeZone: 'America/Los_Angeles',
       },
       end: {
         dateTime: formattedEnd,
-        timeZone: 'America/Los_Angeles',
       },
     },
   });
