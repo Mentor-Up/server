@@ -34,6 +34,12 @@ const SessionSchema = new mongoose.Schema<ISession>(
     end: {
       type: Date,
       required: [true, 'Please provide end time'],
+      validate: {
+        validator: function (this: ISession, value: Date): boolean {
+          return this.start < value;
+        },
+        message: 'End time must be after start time',
+      },
     },
     creator: {
       type: Schema.Types.ObjectId,
