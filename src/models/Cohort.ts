@@ -30,7 +30,7 @@ const CohortSchema = new mongoose.Schema<ICohort>(
     },
     end: {
       type: Date,
-      required: [true, 'Please provide end time'],
+      // required: [true, 'Please provide end time'],
     },
     type: {
       type: String,
