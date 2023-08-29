@@ -33,7 +33,7 @@ class ConvesionService {
     };
 
     if (this.isValidTitle(member.title)) {
-      user.role = [member.title as UserRole];
+      user.role = [member.title.toLocaleLowerCase() as UserRole];
     } else {
       user.role = ['student'];
     }
