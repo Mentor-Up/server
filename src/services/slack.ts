@@ -5,11 +5,7 @@ import { SlackChannel } from '../utils/slack/channel';
 
 // work on name
 class SlackService {
-  // should this be async
-  async handleNewMembers(
-    members: SlackMember[],
-    users: IUser[]
-  ): Promise<SlackMember[]> {
+  handleNewMembers(members: SlackMember[], users: IUser[]): SlackMember[] {
     const newMembers = members.filter((member) => {
       return !users.some(
         (user) => user.slackId === member.id || user.email === member.email
@@ -35,10 +31,10 @@ class SlackService {
     return newToCohort;
   }
 
-  async handleNewChannels(
+  handleNewChannels(
     cohorts: ICohort[],
     channels: SlackChannel[]
-  ): Promise<SlackChannel[]> {
+  ): SlackChannel[] {
     const newChannels = channels.filter((channel) => {
       return !cohorts.some(
         (cohort) =>

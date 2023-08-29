@@ -12,24 +12,19 @@ export async function getNewMembers(
 ): Promise<void> {
   const channelId = req.params.channelId;
 
-  // error handling: service is not available
   const [cohort, users, members] = await Promise.all([
-    Cohort.findOne({ slackId: channelId }), // TODO: move to a service
+    // TODO: user Cohort and User services
+    Cohort.findOne({ slackId: channelId }),
     User.find().populate({
       path: 'cohorts',
       select: 'name slackId',
-    }), // TODO: move to a service
+    }),
     fetchChannelMembersDetails(channelId),
   ]);
-
-  // new users
-  const newMembers = await slackService.handleNewMembers(members, users);
-  const newUsers = newMembers.map((member) =>
-    conversionService.convertToUser(member)
-  );
-
-  // existing users
   if (!cohort) throw new NotFoundError('Cohort not found');
+  if (!users) throw new NotFoundError('Users not found');
+
+  const newMembers = await slackService.handleNewMembers(members, users);
   const newToCohort = slackService.handleExistingUsers(cohort, members, users);
 
   res.json({
@@ -39,8 +34,8 @@ export async function getNewMembers(
       slackId: cohort.slackId,
     },
     newUsers: {
-      count: newUsers.length,
-      list: newUsers,
+      count: newMembers.length,
+      list: newMembers.map((member) => conversionService.convertToUser(member)),
     },
     newToCohort: {
       count: newToCohort.length,
