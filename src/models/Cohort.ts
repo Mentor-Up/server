@@ -29,7 +29,6 @@ const CohortSchema = new mongoose.Schema<ICohort>(
     },
     end: {
       type: Date,
-      required: [true, 'Please provide end time'],
       validate: {
         validator: function (this: ICohort, value: Date): boolean {
           return this.start < value;

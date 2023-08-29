@@ -3,16 +3,11 @@ import Cohort from '../models/Cohort';
 import { SessionModel, ISession, IPopulatedSession } from '../models/Session';
 import { Week } from '../models/Week';
 import { Request, Response } from 'express';
-import {
-  BadRequestError,
-  UnauthenticatedError,
-  UnauthorizedError,
-} from '../errors';
-import mongoose, { Schema, Document } from 'mongoose';
+import { BadRequestError } from '../errors';
 import scheduleEvent from '../utils/createGoogleSchedule';
 
 const createSession = async (req: Request, res: Response) => {
-  const { start, end, type, link, cohortId } = req.body;
+  const { start, end, type, link, cohortId, numberSessions } = req.body;
   const userId = req.user.userId;
 
   if (!start || !end || !type || !link) {
@@ -24,23 +19,46 @@ const createSession = async (req: Request, res: Response) => {
     throw new BadRequestError('Cohort not found');
   }
 
-  const session = await SessionModel.create({
-    start,
-    end,
-    type,
-    link,
-    creator: userId,
-  });
+  if (!numberSessions) {
+    const session = await SessionModel.create({
+      start,
+      end,
+      type,
+      link,
+      creator: userId,
+    });
 
-  const startDate = new Date(start);
-  const week = cohort?.weeks.find(
-    (w) => w.start < startDate && w.end > startDate
-  );
+    const startDate = new Date(start);
+    const week = cohort?.weeks.find(
+      (w) => w.start < startDate && w.end > startDate
+    );
 
-  week?.sessions.push(session._id);
-  await cohort?.save();
+    week?.sessions.push(session._id);
+    await cohort?.save();
 
-  return res.status(201).json({ session });
+    return res.status(201).json({ session });
+  } else {
+    for (let i = 0; i < numberSessions; i++) {
+      const weekInMil = 7 * 24 * 60 * 60 * 1000;
+      let startTimestamp = new Date(start).getTime() + i * weekInMil;
+      let endTimestamp = new Date(end).getTime() + i * weekInMil;
+      const session = await SessionModel.create({
+        start: new Date(startTimestamp),
+        end: new Date(endTimestamp),
+        type,
+        link,
+        creator: userId,
+      });
+
+      const week = cohort?.weeks.find(
+        (w) => w.start < session?.start && w.end > session?.start
+      );
+
+      week?.sessions.push(session._id);
+      await cohort?.save();
+      return res.status(201).json({ cohort });
+    }
+  }
 };
 
 const getAllSession = async (req: Request, res: Response) => {
