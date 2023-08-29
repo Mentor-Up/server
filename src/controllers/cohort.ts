@@ -5,8 +5,8 @@ import { getCohortWeeks } from '../constants/cohortWeeks';
 import { isCohortSubject } from '../utils/typeGuards';
 
 const createCohort = async (req: Request, res: Response) => {
-  const { name, start, end, type } = req.body;
-  if (!name || !start || !end || !type) {
+  const { name, start, type } = req.body;
+  if (!name || !start || !type) {
     throw new BadRequestError('Missing values');
   }
 
@@ -15,7 +15,13 @@ const createCohort = async (req: Request, res: Response) => {
   }
 
   const weeks = createWeeks(type, start);
-  const cohort = await Cohort.create({ name, start, end, type, weeks });
+  const cohort = await Cohort.create({
+    name,
+    start,
+    end: weeks[weeks.length - 1].end,
+    type,
+    weeks,
+  });
 
   return res.status(201).json({ cohort });
 };
