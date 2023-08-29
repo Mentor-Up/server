@@ -5,6 +5,7 @@ import { SlackChannel } from '../utils/slack/channel';
 
 // work on name
 class SlackService {
+  // should this be async
   async handleNewMembers(
     members: SlackMember[],
     users: IUser[]
@@ -15,6 +16,23 @@ class SlackService {
       );
     });
     return newMembers;
+  }
+
+  handleExistingUsers(
+    cohort: ICohort,
+    members: SlackMember[],
+    users: IUser[]
+  ): IUser[] {
+    const newToCohort = users.filter((user) => {
+      return members.some((member) => {
+        return (
+          (user.slackId === member.id || user.email === member.email) &&
+          !cohort.participants.includes(user._id)
+        );
+      });
+    });
+
+    return newToCohort;
   }
 
   async handleNewChannels(
