@@ -5,6 +5,7 @@ import {
   deleteWeek,
   createWeek,
   currentWeek,
+  getWeekByIndex,
 } from '../controllers/week';
 import express from 'express';
 import restrict from '../middleware/authorizeRole';
@@ -19,5 +20,6 @@ router
   .get(getWeek)
   .patch(restrict('admin'), updateWeek)
   .delete(restrict('admin'), deleteWeek);
+router.route('/:cohortId/index/:index').get(getWeekByIndex);
 
 export default router;
