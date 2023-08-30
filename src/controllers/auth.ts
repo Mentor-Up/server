@@ -142,12 +142,7 @@ const login = async (req: Request, res: Response) => {
   });
 
   return res.status(200).json({
-    user: {
-      name: user.name,
-      userId: user._id,
-      email: user.email,
-      role: user.role,
-    },
+    user: user.generateProfile(),
     token,
   });
 };
@@ -180,12 +175,7 @@ const refreshToken = async (req: Request, res: Response) => {
   );
 
   return res.status(200).json({
-    user: {
-      name: user.name,
-      userId: user._id,
-      email: user.email,
-      role: user.role,
-    },
+    user: user.generateProfile(),
     token,
   });
 };
