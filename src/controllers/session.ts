@@ -17,6 +17,8 @@ const addSession = async (cohort: any, startDate: any, session: any) => {
 const createSession = async (req: Request, res: Response) => {
   const { start, end, type, link, cohortId, multipleSessions } = req.body;
   const userId = req.user.userId;
+  const startDate = new Date(start);
+  const endDate = end ? end : new Date(startDate.getTime() + 60 * 60 * 1000);
 
   if (!start || !type) {
     throw new BadRequestError('Start and Type are required');
@@ -26,32 +28,17 @@ const createSession = async (req: Request, res: Response) => {
   if (!cohort) {
     throw new BadRequestError('Cohort not found');
   }
-  const startDate = new Date(start);
 
   if (!multipleSessions) {
-    if (!end) {
-      const newEnd = new Date(startDate.getTime() + 60 * 60 * 1000);
-      const session = await SessionModel.create({
-        start,
-        end: newEnd,
-        type,
-        link,
-        creator: userId,
-      });
-      addSession(cohort, startDate, session);
-      return res.status(201).json({ session });
-    } else {
-      const session = await SessionModel.create({
-        start,
-        end,
-        type,
-        link,
-        creator: userId,
-      });
-
-      addSession(cohort, startDate, session);
-      return res.status(201).json({ session });
-    }
+    const session = await SessionModel.create({
+      start,
+      end: endDate,
+      type,
+      link,
+      creator: userId,
+    });
+    addSession(cohort, startDate, session);
+    return res.status(201).json({ session });
   } else {
     if (!end) {
       const weekInMil = 7 * 24 * 60 * 60 * 1000;
