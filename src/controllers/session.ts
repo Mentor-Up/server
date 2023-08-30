@@ -7,11 +7,11 @@ import { BadRequestError } from '../errors';
 import scheduleEvent from '../utils/createGoogleSchedule';
 
 const createSession = async (req: Request, res: Response) => {
-  const { start, end, type, link, cohortId, numberSessions } = req.body;
+  const { start, end, type, link, cohortId, multipleSessions } = req.body;
   const userId = req.user.userId;
 
-  if (!start || !end || !type || !link) {
-    throw new BadRequestError('Missing values');
+  if (!start || !type) {
+    throw new BadRequestError('Start and Type are required');
   }
 
   const cohort = await Cohort.findById(cohortId);
@@ -19,7 +19,7 @@ const createSession = async (req: Request, res: Response) => {
     throw new BadRequestError('Cohort not found');
   }
 
-  if (!numberSessions) {
+  if (multipleSessions) {
     const session = await SessionModel.create({
       start,
       end,
@@ -38,10 +38,13 @@ const createSession = async (req: Request, res: Response) => {
 
     return res.status(201).json({ session });
   } else {
-    for (let i = 0; i < numberSessions; i++) {
-      const weekInMil = 7 * 24 * 60 * 60 * 1000;
-      let startTimestamp = new Date(start).getTime() + i * weekInMil;
-      let endTimestamp = new Date(end).getTime() + i * weekInMil;
+    const weekInMil = 7 * 24 * 60 * 60 * 1000;
+
+    let cohortEnd = new Date(cohort.end).getTime();
+    let startTimestamp = new Date(start).getTime();
+    let endTimestamp = new Date(end).getTime();
+
+    while (startTimestamp < cohortEnd) {
       const session = await SessionModel.create({
         start: new Date(startTimestamp),
         end: new Date(endTimestamp),
@@ -49,15 +52,17 @@ const createSession = async (req: Request, res: Response) => {
         link,
         creator: userId,
       });
+      startTimestamp += weekInMil;
+      endTimestamp += weekInMil;
 
+      console.log(session);
       const week = cohort?.weeks.find(
         (w) => w.start < session?.start && w.end > session?.start
       );
-
       week?.sessions.push(session._id);
       await cohort?.save();
-      return res.status(201).json({ cohort });
     }
+    return res.status(201).json({ cohort });
   }
 };
 
