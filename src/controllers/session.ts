@@ -17,8 +17,11 @@ const addSession = async (cohort: any, startDate: any, session: any) => {
 const createSession = async (req: Request, res: Response) => {
   const { start, end, type, link, cohortId, multipleSessions } = req.body;
   const userId = req.user.userId;
+  const weekInMil = 7 * 24 * 60 * 60 * 1000;
   const startDate = new Date(start);
-  const endDate = end ? end : new Date(startDate.getTime() + 60 * 60 * 1000);
+  let startTimestamp = new Date(start).getTime();
+  let endDate = end ? end : new Date(startTimestamp + 60 * 60 * 1000);
+  let endTimestamp = new Date(endDate).getTime();
 
   if (!start || !type) {
     throw new BadRequestError('Start and Type are required');
@@ -28,6 +31,7 @@ const createSession = async (req: Request, res: Response) => {
   if (!cohort) {
     throw new BadRequestError('Cohort not found');
   }
+  const cohortEnd = new Date(cohort.end).getTime();
 
   if (!multipleSessions) {
     const session = await SessionModel.create({
@@ -37,63 +41,25 @@ const createSession = async (req: Request, res: Response) => {
       link,
       creator: userId,
     });
-    addSession(cohort, startDate, session);
+    await addSession(cohort, startDate, session);
     return res.status(201).json({ session });
   } else {
-    if (!end) {
-      const weekInMil = 7 * 24 * 60 * 60 * 1000;
+    while (startTimestamp < cohortEnd) {
+      const session = await SessionModel.create({
+        start: new Date(startTimestamp),
+        end: new Date(endTimestamp),
+        type,
+        link,
+        creator: userId,
+      });
+      startTimestamp += weekInMil;
+      endTimestamp += weekInMil;
 
-      let cohortEnd = new Date(cohort.end).getTime();
-      let startTimestamp = new Date(start).getTime();
-      let newEnd = new Date(startTimestamp + 60 * 60 * 1000);
-      let newEndTimestamp = new Date(newEnd).getTime();
-
-      while (startTimestamp < cohortEnd) {
-        const session = await SessionModel.create({
-          start: new Date(startTimestamp),
-          end: new Date(newEndTimestamp),
-          type,
-          link,
-          creator: userId,
-        });
-        startTimestamp += weekInMil;
-        newEndTimestamp += weekInMil;
-
-        console.log(session);
-        const week = cohort?.weeks.find(
-          (w) => w.start < session?.start && w.end > session?.start
-        );
-        week?.sessions.push(session._id);
-        await cohort?.save();
-      }
-      return res.status(201).json({ cohort });
-    } else {
-      const weekInMil = 7 * 24 * 60 * 60 * 1000;
-
-      let cohortEnd = new Date(cohort.end).getTime();
-      let startTimestamp = new Date(start).getTime();
-      let endTimestamp = new Date(end).getTime();
-
-      while (startTimestamp < cohortEnd) {
-        const session = await SessionModel.create({
-          start: new Date(startTimestamp),
-          end: new Date(endTimestamp),
-          type,
-          link,
-          creator: userId,
-        });
-        startTimestamp += weekInMil;
-        endTimestamp += weekInMil;
-
-        console.log(session);
-        const week = cohort?.weeks.find(
-          (w) => w.start < session?.start && w.end > session?.start
-        );
-        week?.sessions.push(session._id);
-        await cohort?.save();
-      }
-      return res.status(201).json({ cohort });
+      console.log(session);
+      const newStart = new Date(session?.start);
+      await addSession(cohort, newStart, session);
     }
+    return res.status(201).json({ cohort });
   }
 };
 
