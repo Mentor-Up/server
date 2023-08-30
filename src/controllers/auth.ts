@@ -172,7 +172,12 @@ const refreshToken = async (req: Request, res: Response) => {
   }
 
   const token = jwt.sign(
-    { name: payload.name, role: payload.role, userId: user._id },
+    {
+      name: payload.name,
+      role: payload.role,
+      userId: user._id,
+      email: user.email,
+    },
     ACCESS_TOKEN_SECRET!,
     {
       expiresIn: ACCESS_TOKEN_EXPIRATION,
