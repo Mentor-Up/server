@@ -6,6 +6,14 @@ import { Request, Response } from 'express';
 import { BadRequestError } from '../errors';
 import scheduleEvent from '../utils/createGoogleSchedule';
 
+const addSession = async (cohort: any, startDate: any, session: any) => {
+  const week = cohort?.weeks.find(
+    (w: any) => w.start < startDate && w.end > startDate
+  );
+  week?.sessions.push(session._id);
+  await cohort?.save();
+};
+
 const createSession = async (req: Request, res: Response) => {
   const { start, end, type, link, cohortId, multipleSessions } = req.body;
   const userId = req.user.userId;
@@ -18,51 +26,87 @@ const createSession = async (req: Request, res: Response) => {
   if (!cohort) {
     throw new BadRequestError('Cohort not found');
   }
+  const startDate = new Date(start);
 
-  if (multipleSessions) {
-    const session = await SessionModel.create({
-      start,
-      end,
-      type,
-      link,
-      creator: userId,
-    });
-
-    const startDate = new Date(start);
-    const week = cohort?.weeks.find(
-      (w) => w.start < startDate && w.end > startDate
-    );
-
-    week?.sessions.push(session._id);
-    await cohort?.save();
-
-    return res.status(201).json({ session });
-  } else {
-    const weekInMil = 7 * 24 * 60 * 60 * 1000;
-
-    let cohortEnd = new Date(cohort.end).getTime();
-    let startTimestamp = new Date(start).getTime();
-    let endTimestamp = new Date(end).getTime();
-
-    while (startTimestamp < cohortEnd) {
+  if (!multipleSessions) {
+    if (!end) {
+      const newEnd = new Date(startDate.getTime() + 60 * 60 * 1000);
       const session = await SessionModel.create({
-        start: new Date(startTimestamp),
-        end: new Date(endTimestamp),
+        start,
+        end: newEnd,
         type,
         link,
         creator: userId,
       });
-      startTimestamp += weekInMil;
-      endTimestamp += weekInMil;
+      addSession(cohort, startDate, session);
+      return res.status(201).json({ session });
+    } else {
+      const session = await SessionModel.create({
+        start,
+        end,
+        type,
+        link,
+        creator: userId,
+      });
 
-      console.log(session);
-      const week = cohort?.weeks.find(
-        (w) => w.start < session?.start && w.end > session?.start
-      );
-      week?.sessions.push(session._id);
-      await cohort?.save();
+      addSession(cohort, startDate, session);
+      return res.status(201).json({ session });
     }
-    return res.status(201).json({ cohort });
+  } else {
+    if (!end) {
+      const weekInMil = 7 * 24 * 60 * 60 * 1000;
+
+      let cohortEnd = new Date(cohort.end).getTime();
+      let startTimestamp = new Date(start).getTime();
+      let newEnd = new Date(startTimestamp + 60 * 60 * 1000);
+      let newEndTimestamp = new Date(newEnd).getTime();
+
+      while (startTimestamp < cohortEnd) {
+        const session = await SessionModel.create({
+          start: new Date(startTimestamp),
+          end: new Date(newEndTimestamp),
+          type,
+          link,
+          creator: userId,
+        });
+        startTimestamp += weekInMil;
+        newEndTimestamp += weekInMil;
+
+        console.log(session);
+        const week = cohort?.weeks.find(
+          (w) => w.start < session?.start && w.end > session?.start
+        );
+        week?.sessions.push(session._id);
+        await cohort?.save();
+      }
+      return res.status(201).json({ cohort });
+    } else {
+      const weekInMil = 7 * 24 * 60 * 60 * 1000;
+
+      let cohortEnd = new Date(cohort.end).getTime();
+      let startTimestamp = new Date(start).getTime();
+      let endTimestamp = new Date(end).getTime();
+
+      while (startTimestamp < cohortEnd) {
+        const session = await SessionModel.create({
+          start: new Date(startTimestamp),
+          end: new Date(endTimestamp),
+          type,
+          link,
+          creator: userId,
+        });
+        startTimestamp += weekInMil;
+        endTimestamp += weekInMil;
+
+        console.log(session);
+        const week = cohort?.weeks.find(
+          (w) => w.start < session?.start && w.end > session?.start
+        );
+        week?.sessions.push(session._id);
+        await cohort?.save();
+      }
+      return res.status(201).json({ cohort });
+    }
   }
 };
 
