@@ -4,6 +4,7 @@ export interface IWeek extends Document {
   name: string;
   start: Date;
   end: Date;
+  index: number;
   sessions: Array<Types.ObjectId>;
 }
 
@@ -19,6 +20,9 @@ export const WeekSchema = new mongoose.Schema<IWeek>(
     },
     end: {
       type: Date,
+    },
+    index: {
+      type: Number,
     },
     sessions: [
       {
