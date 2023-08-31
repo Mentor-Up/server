@@ -7,6 +7,7 @@ import {
   updateStatus,
   getStatus,
   getUpcomingSessions,
+  getStudentUpcomingSessions,
 } from '../controllers/session';
 
 import { createComment, getAllComment } from '../controllers/comment';
@@ -24,6 +25,9 @@ router
 router
   .route('/upcoming')
   .get(restrict('mentor', 'student-leader'), getUpcomingSessions);
+router
+  .route('/student/upcoming')
+  .get(restrict('student'), getStudentUpcomingSessions);
 router
   .route('/:sessionId')
   .get(getSession)

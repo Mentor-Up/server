@@ -251,6 +251,19 @@ const getUpcomingSessions = async (req: Request, res: Response) => {
   res.status(200).json({ sessions });
 };
 
+const getStudentUpcomingSessions = async (req: Request, res: Response) => {
+  const userId = req.user.userId;
+
+  const sessions = await SessionModel.find({
+    participant: userId,
+    start: { $gte: Date.now() },
+  })
+    .limit(6)
+    .sort({ start: 'asc' });
+
+  res.status(200).json({ sessions });
+};
+
 export {
   createSession,
   getAllSession,
@@ -260,4 +273,5 @@ export {
   updateStatus,
   getStatus,
   getUpcomingSessions,
+  getStudentUpcomingSessions,
 };
