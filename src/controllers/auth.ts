@@ -49,9 +49,7 @@ const register = async (req: Request, res: Response) => {
 
     const confirmationCode = getConfirmationCode();
     return User.create({
-      name: u.name,
-      email: u.email,
-      role: u.role,
+      ...u,
       cohorts: [cohortId],
       confirmationCode,
     });
