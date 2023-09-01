@@ -31,7 +31,9 @@ router
 router
   .route('/:sessionId')
   .get(getSession)
-  .patch(restrict('mentor', 'student-leader'), updateSession)
+  .patch(restrict('mentor', 'student-leader'), updateSession);
+router
+  .route('/:cohortId/:sessionId')
   .delete(restrict('mentor', 'student-leader'), deleteSession);
 router
   .route('/:sessionId/student/updateStatus')

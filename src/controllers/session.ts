@@ -132,7 +132,12 @@ const updateSession = async (req: Request, res: Response) => {
 };
 
 const deleteSession = async (req: Request, res: Response) => {
-  const { sessionId } = req.params;
+  const { sessionId, cohortId } = req.params;
+
+  const cohort = await Cohort.findById(cohortId);
+  if (!cohort) {
+    throw new BadRequestError('Cohort not found');
+  }
 
   const session = await SessionModel.findByIdAndRemove({
     _id: sessionId,
@@ -142,6 +147,22 @@ const deleteSession = async (req: Request, res: Response) => {
   if (!session) {
     throw new BadRequestError('This session does not exist');
   }
+
+  const weekIndex = cohort.weeks.findIndex(
+    (w) => w.start < session.start && w.end > session.start
+  );
+
+  if (weekIndex === -1) {
+    throw new BadRequestError('Session not found in this cohort');
+  }
+
+  const previousSessions = cohort.weeks[weekIndex].sessions;
+
+  const newSessions = previousSessions.filter(
+    (s) => s._id.toString() !== sessionId
+  );
+  cohort.weeks[weekIndex].sessions = newSessions;
+  await cohort.save();
 
   res.status(200).json({ status: 'Success! Session removed.' });
 };
