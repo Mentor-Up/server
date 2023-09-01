@@ -44,7 +44,7 @@ const getCohort = async (req: Request, res: Response) => {
 
   const populateUserOptions = {
     path: 'participants',
-    select: '_id name email role isActivated',
+    select: '_id name email role isActivated slackId avatarUrl',
   };
 
   const cohort = await Cohort.find({ _id: cohortId }).populate(
