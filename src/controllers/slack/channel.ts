@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { getAllPrivateChannels } from '../../utils/slack/channel';
-import slackService from '../../services/slack';
+import slackDataService from '../../services/slackData';
 import Cohort from '../../models/Cohort';
 import conversionService from '../../services/conversion';
 
@@ -12,7 +12,10 @@ export const getNewChannels = async (
     getAllPrivateChannels(),
     Cohort.find(), // refactor to service
   ]);
-  const newChannels = await slackService.handleNewChannels(cohorts, channels);
+  const newChannels = await slackDataService.handleNewChannels(
+    cohorts,
+    channels
+  );
   const newCohorts = newChannels.map((channel) =>
     conversionService.convertToCohort(channel)
   );

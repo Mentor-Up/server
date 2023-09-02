@@ -4,7 +4,7 @@ import { SlackMember } from '../utils/slack/member';
 import { SlackChannel } from '../utils/slack/channel';
 
 // work on name
-class SlackService {
+class SlackDataService {
   handleNewMembers(members: SlackMember[], users: IUser[]): SlackMember[] {
     const newMembers = members.filter((member) => {
       return !users.some(
@@ -47,4 +47,4 @@ class SlackService {
   }
 }
 
-export default new SlackService();
+export default new SlackDataService();

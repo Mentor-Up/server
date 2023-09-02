@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { fetchChannelMembersDetails } from '../../utils/slack/member';
-import slackService from '../../services/slack';
+import slackDataService from '../../services/slackData';
 import User from '../../models/User';
 import Cohort from '../../models/Cohort';
 import conversionService from '../../services/conversion';
@@ -13,7 +13,7 @@ export async function getNewMembers(
   const channelId = req.params.channelId;
 
   const [cohort, users, members] = await Promise.all([
-    // TODO: user Cohort and User services
+    // TODO: add Cohort and User services
     Cohort.findOne({ slackId: channelId }),
     User.find().populate({
       path: 'cohorts',
@@ -24,8 +24,12 @@ export async function getNewMembers(
   if (!cohort) throw new NotFoundError('Cohort not found');
   if (!users) throw new NotFoundError('Users not found');
 
-  const newMembers = await slackService.handleNewMembers(members, users);
-  const newToCohort = slackService.handleExistingUsers(cohort, members, users);
+  const newMembers = await slackDataService.handleNewMembers(members, users);
+  const newToCohort = slackDataService.handleExistingUsers(
+    cohort,
+    members,
+    users
+  );
 
   res.json({
     cohort: {
