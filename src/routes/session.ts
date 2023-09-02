@@ -7,10 +7,11 @@ import {
   updateStatus,
   getStatus,
   getUpcomingSessions,
+  getStudentUpcomingSessions,
 } from '../controllers/session';
 
 import { createComment, getAllComment } from '../controllers/comment';
-import { createReview } from '../controllers/review';
+import { createReview, getReview } from '../controllers/review';
 import express from 'express';
 import restrict from '../middleware/authorizeRole';
 
@@ -25,9 +26,14 @@ router
   .route('/upcoming')
   .get(restrict('mentor', 'student-leader'), getUpcomingSessions);
 router
+  .route('/student/upcoming')
+  .get(restrict('student'), getStudentUpcomingSessions);
+router
   .route('/:sessionId')
   .get(getSession)
-  .patch(restrict('mentor', 'student-leader'), updateSession)
+  .patch(restrict('mentor', 'student-leader'), updateSession);
+router
+  .route('/:cohortId/:sessionId')
   .delete(restrict('mentor', 'student-leader'), deleteSession);
 router
   .route('/:sessionId/student/updateStatus')
@@ -38,4 +44,8 @@ router
 
 router.route('/comment').get(getAllComment).post(createComment);
 router.route('/review').post(createReview);
+router
+  .route('/:sessionId/review')
+  .get(restrict('mentor', 'student-leader'), getReview);
+
 export default router;

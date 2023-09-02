@@ -53,6 +53,24 @@ const getWeek = async (req: Request, res: Response) => {
     .json({ status: 'Success', populatedWeek: cohort.weeks[weekIndex] });
 };
 
+const getWeekByIndex = async (req: Request, res: Response) => {
+  const { cohortId, index } = req.params;
+
+  const cohort = await Cohort.findById(cohortId);
+  if (!cohort) {
+    throw new BadRequestError('Cohort not found');
+  }
+
+  const i = parseInt(index);
+  if (isNaN(i) || !cohort.weeks[i]) {
+    throw new BadRequestError('Invalid week index');
+  }
+
+  await cohort.populate({ path: `weeks.${i}.sessions` });
+
+  res.status(200).json({ populatedWeek: cohort.weeks[i] });
+};
+
 const updateWeek = async (req: Request, res: Response) => {
   const { cohortId, weekId } = req.params;
 
@@ -112,11 +130,27 @@ const currentWeek = async (req: Request, res: Response) => {
     (w) => w.start.getTime() < currentTime && w.end.getTime() > currentTime
   );
 
-  await cohort.populate({
-    path: `weeks.${weekIndex}.sessions`,
-  });
-
-  res.status(200).json({ currentWeek: cohort.weeks[weekIndex] });
+  if (weekIndex >= 0 && weekIndex < cohort.weeks.length) {
+    await cohort.populate({
+      path: `weeks.${weekIndex}.sessions`,
+      populate: {
+        path: 'creator',
+        select: 'name',
+      },
+      options: { strictPopulate: false },
+    });
+    res.status(200).json({ currentWeek: cohort.weeks[weekIndex] });
+  } else {
+    res.status(404).json({ message: 'No active week found' });
+  }
 };
 
-export { getAllWeek, getWeek, updateWeek, deleteWeek, createWeek, currentWeek };
+export {
+  getAllWeek,
+  getWeek,
+  getWeekByIndex,
+  updateWeek,
+  deleteWeek,
+  createWeek,
+  currentWeek,
+};

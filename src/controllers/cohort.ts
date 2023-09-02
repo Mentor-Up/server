@@ -97,11 +97,12 @@ const createWeeks = (type: CohortSubject, startOfCohort: Date) => {
 
   const weeks = [];
 
-  for (let weekName of weekNames) {
+  for (let i = 0; i < weekNames.length; i++) {
     weeks.push({
-      name: weekName,
+      name: weekNames[i],
       start: new Date(startTimestamp),
       end: new Date(startTimestamp + 7 * 24 * 60 * 60 * 1000 - 1000),
+      index: i,
     });
     startTimestamp += 7 * 24 * 60 * 60 * 1000;
   }

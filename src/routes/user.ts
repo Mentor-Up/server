@@ -1,5 +1,4 @@
 import express from 'express';
-import authMiddleware from '../middleware/authentication';
 import { getUsers, getUser, updateUser } from '../controllers/user';
 import restrict from '../middleware/authorizeRole';
 

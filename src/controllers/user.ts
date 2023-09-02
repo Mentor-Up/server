@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { IUser } from '../models/User';
+import User, { IUser } from '../models/User';
 import adminService from '../services/admin';
 
 export const getUsers = async (req: Request, res: Response) => {
