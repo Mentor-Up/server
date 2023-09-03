@@ -61,8 +61,12 @@ class AdminService {
     roles: IUser['role']
   ): Promise<void> {
     console.log('1. UPDATE ROLE');
-    user.role = roles;
-    await user.save();
+    if (JSON.stringify(user.role) !== JSON.stringify(roles)) {
+      user.role = roles;
+      await user.save();
+    } else {
+      console.log('No change in roles. Skipping save operation.');
+    }
   }
 
   private async updateCohorts(
