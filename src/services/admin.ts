@@ -72,33 +72,47 @@ class AdminService {
   ): Promise<void> {
     console.log('2. UPDATE COHORT');
 
-    // Additional step: Validate provided cohorts
-    const validCohorts = await Cohort.find({
+    const validCohortsCount = await Cohort.countDocuments({
       _id: { $in: cohorts },
     });
 
-    if (validCohorts.length !== cohorts.length) {
+    if (validCohortsCount !== cohorts.length) {
       throw new NotFoundError(
-        'At least one of the provided cohorts is invalid.'
+        `Mismatch in provided cohorts. Expected ${cohorts.length} valid cohorts, found ${validCohortsCount}.`
       );
     }
 
-    const previousCohorts = user.cohorts;
-    user.cohorts = cohorts;
-    await user.save();
+    // logic to determine cohorts to add and remove
+    const previousUserCohorts = user.cohorts.map((c) => c.toString());
+    const cohortsToAdd = cohorts.filter(
+      (c) => !previousUserCohorts.includes(c)
+    );
+    const cohortsToRemove = previousUserCohorts.filter(
+      (c) => !cohorts.includes(c)
+    );
 
-    // Update cohort participants
-    for (const cohortId of previousCohorts) {
-      await Cohort.findByIdAndUpdate(
-        cohortId,
+    console.log('cohortsToAdd', cohortsToAdd);
+    console.log('cohortsToRemove', cohortsToRemove);
+
+    // limit db calls to only when necessary
+    if (cohortsToAdd.length > 0 || cohortsToRemove.length > 0) {
+      user.cohorts = cohorts;
+      await user.save();
+    } else {
+      console.log('No changes in cohorts. Skipping user save.');
+    }
+
+    if (cohortsToRemove.length > 0) {
+      await Cohort.updateMany(
+        { _id: { $in: cohortsToRemove } },
         { $pull: { participants: user._id } },
         { session }
       );
     }
 
-    for (const cohortId of cohorts) {
-      await Cohort.findByIdAndUpdate(
-        cohortId,
+    if (cohortsToAdd.length > 0) {
+      await Cohort.updateMany(
+        { _id: { $in: cohortsToAdd } },
         { $addToSet: { participants: user._id } },
         { session }
       );
