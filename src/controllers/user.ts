@@ -13,7 +13,7 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const user = await adminService.findUserById(userId);
+  const user = await adminService.findUserByIdwithCohorts(userId);
   if (!user) {
     return res
       .status(404)
@@ -44,12 +44,12 @@ export const updateUserByAdmin = async (req: Request, res: Response) => {
 
   if (invalidKeys.length > 0) {
     res.status(200).json({
-      profile: updatedUser?.generateProfile(),
+      profile: updatedUser.generateProfile(),
       message: 'Some properties cannot be updated by Admin',
       invalidKeys,
       allowedKeys,
     });
   } else {
-    res.status(200).json({ profile: updatedUser?.generateProfile() });
+    res.status(200).json({ profile: updatedUser.generateProfile() });
   }
 };
