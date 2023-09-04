@@ -14,13 +14,7 @@ export const getUsers = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const user = await adminService.findUserByIdwithCohorts(userId);
-  if (!user) {
-    return res
-      .status(404)
-      .json({ message: `User with id: ${userId} not found` });
-  } else {
-    return res.status(200).json({ user: user.generateProfile() });
-  }
+  return res.status(200).json({ user: user.generateProfile() });
 };
 
 export const updateUserByAdmin = async (req: Request, res: Response) => {
