@@ -11,21 +11,20 @@ class AdminService {
     return users.map((user) => user.generateProfile());
   }
 
-  async findUserById(userId: string): Promise<IUserProfile | null> {
+  async findUserById(userId: string): Promise<IUser | null> {
     const user = await User.findById(userId).populate('cohorts', '_id name');
-    if (!user) {
-      throw new NotFoundError(`User with id ${userId} not found`);
-    }
-    return user.generateProfile();
+    return user;
   }
 
   async updateUser(
     userId: string,
     dataUpdate: Partial<IUser>
-  ): Promise<IUserProfile | null> {
+  ): Promise<IUser | null> {
     const session = await mongoose.startSession();
     session.startTransaction();
     console.log('UPDATE STARTED');
+
+    let isUpdated = false;
 
     try {
       const user = await User.findById(userId).session(session);
@@ -34,18 +33,27 @@ class AdminService {
       }
 
       if (dataUpdate.role) {
-        await this.updateUserRoles(user, dataUpdate.role);
+        const roleUpdated = await this.updateUserRoles(user, dataUpdate.role);
+        isUpdated = isUpdated || roleUpdated;
       }
 
       if (dataUpdate.cohorts) {
-        await this.updateCohorts(user, dataUpdate.cohorts, session);
+        const cohortsUpdated = await this.updateCohorts(
+          user,
+          dataUpdate.cohorts,
+          session
+        );
+        isUpdated = isUpdated || cohortsUpdated;
       }
 
       await session.commitTransaction();
       console.log('UPDATED COMPLETED');
 
-      const updatedUser = await this.findUserById(userId);
-      return updatedUser;
+      if (isUpdated) {
+        return await this.findUserById(userId);
+      } else {
+        return user;
+      }
     } catch (error) {
       await session.abortTransaction();
       throw new Error(
@@ -59,13 +67,15 @@ class AdminService {
   private async updateUserRoles(
     user: IUser,
     roles: IUser['role']
-  ): Promise<void> {
+  ): Promise<boolean> {
     console.log('1. UPDATE ROLE');
     if (JSON.stringify(user.role) !== JSON.stringify(roles)) {
       user.role = roles;
       await user.save();
+      return true;
     } else {
       console.log('No change in roles. Skipping save operation.');
+      return false;
     }
   }
 
@@ -73,7 +83,7 @@ class AdminService {
     user: IUser,
     cohorts: IUser['cohorts'],
     session: mongoose.ClientSession
-  ): Promise<void> {
+  ): Promise<boolean> {
     console.log('2. UPDATE COHORT');
 
     const validCohortsCount = await Cohort.countDocuments({
@@ -98,10 +108,13 @@ class AdminService {
     console.log('cohortsToAdd', cohortsToAdd);
     console.log('cohortsToRemove', cohortsToRemove);
 
+    let updated = false;
+
     // limit db calls to only when necessary
     if (cohortsToAdd.length > 0 || cohortsToRemove.length > 0) {
       user.cohorts = cohorts;
       await user.save();
+      updated = true;
     } else {
       console.log('No changes in cohorts. Skipping user save.');
     }
@@ -121,6 +134,7 @@ class AdminService {
         { session }
       );
     }
+    return updated;
   }
 
   async registerDirectUser(
