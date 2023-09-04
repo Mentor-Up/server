@@ -3,6 +3,7 @@ import { NotFoundError } from '../errors';
 import mongoose from 'mongoose';
 import Cohort from '../models/Cohort';
 import getConfirmationCode from '../utils/getConfirmationCode';
+import { Console } from 'console';
 
 class AdminService {
   async findAllUsers(): Promise<IUserProfile[]> {
@@ -119,6 +120,42 @@ class AdminService {
         { $addToSet: { participants: user._id } },
         { session }
       );
+    }
+  }
+
+  async addExistingUsersToCohort(
+    cohortId: string,
+    userIDs: string[]
+  ): Promise<void> {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    console.log('UPDATE STARTED');
+
+    try {
+      const cohort = await Cohort.findById(cohortId).session(session);
+      if (!cohort) throw new NotFoundError(`Cohort not found`);
+      for (const id of userIDs) {
+        console.log('WORKING ON USER', id);
+        const user = await this.findUserById(id);
+        user.$session(session);
+        if (!user.cohorts.includes(cohortId)) {
+          user.cohorts.push(cohortId);
+          await user.save();
+          cohort.participants.push(user._id);
+        }
+      }
+
+      await cohort.save();
+      await session.commitTransaction();
+      console.log('UPDATED COMPLETED');
+    } catch (error) {
+      console.log('UPPDATE FAILED');
+      await session.abortTransaction();
+      throw new Error(
+        `Failed to finish update. Error: ${(error as Error).message}`
+      );
+    } finally {
+      session.endSession();
     }
   }
 

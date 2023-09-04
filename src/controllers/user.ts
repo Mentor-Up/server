@@ -47,3 +47,15 @@ export const updateUserByAdmin = async (req: Request, res: Response) => {
     res.status(200).json({ profile: updatedUser.generateProfile() });
   }
 };
+
+export const addUsersToCohort = async (req: Request, res: Response) => {
+  const { cohortId } = req.params;
+  const { userIDs } = req.body;
+
+  if (!Array.isArray(userIDs) || userIDs.length === 0) {
+    return res.status(400).json({ message: 'Invalid request body' });
+  }
+
+  await adminService.addExistingUsersToCohort(cohortId, userIDs);
+  res.status(200).json({ message: 'Successfully added users to the cohort' });
+};
