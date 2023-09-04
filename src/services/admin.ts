@@ -33,7 +33,8 @@ class AdminService {
       user.$session(session); // Associate the user doc with the session
 
       if (dataUpdate.role) {
-        await this.updateUserRoles(user, dataUpdate.role, session);
+        // no need to pass session since user is already associated with it
+        await this.updateUserRoles(user, dataUpdate.role);
       }
 
       if (dataUpdate.cohorts) {
@@ -56,8 +57,7 @@ class AdminService {
 
   private async updateUserRoles(
     user: IUser,
-    roles: IUser['role'],
-    session: mongoose.ClientSession
+    roles: IUser['role']
   ): Promise<void> {
     console.log('1. UPDATE ROLE');
     if (JSON.stringify(user.role) !== JSON.stringify(roles)) {
