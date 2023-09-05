@@ -5,7 +5,7 @@
 Introducing the Ultimate Class Management App: Streamlining Education Like Never Before!
 
 <div>
-<img src="https://i.imgur.com/VQTznDz.png" alt="class-management"  />
+<img src="" alt="class-management"  />
 </div>
 
 ## Table of Contents
@@ -49,10 +49,10 @@ To get started with MentorUp, follow these simple steps:
 ## Screanshots
 
 <div>
-<img src="https://i.imgur.com/wrWxCjr.png" alt="chat"  />
-<img src="https://i.imgur.com/aVY2l3j.png" alt="chat"  />
-<img src="https://i.imgur.com/X2DmKi4.png" alt="chat"  />
-<img src="https://i.imgur.com/Mwq42zs.png" alt="chat"  />
+<img src="" alt="chat"  />
+<img src="" alt="chat"  />
+<img src="" alt="chat"  />
+<img src="" alt="chat"  />
 </div>
 
 ## Contributing
