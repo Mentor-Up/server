@@ -49,10 +49,10 @@ To get started with MentorUp, follow these simple steps:
 ## Screanshots
 
 <div>
-<img src="" alt="chat"  />
-<img src="" alt="chat"  />
-<img src="" alt="chat"  />
-<img src="" alt="chat"  />
+<img src="" alt="app"  />
+<img src="" alt="app"  />
+<img src="" alt="app"  />
+<img src="" alt="app"  />
 </div>
 
 ## Contributing
@@ -64,7 +64,7 @@ To get started with MentorUp, follow these simple steps:
 🍿If you need any assistance or have questions, you can reach out to our support team at
 
 <div>
-<img src="https://i.imgur.com/WNDXmQb.png" alt="chat"  />
+<img src="https://www.educatorstechnology.com/wp-content/webp-express/webp-images/uploads/2023/05/Best-Tools-and-Apps-to-help-you-manage-your-class-1.png.webp" alt="chat"  />
 </div>
 
 ## License
