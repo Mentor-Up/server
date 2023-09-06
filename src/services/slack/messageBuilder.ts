@@ -1,10 +1,10 @@
 import { CohortData } from './appData';
 class MessageBuilderService {
-  public buildMessages(cohortsData: CohortData[]): string[] {
+  public static buildMessages(cohortsData: CohortData[]): string[] {
     return cohortsData.map((cohort) => this.buildSingleMessage(cohort));
   }
 
-  private buildSingleMessage(cohort: CohortData): string {
+  private static buildSingleMessage(cohort: CohortData): string {
     let message = '*This Week Cohort Sessions:*\n\n';
 
     message += `*Cohort:* ${cohort.name}\n`;
