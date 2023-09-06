@@ -129,9 +129,9 @@ Base: /api/v1
 
 ## Team Info
 
-miminiverse [minhtamphamtol@gmail.com]
-cdpaiva [cdpaivaa@gmail.comsyihew@gmail.com]
-akabishau [leshamisc@icloud.com]
+- miminiverse [minhtamphamtol@gmail.com]
+- cdpaiva [cdpaivaa@gmail.com]
+- akabishau [leshamisc@icloud.com]
 
 ## Contributing
 
