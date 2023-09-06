@@ -12,7 +12,6 @@ class SlackNotificationService {
           channel: channelId,
           text: message,
         });
-
         if (response.ts) {
           console.log('Message sent to channel:', response.ts);
           return response.ts;

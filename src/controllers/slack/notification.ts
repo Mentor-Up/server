@@ -16,20 +16,18 @@ export const handleWeeklySessionsNotification = async (
     const responses = await Promise.all(
       messages.map(async (message) => {
         const response = await SlackNotificationService.postToChannel(
-          // message.channelId,
-          channelId,
-          // message.message
-          message
+          channelId, // message.channelId,
+          message.text
         );
 
         if (response) {
-          // return { success: true, channelId: messageObj.channelId, response };
+          // return { success: true, channelId: message.channelId, response };
           return { success: true, channelId: channelId, response };
         } else {
           return {
             success: false,
-            // channelId: messageObj.channelId,
-            channelId: channelId,
+            // channelId:
+            channelId: channelId, //message.channelId,
             error: 'Failed after retries',
           };
         }

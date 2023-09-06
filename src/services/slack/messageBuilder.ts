@@ -1,7 +1,18 @@
 import { CohortData } from './appData';
+
+interface IMessage {
+  channelId: string;
+  text: string;
+}
+
 class MessageBuilderService {
-  public static buildMessages(cohortsData: CohortData[]): string[] {
-    return cohortsData.map((cohort) => this.buildSingleMessage(cohort));
+  public static buildMessages(cohortsData: CohortData[]): IMessage[] {
+    return cohortsData.map((cohortSessions) => {
+      return {
+        channelId: cohortSessions.slackId,
+        text: this.buildSingleMessage(cohortSessions),
+      };
+    });
   }
 
   private static buildSingleMessage(cohort: CohortData): string {
