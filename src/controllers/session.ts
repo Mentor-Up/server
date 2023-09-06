@@ -254,7 +254,7 @@ const getStatus = async (req: Request, res: Response) => {
     return userId === req.user.userId;
   });
   if (!participantWithUserStatus) {
-    res.status(200).json({ msg: 'You are not joining this session' });
+    res.status(200).json(false);
   }
   res.status(200).json(true);
 };
