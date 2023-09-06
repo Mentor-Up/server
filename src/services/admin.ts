@@ -64,8 +64,6 @@ class AdminService {
     if (JSON.stringify(user.role) !== JSON.stringify(roles)) {
       user.role = roles;
       await user.save();
-    } else {
-      console.log('No change in roles. Skipping save operation.');
     }
   }
 
@@ -95,15 +93,10 @@ class AdminService {
       (c) => !cohorts.includes(c)
     );
 
-    console.log('cohortsToAdd', cohortsToAdd);
-    console.log('cohortsToRemove', cohortsToRemove);
-
     // limit db calls to only when necessary
     if (cohortsToAdd.length > 0 || cohortsToRemove.length > 0) {
       user.cohorts = cohorts;
       await user.save();
-    } else {
-      console.log('No changes in cohorts. Skipping user save.');
     }
 
     if (cohortsToRemove.length > 0) {
