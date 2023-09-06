@@ -3,14 +3,16 @@ import { slackWebClient } from '../../utils/slack/slackWebClient';
 class SlackNotificationService {
   private async postWithRetry(
     channelId: string,
-    message: string,
+    text: string,
+    message: any[],
     retries: number = 3
   ): Promise<string | null> {
     for (let i = 0; i < retries; i++) {
       try {
         const response = await slackWebClient.chat.postMessage({
           channel: channelId,
-          text: message,
+          text: text,
+          blocks: message,
         });
         if (response.ts) {
           console.log('Message sent to channel:', response.ts);
@@ -31,9 +33,10 @@ class SlackNotificationService {
 
   async postToChannel(
     channelId: string,
-    message: string
+    text: string,
+    message: any[]
   ): Promise<string | null> {
-    return this.postWithRetry(channelId, message);
+    return this.postWithRetry(channelId, text, message);
   }
 }
 

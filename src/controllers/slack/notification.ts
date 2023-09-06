@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import appDataService from '../../services/slack/appData';
 import MessageBuilderService from '../../services/slack/messageBuilder';
 import SlackNotificationService from '../../services/slack/notification';
+import { text } from 'stream/consumers';
 
 const channelId = 'C05PG2K45EE'; //hedgehog;
 
@@ -17,7 +18,8 @@ export const handleWeeklySessionsNotification = async (
       messages.map(async (message) => {
         const response = await SlackNotificationService.postToChannel(
           channelId, // message.channelId,
-          message.text
+          message.text,
+          message.blocks
         );
 
         if (response) {
@@ -26,7 +28,6 @@ export const handleWeeklySessionsNotification = async (
         } else {
           return {
             success: false,
-            // channelId:
             channelId: channelId, //message.channelId,
             error: 'Failed after retries',
           };
