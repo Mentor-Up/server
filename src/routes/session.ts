@@ -7,6 +7,7 @@ import {
   updateStatus,
   getStatus,
   getUpcomingSessions,
+  getStudentUpcomingSessions,
 } from '../controllers/session';
 
 import { createComment, getAllComment } from '../controllers/comment';
@@ -25,9 +26,14 @@ router
   .route('/upcoming')
   .get(restrict('mentor', 'student-leader'), getUpcomingSessions);
 router
+  .route('/student/upcoming')
+  .get(restrict('student'), getStudentUpcomingSessions);
+router
   .route('/:sessionId')
   .get(getSession)
-  .patch(restrict('mentor', 'student-leader'), updateSession)
+  .patch(restrict('mentor', 'student-leader'), updateSession);
+router
+  .route('/:cohortId/:sessionId')
   .delete(restrict('mentor', 'student-leader'), deleteSession);
 router
   .route('/:sessionId/student/updateStatus')
