@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import User, { IUser } from '../models/User';
+import { IUser } from '../models/User';
 import adminService from '../services/admin';
+import { filterByAllowedKeys } from '../utils/filterByAllowedKeys';
 
 export const getUsers = async (req: Request, res: Response) => {
   // users by cohort
@@ -12,47 +13,49 @@ export const getUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  const user = await adminService.findUserById(userId);
-  res.status(200).json({ user });
+  const user = await adminService.findUserByIdwithCohorts(userId);
+  return res.status(200).json({ user: user.generateProfile() });
 };
 
-export const updateUser = async (req: Request, res: Response) => {
+export const updateUserByAdmin = async (req: Request, res: Response) => {
   const { userId } = req.params;
-  // const user = req.body;
-  // console.log('values to update', user);
-  const update: Partial<IUser> = {};
-
-  // TODO: Review refactoring into utility function
   const allowedKeys: Array<keyof IUser> = ['role', 'cohorts'];
-  const notAllowedKeys: Array<keyof IUser> = [];
 
-  // Filter and track not allowed keys
-  Object.keys(req.body).forEach((key) => {
-    if (allowedKeys.includes(key as keyof IUser)) {
-      update[key as keyof IUser] = req.body[key];
-    } else {
-      notAllowedKeys.push(key as keyof IUser);
-    }
-  });
+  const { updateData, invalidKeys } = filterByAllowedKeys(
+    req.body,
+    allowedKeys
+  );
 
-  if (Object.keys(update).length === 0) {
+  if (Object.keys(updateData).length === 0) {
     return res.status(400).json({
-      message: 'No values to update',
-      notAllowedKeys: notAllowedKeys,
+      message: 'No valid properties to update',
+      invalidKeys: invalidKeys,
       allowedKeys: allowedKeys,
     });
   }
 
-  const updatedUser = await adminService.updateUser(userId, update);
+  const updatedUser = await adminService.updateUser(userId, updateData);
 
-  if (notAllowedKeys.length > 0) {
+  if (invalidKeys.length > 0) {
     res.status(200).json({
-      profile: updatedUser,
-      message: 'Some properties cannot be updated using profile endpoint',
-      notAllowedKeys,
+      profile: updatedUser.generateProfile(),
+      message: 'Some properties cannot be updated by Admin',
+      invalidKeys,
       allowedKeys,
     });
   } else {
-    res.status(200).json({ profile: updatedUser });
+    res.status(200).json({ profile: updatedUser.generateProfile() });
   }
+};
+
+export const addUsersToCohort = async (req: Request, res: Response) => {
+  const { cohortId } = req.params;
+  const { userIDs } = req.body;
+
+  if (!Array.isArray(userIDs) || userIDs.length === 0) {
+    return res.status(400).json({ message: 'Invalid request body' });
+  }
+
+  await adminService.addExistingUsersToCohort(cohortId, userIDs);
+  res.status(200).json({ message: 'Successfully added users to the cohort' });
 };
