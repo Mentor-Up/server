@@ -8,6 +8,7 @@ export interface ICohort extends Document {
   type: CohortSubject;
   participants: Array<Types.ObjectId>;
   weeks: Array<IWeek>;
+  slackId?: string;
 }
 
 export type CohortSubject =
@@ -52,6 +53,10 @@ const CohortSchema = new mongoose.Schema<ICohort>(
       },
     ],
     weeks: [WeekSchema],
+    slackId: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

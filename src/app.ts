@@ -20,6 +20,7 @@ import sessionRouter from './routes/session';
 import weekRouter from './routes/week';
 import profileRouter from './routes/profile';
 import userRouter from './routes/user';
+import slackRouter from './routes/slack';
 
 import { NODE_ENV } from './config';
 
@@ -69,6 +70,7 @@ app.use('/api/v1/week', authMiddleware, weekRouter);
 app.use('/api/v1/session', authMiddleware, sessionRouter);
 app.use('/api/v1/profile', authMiddleware, profileRouter);
 app.use('/api/v1/users', authMiddleware, userRouter);
+app.use('/api/v1/slack', authMiddleware, slackRouter);
 
 //OAuth
 app.get('/auth/google/callback', googleOauthHandler);

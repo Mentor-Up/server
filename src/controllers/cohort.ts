@@ -5,7 +5,7 @@ import { getCohortWeeks } from '../constants/cohortWeeks';
 import { isCohortSubject } from '../utils/typeGuards';
 
 const createCohort = async (req: Request, res: Response) => {
-  const { name, start, type } = req.body;
+  const { name, start, type, slackId } = req.body;
   if (!name || !start || !type) {
     throw new BadRequestError('Missing values');
   }
@@ -21,6 +21,7 @@ const createCohort = async (req: Request, res: Response) => {
     end: weeks[weeks.length - 1].end,
     type,
     weeks,
+    slackId,
   });
 
   return res.status(201).json({ cohort });
@@ -43,7 +44,7 @@ const getCohort = async (req: Request, res: Response) => {
 
   const populateUserOptions = {
     path: 'participants',
-    select: '_id name email role isActivated',
+    select: '_id name email role isActivated slackId avatarUrl',
   };
 
   const cohort = await Cohort.find({ _id: cohortId }).populate(

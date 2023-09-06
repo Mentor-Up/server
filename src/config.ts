@@ -19,6 +19,7 @@ const {
   MAIL_LOGIN,
   MAIL_PWD,
   WEBSITE_URL,
+  SLACK_API_BOT_USER_OAUTH_TOKEN,
 } = process.env;
 
 const requiredValues = [
@@ -38,6 +39,7 @@ const requiredValues = [
   'MAIL_LOGIN',
   'MAIL_PWD',
   'WEBSITE_URL',
+  'SLACK_API_BOT_USER_OAUTH_TOKEN',
 ];
 
 for (const value of requiredValues) {
@@ -64,4 +66,5 @@ export {
   MAIL_LOGIN,
   MAIL_PWD,
   WEBSITE_URL,
+  SLACK_API_BOT_USER_OAUTH_TOKEN,
 };
