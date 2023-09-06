@@ -212,13 +212,15 @@ const updateStatus = async (req: Request, res: Response) => {
         throw new BadRequestError('Session does not exist');
       }
 
-      event = await scheduleEvent({
-        summary: sessionType,
-        start: sessionStart,
-        end: sessionEnd,
-        email: req.user.email,
-        description: sessionCreator,
-      });
+      if (user.OAuthToken) {
+        event = await scheduleEvent({
+          summary: sessionType,
+          start: sessionStart,
+          end: sessionEnd,
+          email: req.user.email,
+          description: sessionCreator,
+        });
+      }
     }
   } else if (status === false) {
     const userIndex = session.participant.findIndex((participant) =>

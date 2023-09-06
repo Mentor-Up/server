@@ -30,13 +30,16 @@ const scheduleEvent = async ({
   if (!user) {
     throw new Error('error');
   }
-  const refresh_token = user.OAuthToken;
+  let new_refresh_token;
+  if (user?.OAuthToken) {
+    new_refresh_token = user.OAuthToken;
+  }
 
   const formattedStart = moment(start).format('YYYY-MM-DDTHH:mm:ssZ');
   const formattedEnd = moment(end).format('YYYY-MM-DDTHH:mm:ssZ');
 
   oauth2Client.setCredentials({
-    refresh_token: refresh_token,
+    refresh_token: new_refresh_token,
   });
   const calendar = google.calendar('v3');
   const response = await calendar.events.insert({
