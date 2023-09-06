@@ -30,6 +30,10 @@ Whether you're an administrator overseeing multiple classes, a mentor guiding st
 
 - **Enhanced security:** MentorUp employs refresh tokens for added security, ensuring your data remains private and protected.
 
+- **Email Notifications:** Users will receive email confirmations upon successful registration within the app.
+
+- **Multiple Class and Session Creation:** Admin & Mentors can now effortlessly generate multiple sessions instead of the laborious weekly manual input.
+
 - **Real-time Schedule Access:** Empower students to access their class schedules with ease, guaranteeing they never miss essential sessions
 
 - **Google Integration:**
@@ -123,6 +127,12 @@ Base: /api/v1
   - `slack/channels/:channelId/members`
     - GET - admin only, fetches the list of members and their information (name, email, title) for a specific channel
 
+## Team Info
+
+miminiverse [minhtamphamtol@gmail.com]
+cdpaiva [cdpaivaa@gmail.comsyihew@gmail.com]
+akabishau [leshamisc@icloud.com]
+
 ## Contributing
 
 👩‍💻We welcome contributions from the community to make MentorUp even better! If you have any bug fixes, feature suggestions, or improvements, please follow our [contribution guidelines](CONTRIBUTING.md).
@@ -132,7 +142,7 @@ Base: /api/v1
 🍿If you need any assistance or have questions, you can reach out to our support team at [deerdove23@gmail.com]
 
 <div>
-<img src="https://www.educatorstechnology.com/wp-content/webp-express/webp-images/uploads/2023/05/Best-Tools-and-Apps-to-help-you-manage-your-class-1.png.webp" alt="chat"  />
+<img src="https://www.educatorstechnology.com/wp-content/webp-express/webp-images/uploads/2023/05/Best-Tools-and-Apps-to-help-you-manage-your-class-1.png.webp" alt="app"  />
 </div>
 
 ## License
