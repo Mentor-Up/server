@@ -80,18 +80,18 @@ const getSession = async (req: Request, res: Response) => {
 
   const populateParticipantOptions = {
     path: 'participant',
-    select: '_id name ',
+    select: '_id name avatarUrl ',
   };
   const populateCreatorOptions = {
     path: 'creator',
-    select: '_id name ',
+    select: '_id name avatarUrl ',
   };
   const populateDiscussionOptions = {
     path: 'discussion',
     select: '_id name content ',
     populate: {
       path: 'name',
-      select: 'name',
+      select: 'name avatarUrl',
     },
   };
 
