@@ -11,7 +11,7 @@ export const handleWeeklySessionsNotification = async (
 ): Promise<void> => {
   try {
     const weekData = await appDataService.currentWeekData();
-    const messages = MessageBuilderService.buildMessages(weekData);
+    const messages = MessageBuilderService.weeklySessions(weekData);
 
     const responses = await Promise.all(
       messages.map(async (message) => {
