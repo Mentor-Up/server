@@ -16,18 +16,28 @@ class MessageBuilderService {
   }
 
   private static buildWeeklyMessageForChannel(cohort: CohortData): string {
-    let message = '*This Week Cohort Sessions:*\n\n';
+    const sessionMessages = cohort.sessions
+      .map((session) => {
+        const formattedStart = new Date(session.start).toLocaleString('en-US', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        const formattedEnd = new Date(session.end).toLocaleString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        return `• *Mentoring Session* on ${formattedStart} to ${formattedEnd}. [<${session.link}|Join Session>])`;
+      })
+      .join('\n'); // extra line between sessions;
 
-    message += `*Cohort:* ${cohort.name}\n`;
-    message += `*Week:* ${cohort.week}\n`;
-    message += '*Sessions:*\n';
-
-    cohort.sessions.forEach((session) => {
-      message += `- ${session.type} on ${session.start} to ${session.end}. [Link](${session.link})\n`;
-    });
-
-    message += '\n';
-    return message;
+    return `*This Week Cohort Sessions:*\n
+*Cohort:* ${cohort.name}\n
+*Week:* ${cohort.week}\n
+*Sessions:*\n
+${sessionMessages}\n`;
   }
 }
 
