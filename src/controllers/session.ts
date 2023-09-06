@@ -250,13 +250,11 @@ const getStatus = async (req: Request, res: Response) => {
     throw new BadRequestError('This session does not exist');
   }
   const participantWithUserStatus = session?.participant.find((p) => {
-    console.log(p);
-
     const userId = (p as any)._id.toString();
     return userId === req.user.userId;
   });
   if (!participantWithUserStatus) {
-    throw new BadRequestError('You are not joining this session');
+    res.status(200).json({ msg: 'You are not joining this session' });
   }
   res.status(200).json(true);
 };
