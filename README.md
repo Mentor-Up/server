@@ -26,14 +26,16 @@ Whether you're an administrator overseeing multiple classes, a mentor guiding st
 
 ## Features
 
-- **Profile-based Communication:** With distinct roles for administrators, mentors, and students, our app caters to every stakeholder's unique needs. Admins gain comprehensive control over class management, mentors can effortlessly create and manage classes, and students enjoy the ease of accessing their class schedules—all in one intuitive platform.
+- **Tailored roles:** Our app caters to the diverse needs of administrators, mentors, and students with distinct roles. Admins wield comprehensive class management control, mentors effortlessly create and oversee classes, and students access their schedules seamlessly within one intuitive platform.
 
-- **Secure and Private:** MentorUp use refresh token
+- **Enhanced security:** MentorUp employs refresh tokens for added security, ensuring your data remains private and protected.
 
-- **Real-time Schedule Update:** Imagine students having the power to access their class schedules with a few clicks, ensuring they never miss an important lecture or assignment deadline. Meanwhile, mentors can create classes tailored to their teaching style and content, fostering an environment that encourages collaboration and engagement.
+- **Real-time Schedule Access:** Empower students to access their class schedules with ease, guaranteeing they never miss essential sessions
 
-- **Media Sharing:**
-  But that's not all! Our app goes beyond conventional class management by seamlessly integrating with Google OAuth and Slack. Google OAuth enhances security and convenience, allowing users to sign in with their Google accounts. With Slack integration, communication and collaboration reach new heights, making it easier than ever to foster a supportive learning community.
+- **Google Integration:**
+  Users can securely sign in with their Google accounts and utilize Google Calendar to manage their class schedules effortlessly.
+- **Slack Integration:**
+  Our integration with Slack empowers administrators to efficiently handle member profiles and customize private and public channels for seamless communication.
 
 ## Getting Started
 
@@ -41,12 +43,12 @@ To get started with MentorUp, follow these simple steps:
 
 ## Getting Started
 
-1. Create your own .env file
+1. Create your own .env file (see .env.example)
 2. npm install
 3. npm run dev
 4. Go to http://localhost:3000/ to start our application
 
-## Screanshots
+## Screenshots
 
 <div>
 <img src="" alt="app"  />
@@ -61,7 +63,7 @@ To get started with MentorUp, follow these simple steps:
 
 ## Support
 
-🍿If you need any assistance or have questions, you can reach out to our support team at
+🍿If you need any assistance or have questions, you can reach out to our support team at [deerdove23@gmail.com]
 
 <div>
 <img src="https://www.educatorstechnology.com/wp-content/webp-express/webp-images/uploads/2023/05/Best-Tools-and-Apps-to-help-you-manage-your-class-1.png.webp" alt="chat"  />
