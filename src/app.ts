@@ -1,6 +1,6 @@
 import cors from 'cors';
 import 'express-async-errors';
-import express from 'express';
+import express, { NextFunction } from 'express';
 const app = express();
 import favicon from 'express-favicon';
 import logger from 'morgan';
@@ -24,6 +24,7 @@ import slackRouter from './routes/slack';
 
 import { NODE_ENV } from './config';
 
+app.set('trust proxy', 1);
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
@@ -40,8 +41,7 @@ app.use(
   })
 );
 app.use(mongoSanitize());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 
 if (NODE_ENV === 'development') {
@@ -62,6 +62,20 @@ if (NODE_ENV === 'development') {
 app.use(express.static('public'));
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
+app.use((req, res, next) => {
+  console.log('Incoming Request:', req.method, req.path, req.headers, req.body);
+  next();
+});
+import { receiver } from './slack/slackApp';
+app.use(receiver.router);
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// app.post('/slack/events', (req, res) => {
+//   const { challenge } = req.body;
+//   res.send(challenge);
+// });
+
 // routes
 app.use('/api/v1/auth', authRouter);
 app.use('/testAuth', authMiddleware, (req, res) => res.send('OK!'));
@@ -74,6 +88,12 @@ app.use('/api/v1/slack', authMiddleware, slackRouter);
 
 //OAuth
 app.get('/auth/google/callback', googleOauthHandler);
+
+// import { Request, Response } from 'express';
+// app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+//   console.error(err.stack);
+//   res.status(500).send('Something broke!');
+// });
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
