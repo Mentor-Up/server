@@ -26,8 +26,8 @@ import { NODE_ENV } from './config';
 
 app.use(
   rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    max: 80, // Updated max value
+    windowMs: 60 * 1000, // 1 minute
+    max: 100, // Updated max value to 100 requests per minute
   })
 );
 

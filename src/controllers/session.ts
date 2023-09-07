@@ -80,18 +80,18 @@ const getSession = async (req: Request, res: Response) => {
 
   const populateParticipantOptions = {
     path: 'participant',
-    select: '_id name ',
+    select: '_id name avatarUrl ',
   };
   const populateCreatorOptions = {
     path: 'creator',
-    select: '_id name ',
+    select: '_id name avatarUrl ',
   };
   const populateDiscussionOptions = {
     path: 'discussion',
     select: '_id name content ',
     populate: {
       path: 'name',
-      select: 'name',
+      select: 'name avatarUrl',
     },
   };
 
@@ -211,14 +211,17 @@ const updateStatus = async (req: Request, res: Response) => {
       if (!sessionType || !sessionEnd || !sessionStart) {
         throw new BadRequestError('Session does not exist');
       }
+      console.log(user.OAuthToken);
 
-      event = await scheduleEvent({
-        summary: sessionType,
-        start: sessionStart,
-        end: sessionEnd,
-        email: req.user.email,
-        description: sessionCreator,
-      });
+      if (user.OAuthToken) {
+        event = await scheduleEvent({
+          summary: sessionType,
+          start: sessionStart,
+          end: sessionEnd,
+          email: req.user.email,
+          description: sessionCreator,
+        });
+      }
     }
   } else if (status === false) {
     const userIndex = session.participant.findIndex((participant) =>
@@ -248,13 +251,11 @@ const getStatus = async (req: Request, res: Response) => {
     throw new BadRequestError('This session does not exist');
   }
   const participantWithUserStatus = session?.participant.find((p) => {
-    console.log(p);
-
     const userId = (p as any)._id.toString();
     return userId === req.user.userId;
   });
   if (!participantWithUserStatus) {
-    throw new BadRequestError('You are not joining this session');
+    res.status(200).json(false);
   }
   res.status(200).json(true);
 };
