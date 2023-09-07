@@ -12,9 +12,9 @@ const ngrokUrl =
 export const receiver = new ExpressReceiver({
   signingSecret: signingSecret,
   endpoints: {
-    events: '/slack/events',
-    actions: '/slack/actions',
-    commands: '/slack/commands',
+    events: '/events',
+    actions: '/actions',
+    commands: '/commands',
   },
 });
 
@@ -27,11 +27,9 @@ const slackApp = new App({
   //   stateSecret: stateSecret,
   //   scopes: ['chat:write', 'im:write'],
 });
-// slackApp.start();
 
 slackApp.command('/testbolt', async ({ command, ack, say }) => {
   await ack();
-  console.log('COMMMMANDDDD', command);
   await say(`Hey there <@${command.user_id}>! Bolt setup seems to be working!`);
 });
 

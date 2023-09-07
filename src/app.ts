@@ -24,7 +24,10 @@ import slackRouter from './routes/slack';
 
 import { NODE_ENV } from './config';
 
+// Trusts the first proxy in front of the app. Useful when deployed behind a proxy
+// to accurately get the client's IP from the X-Forwarded-For header.
 app.set('trust proxy', 1);
+
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000,
@@ -62,19 +65,11 @@ if (NODE_ENV === 'development') {
 app.use(express.static('public'));
 app.use(favicon(__dirname + '/public/favicon.ico'));
 
-app.use((req, res, next) => {
-  console.log('Incoming Request:', req.method, req.path, req.headers, req.body);
-  next();
-});
-import { receiver } from './slack/slackApp';
-app.use(receiver.router);
+// slack router should be used before json and urlencoded middleware
+app.use('/api/v1/slack', slackRouter);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-// app.post('/slack/events', (req, res) => {
-//   const { challenge } = req.body;
-//   res.send(challenge);
-// });
 
 // routes
 app.use('/api/v1/auth', authRouter);
@@ -84,16 +79,9 @@ app.use('/api/v1/week', authMiddleware, weekRouter);
 app.use('/api/v1/session', authMiddleware, sessionRouter);
 app.use('/api/v1/profile', authMiddleware, profileRouter);
 app.use('/api/v1/users', authMiddleware, userRouter);
-app.use('/api/v1/slack', authMiddleware, slackRouter);
 
 //OAuth
 app.get('/auth/google/callback', googleOauthHandler);
-
-// import { Request, Response } from 'express';
-// app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-//   console.error(err.stack);
-//   res.status(500).send('Something broke!');
-// });
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
