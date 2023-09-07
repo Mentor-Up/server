@@ -149,6 +149,7 @@ Base: /api/v1
 - miminiverse [https://github.com/Miminiverse]
 - cdpaiva [https://github.com/cdpaiva]
 - akabishau [https://github.com/akabishau]
+- secch97 [https://github.com/secch97]
 
 ## Contributing
 
