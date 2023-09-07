@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import appDataService from '../../services/slack/appData';
 import MessageBuilderService from '../../services/slack/messageBuilder';
 import SlackNotificationService from '../../services/slack/notification';
-import { text } from 'stream/consumers';
 
 const channelId = 'C05PG2K45EE'; //hedgehog;
 

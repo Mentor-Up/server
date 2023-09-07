@@ -17,11 +17,13 @@ export interface CohortData {
       name: string;
       slackId: string;
     };
-    participants: {
-      _id: string;
-      name: string;
-      slackId: string;
-    };
+    participants: [
+      {
+        _id: string;
+        name: string;
+        slackId: string;
+      },
+    ];
     link: string;
   }[];
 }
