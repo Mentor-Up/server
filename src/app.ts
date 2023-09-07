@@ -35,7 +35,7 @@ app.use(helmet());
 app.use(compression());
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://mentorup-81w4.onrender.com',
     credentials: true,
   })
 );
