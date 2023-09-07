@@ -45,8 +45,6 @@ Whether you're an administrator overseeing multiple classes, a mentor guiding st
 
 To get started with MentorUp, follow these simple steps:
 
-## Getting Started
-
 1. Create your own .env file (see .env.example)
 2. npm install
 3. npm run dev
