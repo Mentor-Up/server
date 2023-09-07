@@ -158,10 +158,6 @@ Base: /api/v1
 
 🍿If you need any assistance or have questions, you can reach out to our support team at [deerdove23@gmail.com]
 
-<div>
-<img src="https://www.educatorstechnology.com/wp-content/webp-express/webp-images/uploads/2023/05/Best-Tools-and-Apps-to-help-you-manage-your-class-1.png.webp" alt="app"  />
-</div>
-
 ## License
 
 🧙
