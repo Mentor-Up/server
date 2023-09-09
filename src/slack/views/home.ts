@@ -1,7 +1,7 @@
 import { HomeView } from '@slack/types';
 import { getGreetingsView } from './greeting';
 import { getCohortsView } from './sessions';
-import { ThisWeekCohortSessions } from '../../services/slack/sessionsData';
+import { ThisWeekCohortSessions } from '../services/sessions';
 
 // This function will generate the Home view for the user
 export const generateHomeView = (

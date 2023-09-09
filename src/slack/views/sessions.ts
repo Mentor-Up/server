@@ -1,7 +1,4 @@
-import {
-  ThisWeekCohortSessions,
-  CohortSession,
-} from '../../services/slack/sessionsData';
+import { ThisWeekCohortSessions, CohortSession } from '../services/sessions';
 
 // Function to generate a view for a single session
 const getSessionView = (session: CohortSession) => {

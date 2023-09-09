@@ -1,7 +1,7 @@
 import { App } from '@slack/bolt';
 import { HomeView } from '@slack/types';
 import { generateHomeView, getLoadingView, getErrorView } from '../views';
-import sessionDataService from '../../services/slack/sessionsData';
+import sessionsService from '../services/sessions';
 
 export const handleAppHomeOpened = (slackApp: App) => {
   slackApp.event('app_home_opened', async ({ event, client }) => {
@@ -16,7 +16,7 @@ export const handleAppHomeOpened = (slackApp: App) => {
       const slackResult = await client.users.info({ user: slackId });
       console.log(slackResult);
 
-      const sessions = await sessionDataService.getThisWeekSessions(slackId);
+      const sessions = await sessionsService.getThisWeekSessions(slackId);
       console.log(sessions);
 
       if (slackResult.user && sessions) {

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import sessionsDataService from '../../services/slack/sessionsData';
+import sessionsDataService from '../../slack/services/sessions';
 
 export const handleThisWeekSessions = async (
   req: Request,
