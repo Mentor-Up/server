@@ -1,17 +1,12 @@
 import { App, ExpressReceiver, LogLevel } from '@slack/bolt';
 import { registerHomeOpenedEvent } from './events/homeOpened';
-
-const appBotToken = 'xoxb-5756175781729-5743785360178-2er832AYxzFco71dTQbyZyoc';
-const signingSecret = 'eb0333f42982f0d4f01a5f55cfaa00e1';
-const clientId = '5756175781729.5746164617860';
-const clientSecret = '3d019efe3c11d35a5ddad89acd6fa196';
-const stateSecret = 'my-state-secret';
-
-const ngrokUrl =
-  'https://952c-2603-6080-c02-3319-448c-f9c1-139b-cee2.ngrok-free.app';
+import {
+  SLACK_APP_SIGNING_SECRET,
+  SLACK_API_BOT_USER_OAUTH_TOKEN,
+} from '../config';
 
 export const receiver = new ExpressReceiver({
-  signingSecret: signingSecret,
+  signingSecret: SLACK_APP_SIGNING_SECRET!,
   endpoints: {
     events: '/events',
     actions: '/actions',
@@ -20,13 +15,9 @@ export const receiver = new ExpressReceiver({
 });
 
 const slackApp = new App({
-  token: appBotToken,
+  token: SLACK_API_BOT_USER_OAUTH_TOKEN,
   receiver: receiver,
   logLevel: LogLevel.DEBUG,
-  //   clientId: clientId,
-  //   clientSecret: clientSecret,
-  //   stateSecret: stateSecret,
-  //   scopes: ['chat:write', 'im:write'],
 });
 
 slackApp.command('/testbolt', async ({ command, ack, say }) => {
