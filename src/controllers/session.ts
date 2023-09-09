@@ -55,7 +55,6 @@ const createSession = async (req: Request, res: Response) => {
       startTimestamp += weekInMil;
       endTimestamp += weekInMil;
 
-      console.log(session);
       const newStart = new Date(session?.start);
       await addSession(cohort, newStart, session);
     }
@@ -211,7 +210,6 @@ const updateStatus = async (req: Request, res: Response) => {
       if (!sessionType || !sessionEnd || !sessionStart) {
         throw new BadRequestError('Session does not exist');
       }
-      console.log(user.OAuthToken);
 
       if (user.OAuthToken) {
         event = await scheduleEvent({

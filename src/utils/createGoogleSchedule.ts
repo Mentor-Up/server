@@ -34,9 +34,13 @@ const scheduleEvent = async ({
   if (user?.OAuthToken) {
     new_refresh_token = user.OAuthToken;
   }
+  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-  const formattedStart = moment(start).format('YYYY-MM-DDTHH:mm:ssZ');
-  const formattedEnd = moment(end).format('YYYY-MM-DDTHH:mm:ssZ');
+  const userLocalStart = moment.utc(start).tz(userTimeZone);
+  const userLocalEnd = moment.utc(end).tz(userTimeZone);
+
+  const formattedStart = userLocalStart.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
+  const formattedEnd = userLocalEnd.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
 
   oauth2Client.setCredentials({
     refresh_token: new_refresh_token,

@@ -33,12 +33,22 @@ app.use(
 
 app.use(helmet());
 app.use(compression());
-app.use(
-  cors({
-    origin: 'https://mentorup-81w4.onrender.com',
-    credentials: true,
-  })
-);
+if (NODE_ENV === 'development') {
+  app.use(
+    cors({
+      origin: 'http://localhost:3000',
+      credentials: true,
+    })
+  );
+} else {
+  app.use(
+    cors({
+      origin: 'https://mentorup-81w4.onrender.com',
+      credentials: true,
+    })
+  );
+}
+
 app.use(mongoSanitize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
