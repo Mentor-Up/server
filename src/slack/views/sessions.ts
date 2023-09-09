@@ -1,4 +1,4 @@
-import { ThisWeekCohortSessions, CohortSession } from '../services/sessions';
+import { ThisWeekCohortSessions, CohortSession } from '../types/cohortSession';
 
 // Function to generate a view for a single session
 const getSessionView = (session: CohortSession) => {

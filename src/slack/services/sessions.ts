@@ -2,34 +2,11 @@ import { IWeek } from '../../models/Week';
 import Cohort, { ICohort } from '../../models/Cohort';
 import User, { IUser } from '../../models/User';
 import { NotFoundError } from '../../errors';
-
-export interface CohortUser {
-  id: string;
-  name: string;
-  slackId: string | null;
-  isAdmin: boolean;
-  isMentor: boolean;
-}
-
-export interface CohortSession {
-  id: string;
-  type: string;
-  start: Date;
-  end: Date;
-  mentor: CohortUser;
-  students: CohortUser[];
-  link: string;
-}
-
-export interface ThisWeekCohortSessions {
-  id: string;
-  name: string;
-  slackId: string | null;
-  type: string;
-  weekId: string;
-  week: string;
-  sessions: CohortSession[];
-}
+import {
+  CohortUser,
+  CohortSession,
+  ThisWeekCohortSessions,
+} from '../types/cohortSession';
 
 class SessionsDataService {
   private getCohortFindPredicate(
