@@ -3,7 +3,6 @@ import restrict from '../middleware/authorizeRole';
 import { getNewChannels } from '../controllers/slack/channel';
 import { getNewMembers } from '../controllers/slack/member';
 import { handleWeeklySessionsNotification } from '../controllers/slack/notification';
-import { handleThisWeekSessions } from '../controllers/slack/this-week';
 import authMiddleware from '../middleware/authentication';
 import { receiver } from '../slack/slackApp';
 
@@ -29,13 +28,6 @@ router.get(
   express.json(),
   authMiddleware,
   handleWeeklySessionsNotification
-);
-
-router.get(
-  '/this-week-sessions',
-  express.json(),
-  authMiddleware,
-  handleThisWeekSessions
 );
 
 router.use((req, res, next) => {

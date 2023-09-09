@@ -1,5 +1,5 @@
 import { App, ExpressReceiver, LogLevel } from '@slack/bolt';
-import { handleAppHomeOpened } from './events/homeOpened';
+import { registerHomeOpenedEvent } from './events/homeOpened';
 
 const appBotToken = 'xoxb-5756175781729-5743785360178-2er832AYxzFco71dTQbyZyoc';
 const signingSecret = 'eb0333f42982f0d4f01a5f55cfaa00e1';
@@ -34,7 +34,7 @@ slackApp.command('/testbolt', async ({ command, ack, say }) => {
   await say(`Hey there <@${command.user_id}>! Bolt setup seems to be working!`);
 });
 
-handleAppHomeOpened(slackApp);
+registerHomeOpenedEvent(slackApp);
 
 slackApp.error(async (error) => {
   console.error(`Failed due to ${error.message}`);
