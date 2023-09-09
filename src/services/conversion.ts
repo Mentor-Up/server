@@ -2,7 +2,7 @@ import { ICohort } from '../models/Cohort';
 import User, { IUser } from '../models/User';
 import { isCohortSubject } from '../utils/typeGuards';
 import { SlackChannel } from '../utils/slack/channel';
-import { SlackMember } from '../utils/slack/member';
+import { SlackMember } from '../slack/types/member';
 
 class ConvesionService {
   convertToCohort(channel: SlackChannel): Partial<ICohort> {

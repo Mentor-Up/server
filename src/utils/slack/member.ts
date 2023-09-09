@@ -1,18 +1,5 @@
 import { slackWebClient, WebAPICallResult } from './slackWebClient';
-
-export interface SlackMember {
-  id: string;
-  email: string;
-  name: string;
-  title: string;
-  displayName: string;
-  avatarUrl: string;
-  isAdmin: boolean;
-  isBot: boolean;
-  isEmailConfirmed: boolean;
-  teamId: string;
-  timezone?: string;
-}
+import { SlackMember } from '../../slack/types/member';
 
 async function fetchChannelMembers(channelId: string): Promise<string[]> {
   try {
@@ -42,6 +29,8 @@ function extractMemberProfile(userData: WebAPICallResult): SlackMember {
     id: user.id,
     email: profile.email,
     name: profile.real_name,
+    firstName: profile.first_name,
+    lastName: profile.last_name,
     title: profile.title,
     displayName: profile.display_name,
     avatarUrl: profile.image_original,
@@ -49,7 +38,9 @@ function extractMemberProfile(userData: WebAPICallResult): SlackMember {
     isBot: user.is_bot,
     isEmailConfirmed: user.is_email_confirmed,
     teamId: user.team,
-    timezone: user.tz,
+    tz: user.tz,
+    tz_label: user.tz_label,
+    tz_offset: user.tz_offset,
   };
 }
 

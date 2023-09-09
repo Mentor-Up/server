@@ -1,6 +1,6 @@
 import { IUser } from '../models/User';
 import { ICohort } from '../models/Cohort';
-import { SlackMember } from '../utils/slack/member';
+import { SlackMember } from '../slack/types/member';
 import { SlackChannel } from '../utils/slack/channel';
 
 // work on name
