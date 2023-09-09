@@ -1,6 +1,7 @@
 import { IWeek } from '../../models/Week';
 import Cohort, { ICohort } from '../../models/Cohort';
 import User, { IUser } from '../../models/User';
+import { NotFoundError } from '../../errors';
 
 export interface CohortUser {
   id: string;
@@ -38,6 +39,7 @@ class SessionsDataService {
     let predicate: Record<string, any> = {
       start: { $lte: today },
       end: { $gte: today },
+      slackId: { $ne: null },
     };
 
     if (!user.role.includes('admin')) {
@@ -76,12 +78,11 @@ class SessionsDataService {
   }
 
   async getThisWeekSessions(
-    userId: string,
-    slackOnly = true
+    slackId: string
   ): Promise<{ user: CohortUser; cohorts: ThisWeekCohortSessions[] }> {
-    const user = await User.findById(userId);
+    const user = await User.findOne({ slackId });
     if (!user) {
-      throw new Error('User not found.');
+      throw new NotFoundError('User not found.');
     }
     const today = new Date();
 
@@ -89,15 +90,9 @@ class SessionsDataService {
     const populateOptions = this.getSessionPopulateOptions(user);
     const cohorts = await Cohort.find(predicate).populate(populateOptions);
 
-    const filteredCohorts = slackOnly
-      ? cohorts.filter((cohort) => cohort.slackId)
-      : cohorts;
-
     return {
       user: this.handleCohortUser(user),
-      cohorts: filteredCohorts.map((cohort) =>
-        this.handleCohortData(cohort, today)
-      ),
+      cohorts: cohorts.map((cohort) => this.handleCohortData(cohort, today)),
     };
   }
 

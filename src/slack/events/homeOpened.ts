@@ -5,21 +5,18 @@ import sessionDataService from '../../services/slack/sessionsData';
 
 export const handleAppHomeOpened = (slackApp: App) => {
   slackApp.event('app_home_opened', async ({ event, client }) => {
-    const user_id = event.user;
+    const slackId = event.user;
 
     await client.views.publish({
-      user_id: user_id,
+      user_id: slackId,
       view: getLoadingView(),
     });
 
     try {
-      const slackResult = await client.users.info({ user: user_id });
+      const slackResult = await client.users.info({ user: slackId });
       console.log(slackResult);
 
-      //TODO: update to user slack id
-      const sessions = await sessionDataService.getThisWeekSessions(
-        '64f73268910c94f0946a3f3f'
-      );
+      const sessions = await sessionDataService.getThisWeekSessions(slackId);
       console.log(sessions);
 
       if (slackResult.user && sessions) {
@@ -31,14 +28,14 @@ export const handleAppHomeOpened = (slackApp: App) => {
           sessions.cohorts
         );
         await client.views.publish({
-          user_id: user_id,
+          user_id: slackId,
           view: homeView,
         });
       }
     } catch (error) {
       console.error(`Failed due to ${(error as Error).message}`);
       await client.views.publish({
-        user_id: user_id,
+        user_id: slackId,
         view: getErrorView(),
       });
     }
