@@ -5,6 +5,7 @@ import {
   getGreetingsView,
 } from '../views/home/greetings';
 import { buildUserRoleSection } from '../views/home/userRole';
+import { buildCohortSection } from '../views/home/cohort';
 import { getLoadingView, getErrorView } from '../views';
 import sessionsService from '../services/sessions';
 import { SlackMember } from '../types/member';
@@ -39,6 +40,14 @@ export const handleHomeOpened = async (client: WebClient, userId: string) => {
     const userRoleSection = buildUserRoleSection(sessions.user);
     sessionView.push(userRoleSection);
     sessionView.push(Blocks.Divider());
+
+    // cohort section
+    sessions.cohorts.forEach((cohort) => {
+      const cohortSection = buildCohortSection(cohort);
+      sessionView.push(...cohortSection);
+    });
+
+    // placeholder
     sessionView.push(Blocks.Section().text('Session details would go here'));
   } catch (error) {
     console.error(
