@@ -1,20 +1,29 @@
 import moment from 'moment-timezone';
 import { CohortSession } from '../types/cohortSession';
 import { SlackMember } from '../types/member';
+import { stat } from 'fs';
 
 const convertToUserTime = (utcDate: Date, user: SlackMember): moment.Moment => {
   return moment.tz(utcDate, 'UTC').tz(user.tz);
 };
 
-export const formatSessionStart = (
+export const formatSessionDate = (
+  session: CohortSession,
+  user: SlackMember
+) => {
+  const start = convertToUserTime(session.start, user);
+  return start.format('dddd, MMM D');
+};
+
+export const formatSessionStartTime = (
   session: CohortSession,
   user: SlackMember
 ): string => {
   const startTime = convertToUserTime(session.start, user);
-  return startTime.format('dddd, MMM D [at] h:mm a');
+  return startTime.format('h:mm a');
 };
 
-const formatSessionEnd = (
+export const formatSessionEndTime = (
   session: CohortSession,
   user: SlackMember
 ): string => {

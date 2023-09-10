@@ -1,9 +1,10 @@
-import { Blocks } from 'slack-block-builder';
+import { Blocks, Md } from 'slack-block-builder';
 import { CohortSession } from '../../types/cohortSession';
 import { SlackMember } from '../../types/member';
 import {
-  formatSessionStart,
-  calculateDuration,
+  formatSessionStartTime,
+  formatSessionEndTime,
+  formatSessionDate,
 } from '../../utils/sessionTimeUtils';
 
 export const buildSession = (
@@ -12,25 +13,28 @@ export const buildSession = (
   session: CohortSession
 ) => {
   // admin version
-  // type
-  // mentor/creator
-  // start
-  // end
-  // duration
   // link if going
-
   // build and convert to basic?
+  const mentor = session.mentor.slackId
+    ? Md.user(session.mentor.slackId)
+    : session.mentor.name;
+  const title = `${session.type} Session with ${mentor}`;
 
-  const sessionStart = formatSessionStart(session, user);
-  const sessionDuration = calculateDuration(session);
+  const sessionDate = formatSessionDate(session, user);
+  const sessionStart = formatSessionStartTime(session, user);
+  const sessionEnd = formatSessionEndTime(session, user);
+  const count = session.students.length;
 
   const adminView = [
-    Blocks.Section().text('*Admin Session View*'),
-    Blocks.Section().text(`*Type:* ${session.type} Session`),
-    Blocks.Section().text(`*Mentor:* ${session.mentor.name}`),
-    Blocks.Section().text(`*When:* ${sessionStart}`),
-    Blocks.Section().text(`*Duration:* ${sessionDuration}`),
-
+    Blocks.Section().text(Md.emoji('books') + ' ' + Md.bold(title)),
+    Blocks.Section().text(Md.emoji('calendar') + ' ' + sessionDate),
+    Blocks.Section().text(
+      Md.emoji('hourglass') + ' ' + sessionStart + ' - ' + sessionEnd
+    ),
+    Blocks.Section().text(
+      Md.emoji('busts_in_silhouette') + ` Students attending: ${count}`
+    ),
+    Blocks.Section().text(Md.link(session.link, 'Join Session')),
     Blocks.Divider(),
   ];
 
