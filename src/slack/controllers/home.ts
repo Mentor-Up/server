@@ -4,6 +4,7 @@ import {
   getGenericGreetingView,
   getGreetingsView,
 } from '../views/home/greetings';
+import { buildUserRoleSection } from '../views/home/userRole';
 import { getLoadingView, getErrorView } from '../views';
 import sessionsService from '../services/sessions';
 import { SlackMember } from '../types/member';
@@ -35,8 +36,10 @@ export const handleHomeOpened = async (client: WebClient, userId: string) => {
   try {
     const sessions = await sessionsService.getThisWeekSessions(userId);
     console.log('Sessions:', sessions);
-    // Here, you'd replace the following line with actual session processing logic.
-    sessionView = [Blocks.Section().text('Session details would go here')];
+    const userRoleSection = buildUserRoleSection(sessions.user);
+    sessionView.push(userRoleSection);
+    sessionView.push(Blocks.Divider());
+    sessionView.push(Blocks.Section().text('Session details would go here'));
   } catch (error) {
     console.error(
       `Failed to fetch sessions due to ${(error as Error).message}`
