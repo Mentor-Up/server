@@ -3,15 +3,15 @@ import { Blocks, HomeTab } from 'slack-block-builder';
 import {
   getGenericGreetingView,
   getGreetingsView,
-} from '../views/home/greetings';
-import { buildUserRoleSection } from '../views/home/userRole';
-import { buildCohortSection } from '../views/home/cohort';
-import { buildSession } from '../views/home/session';
-import { getLoadingView, getErrorView } from '../views';
-import sessionsService from '../services/sessions';
-import { SlackMember } from '../types/member';
-import { extractMemberProfile } from '../utils/memberHelper';
-import { determineUserRole } from '../utils/userRoleHelper';
+} from '../../views/home/greetings';
+import { buildUserRoleSection } from '../../views/home/userRole';
+import { buildCohortSection } from '../../views/home/cohort';
+import { buildSession } from '../../views/home/session';
+import { getLoadingView, getErrorView } from '../../views';
+import sessionsService from '../../services/sessions';
+import { SlackMember } from '../../types/member';
+import { extractMemberProfile } from '../../utils/memberHelper';
+import { determineUserRole } from '../../utils/userRoleHelper';
 
 export const handleHomeOpened = async (client: WebClient, userId: string) => {
   console.log('handleHomeOpened');

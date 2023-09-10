@@ -1,11 +1,12 @@
 import { App, ExpressReceiver, LogLevel } from '@slack/bolt';
-import { registerHomeOpenedEvent } from './events/homeOpened';
+
 import {
   SLACK_APP_SIGNING_SECRET,
   SLACK_API_BOT_USER_OAUTH_TOKEN,
 } from '../config';
 
 import { registerActionListeners } from './listeners/actions';
+import { registerEventListeners } from './listeners/events';
 
 export const receiver = new ExpressReceiver({
   signingSecret: SLACK_APP_SIGNING_SECRET!,
@@ -28,7 +29,7 @@ slackApp.command('/testbolt', async ({ command, ack, say }) => {
 });
 
 registerActionListeners(slackApp);
-registerHomeOpenedEvent(slackApp);
+registerEventListeners(slackApp);
 
 slackApp.error(async (error) => {
   console.error(`Failed due to ${error.message}`);

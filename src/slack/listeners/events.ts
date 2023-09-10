@@ -1,7 +1,7 @@
 import { App } from '@slack/bolt';
-import { handleHomeOpened } from '../controllers/home';
+import { handleHomeOpened } from '../handlers/events/homePageOpened';
 
-export const registerHomeOpenedEvent = (slackApp: App) => {
+export const registerEventListeners = (slackApp: App) => {
   slackApp.event('app_home_opened', async ({ event, client }) => {
     const userId = event.user;
     await handleHomeOpened(client, userId);
