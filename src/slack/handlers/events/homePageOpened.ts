@@ -16,8 +16,6 @@ import { isSessionPast } from '../../utils/sessionTimeUtils';
 import { CohortSession } from '../../types/cohortSession';
 
 export const handleHomeOpened = async (client: WebClient, userId: string) => {
-  console.log('handleHomeOpened');
-
   await client.views.publish({
     user_id: userId,
     view: getLoadingView(),
@@ -43,7 +41,6 @@ export const handleHomeOpened = async (client: WebClient, userId: string) => {
 
   try {
     const sessions = await sessionsService.getThisWeekSessions(userId);
-    console.log('Sessions:', sessions);
     const userRole = determineUserRole(sessions.user);
     const userRoleView = buildUserRoleSection(userRole, sessions.cohorts);
     sessionView.push(...userRoleView);

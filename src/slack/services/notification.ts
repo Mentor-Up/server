@@ -15,7 +15,6 @@ class SlackNotificationService {
           blocks: message,
         });
         if (response.ts) {
-          console.log('Message sent to channel:', response.ts);
           return response.ts;
         } else {
           console.warn('Unexpected Slack response format. Missing timestamp.');

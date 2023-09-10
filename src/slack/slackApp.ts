@@ -20,7 +20,7 @@ export const receiver = new ExpressReceiver({
 const slackApp = new App({
   token: SLACK_API_BOT_USER_OAUTH_TOKEN,
   receiver: receiver,
-  logLevel: LogLevel.DEBUG,
+  logLevel: LogLevel.INFO,
 });
 
 slackApp.command('/testbolt', async ({ command, ack, say }) => {

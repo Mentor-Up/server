@@ -1,6 +1,6 @@
 import cors from 'cors';
 import 'express-async-errors';
-import express, { NextFunction } from 'express';
+import express from 'express';
 const app = express();
 import favicon from 'express-favicon';
 import logger from 'morgan';
@@ -53,7 +53,12 @@ if (NODE_ENV === 'development') {
   );
 }
 
+// slack router should be used before json and urlencoded middleware
+app.use('/api/v1/slack', slackRouter);
+
 app.use(mongoSanitize());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
 
@@ -74,12 +79,6 @@ if (NODE_ENV === 'development') {
 }
 app.use(express.static('public'));
 app.use(favicon(__dirname + '/public/favicon.ico'));
-
-// slack router should be used before json and urlencoded middleware
-app.use('/api/v1/slack', slackRouter);
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
 // routes
 app.use('/api/v1/auth', authRouter);
