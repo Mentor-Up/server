@@ -74,7 +74,6 @@ app.use(favicon(__dirname + '/public/favicon.ico'));
 
 // routes
 app.use('/api/v1/auth', authRouter);
-app.use('/testAuth', authMiddleware, (req, res) => res.send('OK!'));
 app.use('/api/v1/cohort', authMiddleware, cohortRouter);
 app.use('/api/v1/week', authMiddleware, weekRouter);
 app.use('/api/v1/session', authMiddleware, sessionRouter);

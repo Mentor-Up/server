@@ -42,8 +42,9 @@ const createSession = async (req: Request, res: Response) => {
       creator: userId,
     });
     await addSession(cohort, startDate, session);
-    return res.status(201).json({ session });
+    return res.status(201).json({ sessions: [session] });
   } else {
+    const newSessions = [];
     while (startTimestamp < cohortEnd) {
       const session = await SessionModel.create({
         start: new Date(startTimestamp),
@@ -55,10 +56,11 @@ const createSession = async (req: Request, res: Response) => {
       startTimestamp += weekInMil;
       endTimestamp += weekInMil;
 
+      newSessions.push(session);
       const newStart = new Date(session?.start);
       await addSession(cohort, newStart, session);
     }
-    return res.status(201).json({ cohort });
+    return res.status(201).json({ sessions: newSessions });
   }
 };
 
@@ -264,9 +266,7 @@ const getUpcomingSessions = async (req: Request, res: Response) => {
   const sessions = await SessionModel.find({
     creator: userId,
     start: { $gte: Date.now() },
-  })
-    .limit(6)
-    .sort({ start: 'asc' });
+  }).sort({ start: 'asc' });
 
   res.status(200).json({ sessions });
 };
@@ -277,9 +277,7 @@ const getStudentUpcomingSessions = async (req: Request, res: Response) => {
   const sessions = await SessionModel.find({
     participant: userId,
     start: { $gte: Date.now() },
-  })
-    .limit(6)
-    .sort({ start: 'asc' });
+  }).sort({ start: 'asc' });
 
   res.status(200).json({ sessions });
 };
