@@ -1,6 +1,8 @@
 import { App } from '@slack/bolt';
-import { handleNotifyAllAction } from '../handlers/actions/notifyAllChannels';
+import { handleNotifyAllChannels } from '../handlers/actions/notifyAllChannels';
 
 export const registerActionListeners = (slackApp: App) => {
-  handleNotifyAllAction(slackApp);
+  slackApp.action('notify_all_channels_action', async (payload) => {
+    await handleNotifyAllChannels(payload);
+  });
 };
