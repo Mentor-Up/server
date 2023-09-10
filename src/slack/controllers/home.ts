@@ -21,12 +21,14 @@ export const handleHomeOpened = async (client: WebClient, userId: string) => {
     view: getLoadingView(),
   });
 
+  // TODO: combine both calls since I need member tz for time conversion
+  let member: SlackMember;
   let greetingView = getGenericGreetingView();
 
   try {
     const slackUserInfo = await client.users.info({ user: userId });
     if (slackUserInfo.ok) {
-      const member: SlackMember = extractMemberProfile(slackUserInfo);
+      member = extractMemberProfile(slackUserInfo);
       greetingView = getGreetingsView(member);
     }
   } catch (error) {
@@ -53,7 +55,7 @@ export const handleHomeOpened = async (client: WebClient, userId: string) => {
         );
       } else {
         cohort.sessions.forEach((session) => {
-          const sessionBlock = buildSession(userRole, session);
+          const sessionBlock = buildSession(member, userRole, session);
           sessionView.push(...sessionBlock);
         });
       }
