@@ -42,6 +42,10 @@ const scheduleEvent = async ({
   const formattedStart = userLocalStart.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
   const formattedEnd = userLocalEnd.format('YYYY-MM-DDTHH:mm:ss.SSS[Z]');
 
+  console.log(start);
+  console.log(userLocalStart);
+  console.log(formattedStart);
+
   oauth2Client.setCredentials({
     refresh_token: new_refresh_token,
   });
