@@ -1,8 +1,8 @@
-import { App, SlackActionMiddlewareArgs } from '@slack/bolt';
+import { SlackActionMiddlewareArgs } from '@slack/bolt';
 
-import appDataService from '../../../services/slack/appData';
-import MessageBuilderService from '../../../services/slack/messageBuilder';
-import SlackNotificationService from '../../../services/slack/notification';
+import sessionsDataService from '../../services/sessions';
+import MessageBuilderService from '../../services/messageBuilder';
+import SlackNotificationService from '../../services/notification';
 
 export const handleNotifyAllChannels = async (
   args: SlackActionMiddlewareArgs
@@ -11,8 +11,10 @@ export const handleNotifyAllChannels = async (
   await ack();
   console.log('Notify All button was clicked!');
   try {
-    const weekData = await appDataService.currentWeekData();
-    const messages = MessageBuilderService.weeklySessions(weekData);
+    const weekData = await sessionsDataService.getThisWeekSessions(
+      'U05MVFX85EW'
+    );
+    const messages = MessageBuilderService.weeklySessions(weekData.cohorts);
 
     const channelId = 'C05PG2K45EE'; // hedgehog;
     const responses = await Promise.all(

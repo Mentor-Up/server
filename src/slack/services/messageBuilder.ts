@@ -1,4 +1,4 @@
-import { CohortData } from './appData';
+import { ThisWeekCohortSessions } from '../types/cohortSession';
 
 interface ChannelMessage {
   channelId: string;
@@ -7,17 +7,21 @@ interface ChannelMessage {
 }
 
 class MessageBuilderService {
-  public static weeklySessions(cohortsData: CohortData[]): ChannelMessage[] {
+  public static weeklySessions(
+    cohortsData: ThisWeekCohortSessions[]
+  ): ChannelMessage[] {
     return cohortsData.map((cohort) => {
       return {
-        channelId: cohort.slackId,
+        channelId: cohort.slackId!,
         text: 'Weekly Sessions Update',
         blocks: this.buildWeeklyMessageForChannel(cohort),
       };
     });
   }
 
-  private static buildWeeklyMessageForChannel(cohort: CohortData): any[] {
+  private static buildWeeklyMessageForChannel(
+    cohort: ThisWeekCohortSessions
+  ): any[] {
     const headerBlock = {
       type: 'header',
       text: {
@@ -80,7 +84,7 @@ class MessageBuilderService {
         durationString += `${durationMinutes} minutes`;
       }
 
-      const participantCount = session.participants.length;
+      const participantCount = session.students.length;
       const participantString = `${participantCount} student${
         participantCount !== 1 ? 's' : ''
       }`;
@@ -92,7 +96,7 @@ class MessageBuilderService {
           text: {
             type: 'mrkdwn',
             text: `${session.type} Session with <@${
-              session.creator.slackId
+              session.mentor.slackId
             }>\n When: ${formattedStart} EST for ${durationString}.\n(${participantString} ${
               participantCount === 1 ? 'is' : 'are'
             } attending so far)`,
