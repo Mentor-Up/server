@@ -87,3 +87,25 @@ export const buildSession = (
     return studentView;
   }
 };
+
+export const buildPastSession = (
+  user: SlackMember,
+  role: string,
+  session: CohortSession
+) => {
+  const mentor = session.mentor.slackId
+    ? Md.user(session.mentor.slackId)
+    : session.mentor.name;
+  const title = `${session.type} Session with ${mentor}`;
+
+  const sessionDate = formatSessionDate(session, user);
+  const sessionStart = formatSessionStartTime(session, user);
+  return [
+    Blocks.Section().text(
+      `${Md.emoji('heavy_check_mark')} ${Md.bold(
+        title
+      )} on ${sessionDate} at ${sessionStart}`
+    ),
+    Blocks.Divider(),
+  ];
+};

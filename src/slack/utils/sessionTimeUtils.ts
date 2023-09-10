@@ -41,3 +41,18 @@ export const calculateDuration = (session: CohortSession): string => {
 
   return `${hours ? hours + 'h ' : ''}${minutes}m`;
 };
+
+export const isSessionPast = (
+  session: CohortSession,
+  user: SlackMember
+): boolean => {
+  const currentUserTime = getCurrentUserTime(user);
+  const sessionEndTime = convertToUserTime(session.end, user);
+
+  return sessionEndTime.isBefore(currentUserTime);
+};
+
+const getCurrentUserTime = (user: SlackMember) => {
+  const timezone = user.tz;
+  return moment.tz(timezone);
+};
