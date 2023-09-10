@@ -63,6 +63,7 @@ const googleOauthHandler = async (req: Request, res: Response) => {
         name?: string;
         picture?: string;
       };
+
       const email = googleUser.email;
       try {
         const user = await User.findOne({ email });
