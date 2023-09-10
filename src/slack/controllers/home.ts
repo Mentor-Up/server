@@ -6,6 +6,7 @@ import {
 } from '../views/home/greetings';
 import { buildUserRoleSection } from '../views/home/userRole';
 import { buildCohortSection } from '../views/home/cohort';
+import { buildSession } from '../views/home/session';
 import { getLoadingView, getErrorView } from '../views';
 import sessionsService from '../services/sessions';
 import { SlackMember } from '../types/member';
@@ -44,10 +45,17 @@ export const handleHomeOpened = async (client: WebClient, userId: string) => {
     sessions.cohorts.forEach((cohort) => {
       const cohortSection = buildCohortSection(cohort);
       sessionView.push(...cohortSection);
+      if (cohort.sessions.length === 0) {
+        sessionView.push(
+          Blocks.Section().text('No sessions scheduled for this week.')
+        );
+      } else {
+        cohort.sessions.forEach((session) => {
+          const sessionBlock = buildSession('admin', session);
+          sessionView.push(...sessionBlock);
+        });
+      }
     });
-
-    // placeholder
-    sessionView.push(Blocks.Section().text('Session details would go here'));
   } catch (error) {
     console.error(
       `Failed to fetch sessions due to ${(error as Error).message}`
