@@ -11,6 +11,7 @@ import { getLoadingView, getErrorView } from '../views';
 import sessionsService from '../services/sessions';
 import { SlackMember } from '../types/member';
 import { extractMemberProfile } from '../utils/memberHelper';
+import { determineUserRole } from '../utils/userRoleHelper';
 
 export const handleHomeOpened = async (client: WebClient, userId: string) => {
   console.log('handleHomeOpened');
@@ -38,8 +39,9 @@ export const handleHomeOpened = async (client: WebClient, userId: string) => {
   try {
     const sessions = await sessionsService.getThisWeekSessions(userId);
     console.log('Sessions:', sessions);
-    const userRoleSection = buildUserRoleSection(sessions.user);
-    sessionView.push(...userRoleSection);
+    const userRole = determineUserRole(sessions.user);
+    const userRoleView = buildUserRoleSection(userRole);
+    sessionView.push(...userRoleView);
 
     // cohort section
     sessions.cohorts.forEach((cohort) => {
@@ -51,7 +53,7 @@ export const handleHomeOpened = async (client: WebClient, userId: string) => {
         );
       } else {
         cohort.sessions.forEach((session) => {
-          const sessionBlock = buildSession('admin', session);
+          const sessionBlock = buildSession(userRole, session);
           sessionView.push(...sessionBlock);
         });
       }
