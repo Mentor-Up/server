@@ -66,7 +66,14 @@ const getWeekByIndex = async (req: Request, res: Response) => {
     throw new BadRequestError('Invalid week index');
   }
 
-  await cohort.populate({ path: `weeks.${i}.sessions` });
+  await cohort.populate({
+    path: `weeks.${i}.sessions`,
+    populate: {
+      path: 'creator',
+      select: 'name',
+    },
+    options: { strictPopulate: false },
+  });
 
   res.status(200).json({ populatedWeek: cohort.weeks[i] });
 };

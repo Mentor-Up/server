@@ -30,19 +30,29 @@ app.set('trust proxy', 1);
 
 app.use(
   rateLimiter({
-    windowMs: 15 * 60 * 1000,
-    max: 80, // Updated max value
+    windowMs: 60 * 1000, // 1 minute
+    max: 100, // Updated max value to 100 requests per minute
   })
 );
 
 app.use(helmet());
 app.use(compression());
-app.use(
-  cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  })
-);
+if (NODE_ENV === 'development') {
+  app.use(
+    cors({
+      origin: 'http://localhost:3000',
+      credentials: true,
+    })
+  );
+} else {
+  app.use(
+    cors({
+      origin: 'https://mentorup-81w4.onrender.com',
+      credentials: true,
+    })
+  );
+}
+
 app.use(mongoSanitize());
 
 app.use(cookieParser());
@@ -73,7 +83,6 @@ app.use(express.urlencoded({ extended: false }));
 
 // routes
 app.use('/api/v1/auth', authRouter);
-app.use('/testAuth', authMiddleware, (req, res) => res.send('OK!'));
 app.use('/api/v1/cohort', authMiddleware, cohortRouter);
 app.use('/api/v1/week', authMiddleware, weekRouter);
 app.use('/api/v1/session', authMiddleware, sessionRouter);

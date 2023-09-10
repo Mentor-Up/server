@@ -42,8 +42,9 @@ const createSession = async (req: Request, res: Response) => {
       creator: userId,
     });
     await addSession(cohort, startDate, session);
-    return res.status(201).json({ session });
+    return res.status(201).json({ sessions: [session] });
   } else {
+    const newSessions = [];
     while (startTimestamp < cohortEnd) {
       const session = await SessionModel.create({
         start: new Date(startTimestamp),
@@ -55,11 +56,11 @@ const createSession = async (req: Request, res: Response) => {
       startTimestamp += weekInMil;
       endTimestamp += weekInMil;
 
-      console.log(session);
+      newSessions.push(session);
       const newStart = new Date(session?.start);
       await addSession(cohort, newStart, session);
     }
-    return res.status(201).json({ cohort });
+    return res.status(201).json({ sessions: newSessions });
   }
 };
 
@@ -80,18 +81,18 @@ const getSession = async (req: Request, res: Response) => {
 
   const populateParticipantOptions = {
     path: 'participant',
-    select: '_id name ',
+    select: '_id name avatarUrl ',
   };
   const populateCreatorOptions = {
     path: 'creator',
-    select: '_id name ',
+    select: '_id name avatarUrl ',
   };
   const populateDiscussionOptions = {
     path: 'discussion',
     select: '_id name content ',
     populate: {
       path: 'name',
-      select: 'name',
+      select: 'name avatarUrl',
     },
   };
 
@@ -212,13 +213,15 @@ const updateStatus = async (req: Request, res: Response) => {
         throw new BadRequestError('Session does not exist');
       }
 
-      event = await scheduleEvent({
-        summary: sessionType,
-        start: sessionStart,
-        end: sessionEnd,
-        email: req.user.email,
-        description: sessionCreator,
-      });
+      if (user.OAuthToken) {
+        event = await scheduleEvent({
+          summary: sessionType,
+          start: sessionStart,
+          end: sessionEnd,
+          email: req.user.email,
+          description: sessionCreator,
+        });
+      }
     }
   } else if (status === false) {
     const userIndex = session.participant.findIndex((participant) =>
@@ -248,15 +251,13 @@ const getStatus = async (req: Request, res: Response) => {
     throw new BadRequestError('This session does not exist');
   }
   const participantWithUserStatus = session?.participant.find((p) => {
-    console.log(p);
-
     const userId = (p as any)._id.toString();
     return userId === req.user.userId;
   });
   if (!participantWithUserStatus) {
-    throw new BadRequestError('You are not joining this session');
+    return res.status(200).json(false);
   }
-  res.status(200).json(true);
+  return res.status(200).json(true);
 };
 
 const getUpcomingSessions = async (req: Request, res: Response) => {
@@ -265,9 +266,7 @@ const getUpcomingSessions = async (req: Request, res: Response) => {
   const sessions = await SessionModel.find({
     creator: userId,
     start: { $gte: Date.now() },
-  })
-    .limit(6)
-    .sort({ start: 'asc' });
+  }).sort({ start: 'asc' });
 
   res.status(200).json({ sessions });
 };
@@ -278,9 +277,7 @@ const getStudentUpcomingSessions = async (req: Request, res: Response) => {
   const sessions = await SessionModel.find({
     participant: userId,
     start: { $gte: Date.now() },
-  })
-    .limit(6)
-    .sort({ start: 'asc' });
+  }).sort({ start: 'asc' });
 
   res.status(200).json({ sessions });
 };
