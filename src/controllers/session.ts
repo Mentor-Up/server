@@ -278,9 +278,7 @@ const getStudentUpcomingSessions = async (req: Request, res: Response) => {
   const sessions = await SessionModel.find({
     participant: userId,
     start: { $gte: Date.now() },
-  })
-    .limit(6)
-    .sort({ start: 'asc' });
+  }).sort({ start: 'asc' });
 
   res.status(200).json({ sessions });
 };
