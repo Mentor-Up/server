@@ -1,4 +1,4 @@
-import { Blocks } from 'slack-block-builder';
+import { Blocks, Md } from 'slack-block-builder';
 import { SlackMember } from '../../types/member';
 
 export const getGenericGreetingView = () => {
@@ -11,7 +11,9 @@ export const getGenericGreetingView = () => {
 
 export const getGreetingsView = (member: SlackMember) => {
   const greetingText = `Hello, ${member.firstName}!`;
-  const timezoneText = `Your current time zone is set to ${member.tz_label}.\n All the sessions below are adjusted to this time zone.`;
+  const timezoneText = `All sessions reflect your ${Md.codeInline(
+    member.tz_label
+  )} timezone setting ${Md.emoji('earth_americas')}`;
 
   return [
     Blocks.Header().text(greetingText),
