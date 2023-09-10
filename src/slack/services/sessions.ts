@@ -30,11 +30,17 @@ class SessionsDataService {
       return {
         path: 'weeks.sessions',
         match: { creator: user._id }, // session created by mentor
-        populate: {
-          path: 'participant',
-          select: 'name _id slackId',
-          model: 'User',
-        },
+        populate: [
+          {
+            path: 'creator',
+            select: 'name _id slackId',
+          },
+          {
+            path: 'participant',
+            select: 'name _id slackId',
+            model: 'User',
+          },
+        ],
       };
     } else {
       return {
