@@ -15,7 +15,8 @@ const addSession = async (cohort: any, startDate: any, session: any) => {
 };
 
 const createSession = async (req: Request, res: Response) => {
-  const { start, end, type, link, cohortId, multipleSessions } = req.body;
+  const { start, end, type, link, cohortId, multipleSessions, cohortName } =
+    req.body;
   const userId = req.user.userId;
   const weekInMil = 7 * 24 * 60 * 60 * 1000;
   const startDate = new Date(start);
@@ -39,6 +40,7 @@ const createSession = async (req: Request, res: Response) => {
       end: endDate,
       type,
       link,
+      cohortName,
       creator: userId,
     });
     await addSession(cohort, startDate, session);
@@ -51,6 +53,7 @@ const createSession = async (req: Request, res: Response) => {
         end: new Date(endTimestamp),
         type,
         link,
+        cohortName,
         creator: userId,
       });
       startTimestamp += weekInMil;
