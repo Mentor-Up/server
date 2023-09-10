@@ -3,7 +3,7 @@ import { ThisWeekCohortSessions } from '../../types/cohortSession';
 
 export const buildCohortSection = (cohort: ThisWeekCohortSessions) => {
   return [
-    Blocks.Header().text(`${cohort.name}: ${cohort.week}`),
+    Blocks.Header().text(cohort.name + ': ' + cohort.week),
     Blocks.Divider(),
   ];
 };
