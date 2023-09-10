@@ -38,8 +38,7 @@ export const handleHomeOpened = async (client: WebClient, userId: string) => {
     const sessions = await sessionsService.getThisWeekSessions(userId);
     console.log('Sessions:', sessions);
     const userRoleSection = buildUserRoleSection(sessions.user);
-    sessionView.push(userRoleSection);
-    sessionView.push(Blocks.Divider());
+    sessionView.push(...userRoleSection);
 
     // cohort section
     sessions.cohorts.forEach((cohort) => {
