@@ -1,7 +1,7 @@
 import { IUser } from '../models/User';
 import { ICohort } from '../models/Cohort';
-import { SlackMember } from '../utils/slack/member';
-import { SlackChannel } from '../utils/slack/channel';
+import { SlackMember } from '../slack/types/member';
+import { SlackChannel } from '../slack/types/channel';
 
 // work on name
 class SlackDataService {

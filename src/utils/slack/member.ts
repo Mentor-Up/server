@@ -1,18 +1,7 @@
+// TODO: Use Bolt instead of WebClient
 import { slackWebClient, WebAPICallResult } from './slackWebClient';
-
-export interface SlackMember {
-  id: string;
-  email: string;
-  name: string;
-  title: string;
-  displayName: string;
-  avatarUrl: string;
-  isAdmin: boolean;
-  isBot: boolean;
-  isEmailConfirmed: boolean;
-  teamId: string;
-  timezone?: string;
-}
+import { SlackMember } from '../../slack/types/member';
+import { extractMemberProfile } from '../../slack/utils/memberHelper';
 
 async function fetchChannelMembers(channelId: string): Promise<string[]> {
   try {
@@ -33,24 +22,6 @@ async function fetchMemberData(userId: string): Promise<WebAPICallResult> {
     console.error('Error fetching user details:', error);
     throw error;
   }
-}
-
-function extractMemberProfile(userData: WebAPICallResult): SlackMember {
-  const user = userData.user as any;
-  const profile = user?.profile || {};
-  return {
-    id: user.id,
-    email: profile.email,
-    name: profile.real_name,
-    title: profile.title,
-    displayName: profile.display_name,
-    avatarUrl: profile.image_original,
-    isAdmin: user.is_admin || false,
-    isBot: user.is_bot,
-    isEmailConfirmed: user.is_email_confirmed,
-    teamId: user.team,
-    timezone: user.tz,
-  };
 }
 
 export async function fetchChannelMembersDetails(

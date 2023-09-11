@@ -24,6 +24,10 @@ import slackRouter from './routes/slack';
 
 import { NODE_ENV } from './config';
 
+// Trusts the first proxy in front of the app. Useful when deployed behind a proxy
+// to accurately get the client's IP from the X-Forwarded-For header.
+app.set('trust proxy', 1);
+
 app.use(
   rateLimiter({
     windowMs: 60 * 1000, // 1 minute
@@ -49,9 +53,13 @@ if (NODE_ENV === 'development') {
   );
 }
 
+// slack router should be used before json and urlencoded middleware
+app.use('/api/v1/slack', slackRouter);
+
 app.use(mongoSanitize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 
 if (NODE_ENV === 'development') {
@@ -79,7 +87,6 @@ app.use('/api/v1/week', authMiddleware, weekRouter);
 app.use('/api/v1/session', authMiddleware, sessionRouter);
 app.use('/api/v1/profile', authMiddleware, profileRouter);
 app.use('/api/v1/users', authMiddleware, userRouter);
-app.use('/api/v1/slack', authMiddleware, slackRouter);
 
 //OAuth
 app.get('/auth/google/callback', googleOauthHandler);

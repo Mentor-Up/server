@@ -3,15 +3,7 @@ import {
   WebAPICallResult,
   WebAPICallError,
 } from './slackWebClient';
-
-export interface SlackChannel {
-  slackId: string;
-  name: string;
-  type: string;
-  numberOfMembers: number;
-  startDate?: string;
-  endDate?: string;
-}
+import { SlackChannel } from '../../slack/types/channel';
 
 async function fetchPrivateChannels(): Promise<WebAPICallResult> {
   try {
