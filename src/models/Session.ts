@@ -12,6 +12,7 @@ interface ISession extends Document {
   discussion: Array<String>;
   review: Array<String>;
   link: string;
+  cohortName: string;
 }
 
 interface IPopulatedSession extends ISession {
@@ -63,6 +64,9 @@ const SessionSchema = new mongoose.Schema<ISession>(
       },
     ],
     link: {
+      type: String,
+    },
+    cohortName: {
       type: String,
     },
   },
