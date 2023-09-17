@@ -20,6 +20,9 @@ Introducing the Ultimate Class Management App: Streamlining Education Like Never
 
 Whether you're an administrator overseeing multiple classes, a mentor guiding students on their academic journey, or a student seeking to stay organized, our cutting-edge Class Management App has you covered. Powered by Express, TypeScript, and React, this application offers a seamless user experience while integrating the convenience of Google OAuth and Slack.
 
+- Demo Link: https://youtu.be/2UqX1BSH0hU
+
+
 ## Features
 
 - **Tailored roles:** Our app caters to the diverse needs of administrators, mentors, and students with distinct roles. Admins wield comprehensive class management control, mentors effortlessly create and oversee classes, and students access their schedules seamlessly within one intuitive platform.
