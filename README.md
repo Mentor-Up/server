@@ -4,6 +4,8 @@
 
 Introducing the Ultimate Class Management App: Streamlining Education Like Never Before!
 
+- Demo Link: https://youtu.be/2UqX1BSH0hU
+
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -19,8 +21,6 @@ Introducing the Ultimate Class Management App: Streamlining Education Like Never
 ## Introduction
 
 Whether you're an administrator overseeing multiple classes, a mentor guiding students on their academic journey, or a student seeking to stay organized, our cutting-edge Class Management App has you covered. Powered by Express, TypeScript, and React, this application offers a seamless user experience while integrating the convenience of Google OAuth and Slack.
-
-- Demo Link: https://youtu.be/2UqX1BSH0hU
 
 
 ## Features
